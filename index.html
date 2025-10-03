@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Éphéméride Translucide – Bergerac</title>
+    <title>Éphéméride Translucide – 2 rue Georges Bizet</title>
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!-- Chargement de Tailwind CSS pour un style moderne et responsive -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -92,6 +92,34 @@
             justify-content: center;
         }
 
+        /* NOUVEAU STYLE POUR LA BANNIÈRE (Plus clair et en verre amélioré) */
+        .welcome-banner {
+            /* Utilisation d'un gradient plus profond pour le fond, mais en gardant la transparence */
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.15) 100%);
+            backdrop-filter: blur(25px); /* Plus flou */
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.5); /* Bordure plus visible */
+            transition: transform 0.3s ease-out, box-shadow 0.3s ease-out; /* Ajout de transition */
+        }
+        .welcome-banner:hover {
+            transform: translateY(-2px); /* Léger soulèvement au survol */
+            box-shadow: 0 15px 40px rgba(255, 255, 255, 0.2); /* Ombre plus marquée */
+        }
+
+        .dark-mode .welcome-banner {
+            /* Gradient sombre plus riche */
+            background: linear-gradient(135deg, rgba(36, 44, 61, 0.8) 0%, rgba(53, 62, 79, 0.6) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .dark-mode .welcome-banner:hover {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+        }
+
+        .banner-address-text {
+            /* Style pour le texte d'adresse, avec ombre lumineuse */
+            text-shadow: 0 0 10px rgba(255, 255, 0, 0.7);
+        }
+
         /* Styles spécifiques pour le grand affichage de la date */
         .date-day-of-week {
             font-size: 1.5rem; /* Taille moyenne */
@@ -122,7 +150,6 @@
             border-color: rgba(239, 68, 68, 0.5);
             min-height: 140px;
         }
-        /* NOUVEAU STYLE POUR LE RESTAURANT */
         .local-contact-card-restaurant {
             background-color: rgba(245, 158, 11, 0.1); /* Orange/Amber clair */
             border-color: rgba(245, 158, 11, 0.5);
@@ -138,7 +165,29 @@
 <div class="main-container w-full max-w-5xl">
     
     <header class="text-center mb-6 p-4 rounded-xl">
-        <h1 class="text-4xl font-extrabold tracking-tight text-white shadow-lg mb-4 lg:mb-6">Éphéméride – Bergerac</h1>
+        <!-- NOUVELLE BANNIÈRE DE BIENVENUE (Version Glassmorphism AMÉLIORÉE) -->
+        <div class="welcome-banner p-6 mb-8 rounded-2xl text-center shadow-2xl relative overflow-hidden">
+            <!-- Subtil overlay pour la texture (optionnel, mais ajoute de la profondeur) -->
+            <div class="absolute inset-0 bg-white/5 opacity-50 pointer-events-none rounded-2xl"></div> 
+
+            <!-- Titre principal -->
+            <p class="text-xl sm:text-2xl font-light flex items-center justify-center gap-3 relative z-10 text-indigo-100 mb-2">
+                <span class="text-3xl sm:text-4xl text-yellow-300">🏠</span>
+                Bienvenue !
+            </p>
+            
+            <!-- Adresse élevée -->
+            <p class="banner-address-text text-3xl sm:text-4xl font-extrabold text-yellow-400 relative z-10 transition duration-300">
+                2 rue Georges Bizet
+            </p>
+            
+            <!-- Séparateur décoratif -->
+            <div class="w-1/4 h-1 bg-white/30 mx-auto my-3 rounded-full relative z-10"></div>
+            
+            <p class="text-sm text-white/80 mt-1 relative z-10 italic font-medium">
+                Votre guide en temps réel des informations pratiques et des services locaux.
+            </p>
+        </div>
         
         <!-- Conteneur flex pour la date et les infos calendaires -->
         <div class="flex flex-col lg:grid lg:grid-cols-2 justify-center gap-6">
@@ -172,10 +221,10 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
             
-            <!-- Colonne Gauche : CONTEXTE QUOTIDIEN (Inclut maintenant la Météo en premier) -->
+            <!-- Colonne Gauche : CONTEXTE QUOTIDIEN (Météo en premier) -->
             <div class="col space-y-6">
 
-                <!-- MODULE: MÉTÉO LOCALE (Déplacé ici) -->
+                <!-- MODULE: MÉTÉO LOCALE -->
                 <section id="meteo-module" class="bg-white/10 p-6 rounded-2xl border border-white/20 hover:shadow-xl transition duration-300">
                     <h2 class="text-2xl font-semibold mb-4 text-indigo-400">Météo Locale</h2>
                     <!-- Contenu météo sans icône, centré. Augmentation de la taille pour compenser la perte des actus -->
@@ -234,7 +283,7 @@
                 
             </div>
 
-            <!-- Colonne Droite : Services Locaux (La météo a été retirée de cette colonne) -->
+            <!-- Colonne Droite : Services Locaux -->
             <div class="col space-y-6">
 
                 <!-- CONTACTS LOCAUX (3 services) -->
