@@ -224,12 +224,31 @@
             <!-- Colonne Gauche : CONTEXTE QUOTIDIEN (Météo en premier) -->
             <div class="col space-y-6">
 
-                <!-- MODULE: MÉTÉO LOCALE -->
+                <!-- MODULE: MÉTÉO LOCALE (AVEC PRÉVISIONS DU LENDEMAIN) -->
                 <section id="meteo-module" class="bg-white/10 p-6 rounded-2xl border border-white/20 hover:shadow-xl transition duration-300">
                     <h2 class="text-2xl font-semibold mb-4 text-indigo-400">Météo Locale</h2>
-                    <!-- Contenu météo sans icône, centré. Augmentation de la taille pour compenser la perte des actus -->
-                    <div id="weather-content" class="text-center font-medium mb-4 text-xl py-4">Chargement météo...</div>
-                    <div class="update-time text-sm text-white/70 text-right" id="meteo-update"></div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="weather-sub-modules">
+                        <!-- Aujourd'hui -->
+                        <div id="meteo-today" class="info-card p-4 rounded-xl bg-white/5 border border-indigo-500/30 text-center flex flex-col justify-between min-h-[160px]">
+                            <h3 class="text-xl font-bold text-yellow-300 mb-2">Aujourd'hui</h3>
+                            <div id="today-icon" class="text-5xl mb-1">...</div>
+                            <div id="today-temp" class="text-2xl font-extrabold text-white/90">...</div>
+                            <div id="today-desc" class="text-sm text-indigo-200">...</div>
+                            <div id="today-daily-range" class="text-xs text-white/70 mt-1">Min: ... / Max: ...</div>
+                        </div>
+                        
+                        <!-- Demain -->
+                        <div id="meteo-tomorrow" class="info-card p-4 rounded-xl bg-white/5 border border-indigo-500/30 text-center flex flex-col justify-between min-h-[160px]">
+                            <h3 class="text-xl font-bold text-yellow-300 mb-2">Demain</h3>
+                            <div id="tomorrow-icon" class="text-5xl mb-1">...</div>
+                            <div id="tomorrow-desc" class="text-lg font-bold text-white/90 mt-2">...</div>
+                            <div id="tomorrow-daily-range" class="text-sm text-white/70 mt-1">Min: ... / Max: ...</div>
+                            <div class="text-sm pt-2 text-transparent">.</div> <!-- Espacement pour alignement -->
+                        </div>
+                    </div>
+
+                    <div class="update-time text-sm text-white/70 text-right mt-4" id="meteo-update"></div>
                 </section>
 
                 <!-- MODULE: LUNE & LUMINOSITÉ (Maintenant en deuxième position) -->
@@ -381,7 +400,6 @@ const LON = 0.4817;
 
 // Configuration des variables globales de l'environnement (initialisation Firestore non utilisée ici)
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-// FIX: Correction de la faute de frappe: __firebaseConfig a été remplacé par __firebase_config
 const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
 const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : '';
 
@@ -497,27 +515,94 @@ async function fetchSunData() {
 
 
 // === MÉTÉO (Open-Meteo) ===
+
+/**
+ * Traduit le code météo WMO en description et icône française.
+ * @param {number} wmoCode 
+ * @returns {object} { description, icon }
+ */
+function getWeatherDescriptionAndIcon(wmoCode) {
+    let description, icon;
+    
+    switch (wmoCode) {
+        case 0: description = "Ciel clair"; icon = "☀️"; break;
+        case 1: description = "Partiellement clair"; icon = "🌤️"; break;
+        case 2: description = "Nuages dispersés"; icon = "⛅"; break;
+        case 3: description = "Très nuageux"; icon = "☁️"; break;
+        case 45: 
+        case 48: description = "Brouillard"; icon = "🌫️"; break;
+        case 51: 
+        case 53: 
+        case 55: description = "Bruine"; icon = "🌧️"; break;
+        case 56: 
+        case 57: description = "Bruine verglaçante"; icon = "🥶🌧️"; break;
+        case 61: description = "Pluie légère"; icon = "🌦️"; break;
+        case 63: description = "Pluie modérée"; icon = "☔"; break;
+        case 65: description = "Forte pluie"; icon = "🌧️"; break;
+        case 66: 
+        case 67: description = "Pluie verglaçante"; icon = "🧊🌧️"; break;
+        case 71: description = "Chute de neige légère"; icon = "🌨️"; break;
+        case 73: description = "Chute de neige modérée"; icon = "❄️"; break;
+        case 75: description = "Forte chute de neige"; icon = "🌨️"; break;
+        case 77: description = "Grains de neige"; icon = "❄️"; break;
+        case 80: 
+        case 81: 
+        case 82: description = "Averses de pluie"; icon = "💦"; break;
+        case 85: 
+        case 86: description = "Averses de neige"; icon = "🌨️"; break;
+        case 95: description = "Orage"; icon = "⛈️"; break;
+        case 96: 
+        case 99: description = "Orage avec grêle"; icon = "🌩️"; break;
+        default: description = "Conditions variables"; icon = "❓";
+    }
+    return { description, icon };
+}
+
 async function fetchWeather() {
-    // Coordonnées de Bergerac (Latitude: 44.8516, Longitude: 0.4817)
-    // Seules les données nécessaires (température et précipitation) sont demandées.
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&hourly=temperature_2m,precipitation&current_weather=true&timezone=Europe%2FParis`;
+    // Récupère la météo actuelle et le prévisions quotidiennes (max/min température et code météo) pour 2 jours (aujourd'hui et demain).
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&daily=weather_code,temperature_2m_max,temperature_2m_min&current_weather=true&timezone=Europe%2FParis&forecast_days=2`;
     try {
       const r = await fetch(url);
       const d = await r.json();
+
       const meteo = d.current_weather;
+        const daily = d.daily;
+
+        // --- DONNÉES DU JOUR (Index 0) ---
+        const todayCode = daily.weather_code[0];
+        const todayMax = Math.round(daily.temperature_2m_max[0]);
+        const todayMin = Math.round(daily.temperature_2m_min[0]);
+        const todayCurrentTemp = Math.round(meteo.temperature);
+        const todayWeather = getWeatherDescriptionAndIcon(todayCode);
+
+        // Mise à jour du module "Aujourd'hui"
+        document.getElementById('today-icon').textContent = todayWeather.icon;
+        document.getElementById('today-temp').textContent = `${todayCurrentTemp}°C`;
+        document.getElementById('today-desc').textContent = `Actuel : ${todayWeather.description}`;
+        document.getElementById('today-daily-range').textContent = `Plage : ${todayMin}°C / ${todayMax}°C`;
+
+        // --- DONNÉES DU LENDEMAIN (Index 1) ---
+        // S'assurer que les données du jour 1 existent
+        if (daily.weather_code[1]) {
+            const tomorrowCode = daily.weather_code[1];
+            const tomorrowMax = Math.round(daily.temperature_2m_max[1]);
+            const tomorrowMin = Math.round(daily.temperature_2m_min[1]);
+            const tomorrowWeather = getWeatherDescriptionAndIcon(tomorrowCode);
+
+            // Mise à jour du module "Demain"
+            document.getElementById('tomorrow-icon').textContent = tomorrowWeather.icon;
+            document.getElementById('tomorrow-desc').textContent = tomorrowWeather.description;
+            document.getElementById('tomorrow-daily-range').textContent = `Plage : ${tomorrowMin}°C / ${tomorrowMax}°C`;
+        } else {
+            document.getElementById('tomorrow-icon').textContent = "⚠️";
+            document.getElementById('tomorrow-desc').textContent = "Prévisions non disponibles.";
+            document.getElementById('tomorrow-daily-range').textContent = "";
+        }
       
-        const temp = meteo ? `${meteo.temperature}°C` : "--";
-      const pluie = (typeof d.hourly.precipitation[0] !== "undefined") ? 
-          `<br>Précipitations (proch. h) : <b class="text-yellow-400">${d.hourly.precipitation[0]} mm</b>` : ""; 
-
-        // Mise à jour du contenu textuel de la météo
-      document.getElementById('weather-content').innerHTML =
-        `Température actuelle : <b class="text-yellow-400">${temp}</b>${pluie}`;
-
       document.getElementById('meteo-update').textContent = 'MAJ : ' + new Date().toLocaleTimeString('fr-FR');
     } catch (e) {
       console.error("Erreur météo:", e);
-      document.getElementById('weather-content').textContent = "Erreur de chargement météo.";
+      document.getElementById('weather-sub-modules').innerHTML = "<div class='text-center text-red-400 p-4 col-span-2'>Erreur de chargement des données météo. Veuillez réessayer.</div>";
     }
 }
 
