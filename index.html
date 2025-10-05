@@ -1,892 +1,235 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Éphéméride Translucide – 2 rue Georges Bizet</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <!-- Chargement de Tailwind CSS pour un style moderne et responsive -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        :root {
-            --accent: #387af6;
-            --accent2: #9b63e7;
-            --fond-clair: #f6faff;
-            --fond-nuit: #141b28;
-        }
-
-        /* Styles pour le Conteneur Principal (Effet de Verre) */
-        .glass-background {
-            /* Bordure subtile */
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            /* Effet flou principal */
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            /* Ombre */
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-        }
-
-        .dark-mode .glass-background {
-            /* Version sombre pour le verre */
-            background: linear-gradient(135deg, rgba(36, 44, 61, 0.8) 0%, rgba(53, 62, 79, 0.6) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-        }
-
-        /* Styles de base pour le corps et le mode sombre */
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #182848 0%, #4b6cb7 100%); /* Fond bleu foncé par défaut */
-            color: #e0e7ff;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .dark-mode body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: #f1f5f9;
-        }
-
-        /* Style spécifique pour le bouton mode sombre */
-        #toggle-dark {
-            background-color: rgba(255, 255, 255, 0.15);
-            color: white;
-            transition: background 0.2s;
-            backdrop-filter: blur(5px);
-        }
-        #toggle-dark:hover {
-            background-color: rgba(255, 255, 255, 0.3);
-        }
-        .dark-mode #toggle-dark {
-            background-color: rgba(0, 0, 0, 0.3);
-        }
-        .dark-mode #toggle-dark:hover {
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-        
-        /* Styles pour les titres dans le mode sombre */
-        .dark-mode h2 {
-            color: #a5b4fc; /* Couleur plus claire dans le mode sombre */
-        }
-
-        .actus-item {
-            border-color: rgba(255, 255, 255, 0.2);
-        }
-        .dark-mode .actus-item {
-            border-color: rgba(0, 0, 0, 0.2);
-        }
-
-        /* --- STYLES COMMUNS AUX MODULES D'EN-TÊTE (Date & Calendar) --- */
-        .header-module-style {
-            /* Fond sombre et opaque (similaire au date-display original) */
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 1rem;
-            padding: 1.5rem; 
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
-            /* Hauteur minimale ajustée pour réduire la taille globale */
-            min-height: 180px; 
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        /* NOUVEAU STYLE POUR LA BANNIÈRE (Plus clair et en verre amélioré) */
-        .welcome-banner {
-            /* Utilisation d'un gradient plus profond pour le fond, mais en gardant la transparence */
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.15) 100%);
-            backdrop-filter: blur(25px); /* Plus flou */
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.5); /* Bordure plus visible */
-            transition: transform 0.3s ease-out, box-shadow 0.3s ease-out; /* Ajout de transition */
-        }
-        .welcome-banner:hover {
-            transform: translateY(-2px); /* Léger soulèvement au survol */
-            box-shadow: 0 15px 40px rgba(255, 255, 255, 0.2); /* Ombre plus marquée */
-        }
-
-        .dark-mode .welcome-banner {
-            /* Gradient sombre plus riche */
-            background: linear-gradient(135deg, rgba(36, 44, 61, 0.8) 0%, rgba(53, 62, 79, 0.6) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .dark-mode .welcome-banner:hover {
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
-        }
-
-        .banner-address-text {
-            /* Style pour le texte d'adresse, avec ombre lumineuse */
-            text-shadow: 0 0 10px rgba(255, 255, 0, 0.7);
-        }
-
-        /* Styles spécifiques pour le grand affichage de la date */
-        .date-day-of-week {
-            font-size: 1.5rem; /* Taille moyenne */
-            font-weight: 700;
-            color: #a5b4fc; /* Indigo clair */
-        }
-        .date-number {
-            /* Taille réduite de 5rem à 4rem */
-            font-size: 4rem; 
-            font-weight: 900;
-            line-height: 1;
-            color: #ffe082; /* Jaune */
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-        }
-        .date-month-year {
-            font-size: 1.25rem;
-            font-weight: 500;
-            color: #e0e7ff; /* Blanc cassé */
-        }
-
-        .local-contact-card-pharmacy {
-            background-color: rgba(16, 185, 129, 0.1); /* Vert clair */
-            border-color: rgba(16, 185, 129, 0.5);
-            min-height: 140px;
-        }
-        .local-contact-card-vet {
-            background-color: rgba(239, 68, 68, 0.1); /* Rouge clair */
-            border-color: rgba(239, 68, 68, 0.5);
-            min-height: 140px;
-        }
-        .local-contact-card-restaurant {
-            background-color: rgba(245, 158, 11, 0.1); /* Orange/Amber clair */
-            border-color: rgba(245, 158, 11, 0.5);
-            min-height: 140px;
-        }
-        
-    </style>
+  <meta charset="UTF-8">
+  <title>Éphémérides Bergerac</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body.page-neon { background:#181820; color:#fff; font-family: system-ui, -apple-system, sans-serif; }
+    .card-neon {
+      border-radius:1.5rem;
+      box-shadow:0 0 24px #ffe06633,0 0 2px #ffe066;
+      background: linear-gradient(140deg,#282844 80%,#ffe06633 100%);
+      padding:1rem 1.25rem;
+      margin-bottom:.5rem;
+    }
+    .neon-section { border-radius:2rem;box-shadow:0 2px 24px #ffe06633; background:#232336;padding:1rem;}
+    .section-title-yellow {color:#ffe066;letter-spacing:0.05em;}
+    .neon-btn {
+      border-radius:1.2em;
+      padding:.4em 1.2em;
+      border:none;
+      background:#ffe066;
+      color:#232336;
+      font-weight:bold;
+      box-shadow:0 0 10px #ffe06699;
+      transition:all .2s;
+      margin-top:.15em;
+      cursor:pointer;
+      font-size:1em;
+      text-decoration:none;
+      display:inline-block;
+    }
+    .neon-btn:hover { background:#ffef96; color:#232336; transform:scale(1.05);}
+    .neon-btn.active { background:#fff; color:#232336; }
+    @media (max-width:600px){ .card-neon,.neon-section {border-radius:.9em;} }
+  </style>
 </head>
-<body class="dark-mode">
+<body class="page-neon text-white p-4">
 
-<button id="toggle-dark" class="fixed top-4 right-4 z-50 px-4 py-2 text-sm font-semibold rounded-full shadow-lg">☀️ Mode jour</button>
+  <div class="card-neon mb-8 mx-auto max-w-xl text-center">
+    <h2 class="text-2xl md:text-3xl font-extrabold section-title-yellow mb-2">Bienvenue</h2>
+    <div class="text-lg md:text-xl font-medium tracking-wide" style="letter-spacing:0.06em;">2 rue Georges Bizet</div>
+  </div>
 
-<div class="main-container w-full max-w-5xl">
-    
-    <header class="text-center mb-6 p-4 rounded-xl">
-        <!-- NOUVELLE BANNIÈRE DE BIENVENUE (Version Glassmorphism AMÉLIORÉE) -->
-        <div class="welcome-banner p-6 mb-8 rounded-2xl text-center shadow-2xl relative overflow-hidden">
-            <!-- Subtil overlay pour la texture (optionnel, mais ajoute de la profondeur) -->
-            <div class="absolute inset-0 bg-white/5 opacity-50 pointer-events-none rounded-2xl"></div> 
-
-            <!-- Titre principal -->
-            <p class="text-xl sm:text-2xl font-light flex items-center justify-center gap-3 relative z-10 text-indigo-100 mb-2">
-                <span class="text-3xl sm:text-4xl text-yellow-300">🏠</span>
-                Bienvenue !
-            </p>
-            
-            <!-- Adresse élevée -->
-            <p class="banner-address-text text-3xl sm:text-4xl font-extrabold text-yellow-400 relative z-10 transition duration-300">
-                2 rue Georges Bizet
-            </p>
-            
-            <!-- Séparateur décoratif -->
-            <div class="w-1/4 h-1 bg-white/30 mx-auto my-3 rounded-full relative z-10"></div>
-            
-            <p class="text-sm text-white/80 mt-1 relative z-10 italic font-medium">
-                Votre guide en temps réel des informations pratiques et des services locaux.
-            </p>
-        </div>
-        
-        <!-- Conteneur flex pour la date et les infos calendaires -->
-        <div class="flex flex-col lg:grid lg:grid-cols-2 justify-center gap-6">
-
-            <!-- MODULE 1: STATIC DATE DISPLAY -->
-            <div class="header-module-style flex flex-col items-center mx-auto lg:mx-0 w-full">
-                <div id="day-of-week" class="date-day-of-week"></div>
-                <div id="date-number" class="date-number"></div>
-                <div id="month-year" class="date-month-year"></div>
-                <div id="current-time" class="text-lg font-medium mt-2 text-indigo-200"></div>
+  <div class="max-w-4xl mx-auto">
+    <main class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div class="space-y-8">
+        <section class="neon-section p-6 text-center">
+          <h2 class="text-2xl font-extrabold mb-6 section-title-yellow">Calendrier</h2>
+          <div class="flex flex-col gap-6 items-center justify-center">
+            <div class="card-neon flex flex-col items-center text-center">
+              <div class="text-4xl mb-2">📆</div>
+              <div id="day-of-week" class="font-bold text-lg">Dimanche</div>
+              <div id="date-number" class="text-3xl font-extrabold">5</div>
+              <div id="month-year" class="text-base font-medium">Octobre 2025</div>
             </div>
-
-            <!-- MODULE 2: CALENDRIER & CITATION -->
-            <section id="calendar-info-module" class="header-module-style mx-auto lg:mx-0 w-full">
-                <h2 class="text-xl font-semibold mb-3 text-indigo-200 border-b border-white/20 pb-2 text-center">Calendrier & Citation</h2>
-                <div id="calendar-header-content" class="text-sm mt-3 flex flex-col justify-center items-center h-full text-center">
-                    <div id="cal-semaine" class="font-bold text-lg text-yellow-300"></div>
-                    <div id="cal-days-passes" class="text-white/80"></div>
-                    <div id="cal-days-restants" class="text-white/80 mb-2"></div>
-                    <!-- Citation plus petite pour rentrer dans l'en-tête -->
-                    <div id="citation-jour" class="text-xs italic text-indigo-200 p-2 rounded-lg bg-white/5 border border-indigo-500/30 w-full max-w-xs mx-auto mt-2"></div>
-                    <div class="update-time text-xs text-white/70 pt-2" id="calendrier-update"></div>
-                </div>
-            </section>
-
-        </div>
-    </header>
-
-    <!-- Le Conteneur principal translucide au centre -->
-    <div class="glass-background p-6 md:p-10 rounded-3xl shadow-2xl mx-auto w-full">
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
-            
-            <!-- Colonne Gauche : CONTEXTE QUOTIDIEN (Météo en premier) -->
-            <div class="col space-y-6">
-
-                <!-- MODULE: MÉTÉO LOCALE (AVEC PRÉVISIONS DU LENDEMAIN) -->
-                <section id="meteo-module" class="bg-white/10 p-6 rounded-2xl border border-white/20 hover:shadow-xl transition duration-300">
-                    <h2 class="text-2xl font-semibold mb-4 text-indigo-400">Météo Locale</h2>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="weather-sub-modules">
-                        <!-- Aujourd'hui -->
-                        <div id="meteo-today" class="info-card p-4 rounded-xl bg-white/5 border border-indigo-500/30 text-center flex flex-col justify-between min-h-[160px]">
-                            <h3 class="text-xl font-bold text-yellow-300 mb-2">Aujourd'hui</h3>
-                            <div id="today-icon" class="text-5xl mb-1">...</div>
-                            <div id="today-temp" class="text-2xl font-extrabold text-white/90">...</div>
-                            <div id="today-desc" class="text-sm text-indigo-200">...</div>
-                            <div id="today-daily-range" class="text-xs text-white/70 mt-1">Min: ... / Max: ...</div>
-                        </div>
-                        
-                        <!-- Demain -->
-                        <div id="meteo-tomorrow" class="info-card p-4 rounded-xl bg-white/5 border border-indigo-500/30 text-center flex flex-col justify-between min-h-[160px]">
-                            <h3 class="text-xl font-bold text-yellow-300 mb-2">Demain</h3>
-                            <div id="tomorrow-icon" class="text-5xl mb-1">...</div>
-                            <div id="tomorrow-desc" class="text-lg font-bold text-white/90 mt-2">...</div>
-                            <div id="tomorrow-daily-range" class="text-sm text-white/70 mt-1">Min: ... / Max: ...</div>
-                            <div class="text-sm pt-2 text-transparent">.</div> <!-- Espacement pour alignement -->
-                        </div>
-                    </div>
-
-                    <div class="update-time text-sm text-white/70 text-right mt-4" id="meteo-update"></div>
-                </section>
-
-                <!-- MODULE: LUNE & LUMINOSITÉ (Maintenant en deuxième position) -->
-                <section id="sun-moon-details" class="bg-white/10 p-6 rounded-2xl border border-white/20 hover:shadow-xl transition duration-300">
-                    <h2 class="text-2xl font-semibold mb-4 text-indigo-400">Lune & Luminosité</h2>
-                    <div id="sun-moon-content-main" class="grid grid-cols-3 gap-4 text-center mt-3 text-base">
-                        <!-- Phase Lunaire -->
-                        <div>
-                            <div class="text-4xl mb-1" id="moon-phase-icon">...</div>
-                            <div class="font-semibold text-white/90 text-sm">Phase</div>
-                            <div id="moon-phase-name" class="text-yellow-300 font-bold text-sm">Chargement...</div>
-                        </div>
-                        <!-- Lever du soleil -->
-                        <div>
-                            <div class="text-4xl mb-1">🌅</div>
-                            <div class="font-semibold text-white/90 text-sm">Lever du soleil</div>
-                            <div id="sunrise-time" class="text-yellow-300 font-bold text-xl mt-1">...</div>
-                        </div>
-                        <!-- Coucher du soleil -->
-                        <div>
-                            <div class="text-4xl mb-1">🌇</div>
-                            <div class="font-semibold text-white/90 text-sm">Coucher du soleil</div>
-                            <div id="sunset-time" class="text-yellow-300 font-bold text-xl mt-1">...</div>
-                        </div>
-                    </div>
-                    <div class="update-time text-sm text-white/70 pt-4 text-right" id="sun-moon-update"></div>
-                </section>
-
-                <!-- PROCHAIN JOUR FÉRIÉ -->
-                <section id="prochain-ferie-section" class="bg-white/10 p-6 rounded-2xl border border-white/20 hover:shadow-xl transition duration-300">
-                    <h2 class="text-2xl font-semibold mb-4 text-indigo-400">Prochain jour férié</h2>
-                    <div id="prochain-ferie-card" class="info-card p-3 rounded-xl bg-white/5 border border-white/10 text-center">
-                        <div class="text-3xl mb-1">📅</div>
-                        <div class="font-semibold text-indigo-300">Date à planifier</div>
-                        <div id="ferie-nom" class="text-sm font-bold text-yellow-300">Chargement...</div>
-                        <div id="ferie-date" class="text-xs"></div>
-                        <div id="ferie-temps-restant" class="text-xs mt-1 text-white/70"></div>
-                    </div>
-                </section>
-                
-                <!-- VACANCES SCOLAIRES (Planification à long terme) -->
-                <section id="vacances" class="bg-white/10 p-6 rounded-2xl border border-white/20 hover:shadow-xl transition duration-300">
-                    <h2 class="text-2xl font-semibold mb-4 text-indigo-400">Vacances scolaires (2025/2026)</h2>
-                    <div id="zone-btns" class="flex gap-2 justify-center mb-4">
-                        <button class="zone-btn px-4 py-1 text-sm rounded-xl font-medium bg-indigo-500 text-white hover:bg-indigo-600 transition duration-150" data-zone="A">Zone A</button>
-                        <button class="zone-btn px-4 py-1 text-sm rounded-xl font-medium bg-white/10 text-white hover:bg-white/20 transition duration-150" data-zone="B">Zone B</button>
-                        <button class="zone-btn px-4 py-1 text-sm rounded-xl font-medium bg-white/10 text-white hover:bg-white/20 transition duration-150" data-zone="C">Zone C</button>
-                    </div>
-                    <ul id="vacances-list" class="space-y-2 text-center"></ul>
-                </section>
-                
+            <div class="card-neon flex flex-col items-center text-center">
+              <div class="text-4xl mb-2">🔢</div>
+              <div class="text-base font-semibold mb-1">Semaine</div>
+              <div id="cal-semaine" class="text-2xl font-bold">40</div>
             </div>
-
-            <!-- Colonne Droite : Services Locaux -->
-            <div class="col space-y-6">
-
-                <!-- CONTACTS LOCAUX (3 services) -->
-                <section id="local-contacts" class="bg-white/10 p-6 rounded-2xl border border-white/20 hover:shadow-xl transition duration-300">
-                    <h2 class="text-2xl font-semibold mb-6 text-yellow-400 border-b border-yellow-400/50 pb-2">Contacts Commerces</h2>
-                    <!-- RESTAURÉ : Utilisation de grid-cols-1 lg:grid-cols-2 pour afficher 2 contacts par ligne sur desktop -->
-                    <div class="info-grid grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
-                        
-                        <!-- Pharmacie Locale -->
-                        <div class="info-card p-3 rounded-xl local-contact-card-pharmacy border min-h-[140px] text-center">
-                            <div class="text-3xl mb-1">💊</div>
-                            <div class="font-semibold text-green-300">Pharmacie de la Moulette</div>
-                            <div class="text-xs text-white/80 italic mb-1">102 Av. Pasteur, 24100 Bergerac</div>
-                            <!-- Numéro de téléphone recherché -->
-                            <a href="tel:0553570469" class="text-2xl font-bold text-yellow-300 hover:text-yellow-200 transition mt-1 block">05 53 57 04 69</a>
-                            <span class="text-xs mt-1 text-white/70 font-medium block">
-                                Horaires : Lundi–Samedi : 9h–12h30 / 14h–19h30
-                            </span>
-                        </div>
-                        
-                        <!-- Vétérinaire Local -->
-                        <div class="info-card p-3 rounded-xl local-contact-card-vet border min-h-[140px] text-center">
-                            <div class="text-3xl mb-1">🐶</div>
-                            <div class="font-semibold text-red-300">Clinique vétérinaire Aliénor</div>
-                            <div class="text-xs text-white/80 italic mb-1">Consultations sur rendez-vous</div>
-                            <!-- Numéro du vétérinaire -->
-                            <a href="tel:0553570805" class="text-2xl font-bold text-red-400 hover:text-red-300 transition mt-1 block">05 53 57 08 05</a>
-                            <span class="text-xs mt-1 text-white/70 font-medium block">
-                                Lundi–Vendredi 8h–12h30, 14h–19h, Samedi 8h–12h
-                            </span>
-                            <div class="text-xs mt-1 text-white/70 font-medium block">
-                                *Urgences : Suivre les instructions du répondeur.
-                            </div>
-                        </div>
-
-                        <!-- Restaurant C’est Qui L’Paton - Prend maintenant toute la ligne sur mobile/tablet, et la moitié sur desktop (lg:col-span-2 retiré) -->
-                        <div class="info-card p-3 rounded-xl local-contact-card-restaurant border min-h-[140px] text-center lg:col-span-2">
-                            <div class="text-3xl mb-1">🍽️</div>
-                            <div class="font-semibold text-orange-300">C’est Qui L’Paton</div>
-                            <div class="text-xs text-white/80 italic mb-1">3 Avenue Marceau Feyry, 24100 Bergerac</div>
-                            <!-- Nouveau Numéro -->
-                            <a href="tel:0553733721" class="text-2xl font-bold text-orange-400 hover:text-orange-300 transition mt-1 block">05 53 73 37 21</a>
-                            <span class="text-xs mt-1 text-white/70 font-medium block">
-                                Ouvert Lundi–Samedi (midi & soir). Fermé le dimanche midi.
-                            </span>
-                        </div>
-                    </div>
-                </section>
-
-
-                <!-- ADRESSES UTILES (Statiques) -->
-                <section id="adresses" class="bg-white/10 p-6 rounded-2xl border border-white/20 hover:shadow-xl transition duration-300">
-                    <h2 class="text-2xl font-semibold mb-6 text-indigo-400">Adresses & Services essentiels</h2>
-                    <div class="info-grid grid grid-cols-2 gap-4 w-full">
-                        <!-- Mairie -->
-                        <div class="info-card p-3 rounded-xl bg-white/5 border border-white/10 text-center">
-                            <div class="text-3xl mb-1">🏛️</div>
-                            <div class="font-semibold text-indigo-300">Mairie</div>
-                            <div class="text-sm">106 rue Neuve d'Argenson</div>
-                            <a href="tel:0553746666" class="text-sm font-bold text-yellow-300 hover:text-yellow-200 transition">05 53 74 66 66</a>
-                        </div>
-                        <!-- Police -->
-                        <div class="info-card p-3 rounded-xl bg-white/5 border border-white/10 text-center">
-                            <div class="text-3xl mb-1">🚓</div>
-                            <div class="font-semibold text-indigo-300">Police municipale</div>
-                            <div class="text-sm">19 rue Neuve d'Argenson</div>
-                            <a href="tel:0553746622" class="text-sm font-bold text-yellow-300 hover:text-yellow-200 transition">05 53 74 66 22</a>
-                        </div>
-                        <!-- Hôpital -->
-                        <div class="info-card p-3 rounded-xl bg-white/5 border border-white/10 text-center">
-                            <div class="text-3xl mb-1">🏥</div>
-                            <div class="font-semibold text-indigo-300">Hôpital</div>
-                            <div class="text-sm">9 av. Calmette</div>
-                            <a href="tel:0553638888" class="text-sm font-bold text-yellow-300 hover:text-yellow-200 transition">05 53 63 88 88</a>
-                        </div>
-                        <!-- Tourisme -->
-                        <div class="info-card p-3 rounded-xl bg-white/5 border border-white/10 text-center">
-                            <div class="text-3xl mb-1">🧭</div>
-                            <div class="font-semibold text-indigo-300">Office de tourisme</div>
-                            <div class="text-sm">Quai Cyrano</div>
-                            <a href="tel:0553570311" class="text-sm font-bold text-yellow-300 hover:text-yellow-200 transition">05 53 57 03 11</a>
-                        </div>
-                    </div>
-                </section>
-                
+            <div class="card-neon flex flex-col items-center text-center">
+              <div class="text-3xl mb-2">📈</div>
+              <div class="text-base font-semibold mb-1">Année</div>
+              <div id="cal-days-passes" class="text-base">279 jours passés</div>
+              <div id="cal-days-restants" class="text-base">86 jours restants</div>
             </div>
+          </div>
+        </section>
+        <section class="neon-section p-4 text-center">
+          <h2 class="text-xl font-bold mb-2 section-title-yellow">Citation du jour</h2>
+          <div class="card-neon p-3 flex flex-col items-center text-center">
+            <span id="citation-jour" class="italic text-lg">"La simplicité est la sophistication suprême." - Leonardo da Vinci</span>
+          </div>
+        </section>
+        <section class="neon-section p-4 text-center">
+          <h2 class="text-xl font-bold mb-2 section-title-yellow">Soleil & Lune</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="card-neon flex flex-col items-center justify-center text-center">
+              <div class="text-4xl mb-2">🌙</div>
+              <div id="moon-phase-icon" class="text-3xl mb-2">🌓</div>
+              <div id="moon-phase-name" class="mb-1">Premier quartier</div>
+              <div class="text-xs mt-1">Phase</div>
+            </div>
+            <div class="card-neon flex flex-col items-center justify-center text-center">
+              <div class="text-4xl mb-2">🌅</div>
+              <div id="sunrise-time" class="text-xl mb-1">08:12</div>
+              <div class="text-xs mt-1">Lever</div>
+            </div>
+            <div class="card-neon flex flex-col items-center justify-center text-center">
+              <div class="text-4xl mb-2">🌇</div>
+              <div id="sunset-time" class="text-xl mb-1">19:42</div>
+              <div class="text-xs mt-1">Coucher</div>
+            </div>
+          </div>
+          <div id="sun-moon-update" class="pt-2 text-right text-xs">Dernière maj : 19:15</div>
+        </section>
+      </div>
+      <div class="space-y-8">
+        <section class="neon-section p-4 text-center">
+          <h2 class="text-xl font-bold mb-2 section-title-yellow">Météo Bergerac</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="card-neon p-3 flex flex-col items-center text-center">
+              <div class="font-bold mb-1">Aujourd'hui</div>
+              <div id="meteo-today">
+                <div class="text-3xl mb-1">☀️</div>
+                <div class="text-lg font-bold">18°C</div>
+                <div class="text-sm">Ensoleillé</div>
+              </div>
+            </div>
+            <div class="card-neon p-3 flex flex-col items-center text-center">
+              <div class="font-bold mb-1">Demain</div>
+              <div id="meteo-tomorrow">
+                <div class="text-3xl mb-1">⛅</div>
+                <div class="text-lg font-bold">16°C</div>
+                <div class="text-sm">Nuageux</div>
+              </div>
+            </div>
+          </div>
+          <div id="meteo-update" class="pt-2 text-right text-xs">Dernière maj : 19:00</div>
+        </section>
+        <section class="neon-section p-4 text-center">
+          <h2 class="text-xl font-bold mb-2 section-title-yellow">Prochain férié</h2>
+          <div class="card-neon flex flex-col items-center text-center">
+            <div class="text-3xl">🎉</div>
+            <div id="ferie-nom" class="font-bold text-lg">Toussaint</div>
+            <div id="ferie-date" class="font-medium mt-1">1er novembre 2025</div>
+            <div id="ferie-temps-restant" class="mt-1">Dans 27 jours</div>
+          </div>
+        </section>
+        <section class="neon-section p-4 text-center">
+          <h2 class="text-xl font-bold mb-2 section-title-yellow">Vacances scolaires</h2>
+          <div id="zone-btns" class="flex gap-2 justify-center my-2">
+            <button class="neon-btn" data-zone="A">Zone A</button>
+            <button class="neon-btn active" data-zone="B">Zone B</button>
+            <button class="neon-btn" data-zone="C">Zone C</button>
+          </div>
+          <div id="vacances-list" class="grid grid-cols-1 gap-2">
+            <div class="card-neon text-sm p-2">
+              <div class="font-semibold">Vacances de la Toussaint</div>
+              <div>Du 19 octobre au 4 novembre 2025</div>
+            </div>
+            <div class="card-neon text-sm p-2">
+              <div class="font-semibold">Vacances de Noël</div>
+              <div>Du 21 décembre 2025 au 6 janvier 2026</div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Module Liste de courses Google Sheet collaborative -->
+    <section class="neon-section p-4 text-center mb-8">
+      <h2 class="text-xl font-bold mb-2 section-title-yellow">Liste de courses collaborative</h2>
+      <div class="card-neon flex flex-col items-center text-center py-4">
+        <p class="mb-3">Ajoutez, modifiez et suivez la liste en direct :</p>
+        <a href="https://docs.google.com/spreadsheets/d/15gCel9KD4MGUF-QVLI4IYZA-xMikhdSHGPKh2iCLCTM/edit?usp=sharing"
+          class="neon-btn mt-3 mb-4" target="_blank">
+          🛒 Modifier la liste
+        </a>
+        <div class="w-full flex justify-center mt-4">
+          <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQ6NtAEVEZe2gINyb02H4MjD8uG_yPsIEn3pz-DtE_sKtWWcNAZrNiXrJdYTl_e8Ee6v4aRKygdua6_/pubhtml?gid=0&amp;single=true&amp;widget=true&amp;headers=false"
+            style="width:100%;max-width:500px;height:340px;border:0;border-radius:1.5rem;box-shadow:0 0 15px #ffe06650;display:block;margin:0 auto;"></iframe>
         </div>
-    </div>
-</div>
+        <small class="text-white/60 mt-2">Aperçu de la liste • Pour modifier, cliquer sur le bouton</small>
+      </div>
+    </section>
 
-<script>
-// Coordonnées de Bergerac
-const LAT = 44.8516;
-const LON = 0.4817;
+    <!-- Module Numéros utiles cliquables -->
+    <section class="neon-section p-4 text-center mb-8">
+      <h2 class="text-xl font-bold mb-2 section-title-yellow">Numéros utiles</h2>
+      <div class="card-neon flex flex-col gap-3 items-center text-center py-6">
+        <div>
+          <span class="font-semibold">Pharmacie de la Moulette</span><br>
+          <a href="tel:0553572906" class="text-white/80 hover:text-yellow-300 font-mono underline underline-offset-2 transition">05 53 57 29 06</a>
+        </div>
+        <div>
+          <span class="font-semibold">Clinique Vétérinaire Aliénor</span><br>
+          <a href="tel:0553740484" class="text-white/80 hover:text-yellow-300 font-mono underline underline-offset-2 transition">05 53 74 04 84</a>
+        </div>
+        <div>
+          <span class="font-semibold">Pizzeria "C'est qui le paton&nbsp;?"</span><br>
+          <a href="tel:0553573561" class="text-white/80 hover:text-yellow-300 font-mono underline underline-offset-2 transition">05 53 57 35 61</a>
+        </div>
+      </div>
+    </section>
 
-// Configuration des variables globales de l'environnement (initialisation Firestore non utilisée ici)
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : '';
+    <footer class="mt-8 text-center text-xs text-white">
+      Éphémérides Bergerac &mdash; Données : Open-Meteo, Calendriers officiels, etc.
+    </footer>
+  </div>
 
-
-// Initialisation Tailwind pour gérer les classes
-tailwind.config = {
-    darkMode: 'class', // Active le mode sombre basé sur la classe 'dark-mode' sur <body>
-}
-
-// =========================================================
-// === FONCTIONS STATIQUES/SEMI-STATIQUES ===
-// =========================================================
-
-
-// === STATIC DATE & TIME LOGIC ===
-function updateDateTime() {
-    const now = new Date();
-    
-    // JOUR DE LA SEMAINE (Vendredi)
-    const dayOfWeek = now.toLocaleDateString('fr-FR', { weekday: 'long' });
-    document.getElementById('day-of-week').textContent = dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1);
-    
-    // NUMÉRO DU JOUR (3)
-    document.getElementById('date-number').textContent = now.getDate();
-    
-    // MOIS ET ANNÉE (Octobre 2025)
-    const monthYear = now.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
-    document.getElementById('month-year').textContent = monthYear.charAt(0).toUpperCase() + monthYear.slice(1);
-
-    // HEURE (Pour rester dynamique et utile)
-    const time = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    document.getElementById('current-time').textContent = `Heure locale : ${time}`;
-}
-
-// Mise à jour de l'heure chaque seconde
-setInterval(updateDateTime, 1000);
-// =========================================================
-
-// === LUNE & SOLEIL ===
-
-/**
- * Met à jour la phase lunaire (approximation basée sur le jour de l'année)
- */
-function updateMoonPhase() {
-    const now = new Date();
-    // Approximation simplifiée du cycle lunaire (29.53 jours)
-    // Utilisation d'une date de Nouvelle Lune proche de 2000 comme point de départ
-    const start2000 = new Date('2000-01-06'); 
-    const diffDays = (now - start2000) / (1000 * 60 * 60 * 24);
-    // Le cycle lunaire synodique est d'environ 29.530588 jours
-    const lunarCycleDay = diffDays % 29.5305882;
-    
-    let phaseName = "";
-    let phaseIcon = "";
-
-    // 0 = Nouvelle Lune, 14.76 = Pleine Lune
-    if (lunarCycleDay < 1.84) {
-        phaseName = "Nouvelle Lune"; phaseIcon = "🌑";
-    } else if (lunarCycleDay < 5.53) {
-        phaseName = "Premier Croissant"; phaseIcon = "🌒";
-    } else if (lunarCycleDay < 9.22) {
-        phaseName = "Premier Quartier"; phaseIcon = "🌓";
-    } else if (lunarCycleDay < 12.91) {
-        phaseName = "Lune Gibbeuse Croissante"; phaseIcon = "🌔";
-    } else if (lunarCycleDay < 16.61) {
-        phaseName = "Pleine Lune"; phaseIcon = "🌕";
-    } else if (lunarCycleDay < 20.30) {
-        phaseName = "Lune Gibbeuse Décroissante"; phaseIcon = "🌖";
-    } else if (lunarCycleDay < 23.99) {
-        phaseName = "Dernier Quartier"; phaseIcon = "🌗";
-    } else if (lunarCycleDay < 27.68) {
-        phaseName = "Dernier Croissant"; phaseIcon = "🌘";
-    } else {
-        phaseName = "Nouvelle Lune"; phaseIcon = "🌑";
-    }
-
-    // Mise à jour des éléments dans le module #sun-moon-details
-    document.getElementById('moon-phase-name').textContent = phaseName;
-    document.getElementById('moon-phase-icon').textContent = phaseIcon;
-    document.getElementById('sun-moon-update').textContent = 'MAJ : ' + new Date().toLocaleTimeString('fr-FR');
-}
-
-/**
- * Récupère les heures de lever et coucher du soleil via Open-Meteo
- */
-async function fetchSunData() {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&daily=sunrise,sunset&timezone=Europe%2FParis`;
-    try {
-        const r = await fetch(url);
-        const d = await r.json();
-        
-        const sunriseStr = d.daily?.sunrise?.[0] || null;
-        const sunsetStr = d.daily?.sunset?.[0] || null;
-
-        if (sunriseStr && sunsetStr) {
-            // Extraire l'heure (HH:MM)
-            const sunriseTime = new Date(sunriseStr).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-            const sunsetTime = new Date(sunsetStr).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-
-            // Mise à jour des éléments dans le module #sun-moon-details
-            document.getElementById('sunrise-time').textContent = sunriseTime;
-            document.getElementById('sunset-time').textContent = sunsetTime;
-        } else {
-            throw new Error("Données soleil incomplètes.");
-        }
-    } catch (e) {
-        console.error("Erreur soleil:", e);
-        document.getElementById('sunrise-time').textContent = "Erreur";
-        document.getElementById('sunset-time').textContent = "Erreur";
-    }
-}
-// =========================================================
-
-
-// === MÉTÉO (Open-Meteo) ===
-
-/**
- * Traduit le code météo WMO en description et icône française.
- * @param {number} wmoCode 
- * @returns {object} { description, icon }
- */
-function getWeatherDescriptionAndIcon(wmoCode) {
-    let description, icon;
-    
-    switch (wmoCode) {
-        case 0: description = "Ciel clair"; icon = "☀️"; break;
-        case 1: description = "Partiellement clair"; icon = "🌤️"; break;
-        case 2: description = "Nuages dispersés"; icon = "⛅"; break;
-        case 3: description = "Très nuageux"; icon = "☁️"; break;
-        case 45: 
-        case 48: description = "Brouillard"; icon = "🌫️"; break;
-        case 51: 
-        case 53: 
-        case 55: description = "Bruine"; icon = "🌧️"; break;
-        case 56: 
-        case 57: description = "Bruine verglaçante"; icon = "🥶🌧️"; break;
-        case 61: description = "Pluie légère"; icon = "🌦️"; break;
-        case 63: description = "Pluie modérée"; icon = "☔"; break;
-        case 65: description = "Forte pluie"; icon = "🌧️"; break;
-        case 66: 
-        case 67: description = "Pluie verglaçante"; icon = "🧊🌧️"; break;
-        case 71: description = "Chute de neige légère"; icon = "🌨️"; break;
-        case 73: description = "Chute de neige modérée"; icon = "❄️"; break;
-        case 75: description = "Forte chute de neige"; icon = "🌨️"; break;
-        case 77: description = "Grains de neige"; icon = "❄️"; break;
-        case 80: 
-        case 81: 
-        case 82: description = "Averses de pluie"; icon = "💦"; break;
-        case 85: 
-        case 86: description = "Averses de neige"; icon = "🌨️"; break;
-        case 95: description = "Orage"; icon = "⛈️"; break;
-        case 96: 
-        case 99: description = "Orage avec grêle"; icon = "🌩️"; break;
-        default: description = "Conditions variables"; icon = "❓";
-    }
-    return { description, icon };
-}
-
-async function fetchWeather() {
-    // Récupère la météo actuelle et le prévisions quotidiennes (max/min température et code météo) pour 2 jours (aujourd'hui et demain).
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&daily=weather_code,temperature_2m_max,temperature_2m_min&current_weather=true&timezone=Europe%2FParis&forecast_days=2`;
-    try {
-      const r = await fetch(url);
-      const d = await r.json();
-
-      const meteo = d.current_weather;
-        const daily = d.daily;
-
-        // --- DONNÉES DU JOUR (Index 0) ---
-        const todayCode = daily.weather_code[0];
-        const todayMax = Math.round(daily.temperature_2m_max[0]);
-        const todayMin = Math.round(daily.temperature_2m_min[0]);
-        const todayCurrentTemp = Math.round(meteo.temperature);
-        const todayWeather = getWeatherDescriptionAndIcon(todayCode);
-
-        // Mise à jour du module "Aujourd'hui"
-        document.getElementById('today-icon').textContent = todayWeather.icon;
-        document.getElementById('today-temp').textContent = `${todayCurrentTemp}°C`;
-        document.getElementById('today-desc').textContent = `Actuel : ${todayWeather.description}`;
-        document.getElementById('today-daily-range').textContent = `Plage : ${todayMin}°C / ${todayMax}°C`;
-
-        // --- DONNÉES DU LENDEMAIN (Index 1) ---
-        // S'assurer que les données du jour 1 existent
-        if (daily.weather_code[1]) {
-            const tomorrowCode = daily.weather_code[1];
-            const tomorrowMax = Math.round(daily.temperature_2m_max[1]);
-            const tomorrowMin = Math.round(daily.temperature_2m_min[1]);
-            const tomorrowWeather = getWeatherDescriptionAndIcon(tomorrowCode);
-
-            // Mise à jour du module "Demain"
-            document.getElementById('tomorrow-icon').textContent = tomorrowWeather.icon;
-            document.getElementById('tomorrow-desc').textContent = tomorrowWeather.description;
-            document.getElementById('tomorrow-daily-range').textContent = `Plage : ${tomorrowMin}°C / ${tomorrowMax}°C`;
-        } else {
-            document.getElementById('tomorrow-icon').textContent = "⚠️";
-            document.getElementById('tomorrow-desc').textContent = "Prévisions non disponibles.";
-            document.getElementById('tomorrow-daily-range').textContent = "";
-        }
-      
-      document.getElementById('meteo-update').textContent = 'MAJ : ' + new Date().toLocaleTimeString('fr-FR');
-    } catch (e) {
-      console.error("Erreur météo:", e);
-      document.getElementById('weather-sub-modules').innerHTML = "<div class='text-center text-red-400 p-4 col-span-2'>Erreur de chargement des données météo. Veuillez réessayer.</div>";
-    }
-}
-
-
-// === VACANCES SCOLAIRES (2025/2026 - Bergerac est en Zone A) ===
-const vacancesZones = {
-    "A": [
-      { nom: "Toussaint", debut: "25/10/2025", fin: "03/11/2025" },
-      { nom: "Noël", debut: "20/12/2025", fin: "05/01/2026" },
-      { nom: "Hiver", debut: "21/02/2026", fin: "09/03/2026" },
-      { nom: "Printemps", debut: "18/04/2026", fin: "04/05/2026" },
-      { nom: "Été", debut: "04/07/2026", fin: "01/09/2026" }
-    ],
-    "B": [
-      { nom: "Toussaint", debut: "25/10/2025", fin: "03/11/2025" },
-      { nom: "Noël", debut: "20/12/2025", fin: "05/01/2026" },
-      { nom: "Hiver", debut: "07/02/2026", fin: "23/02/2026" },
-      { nom: "Printemps", debut: "04/04/2026", fin: "20/04/2026" },
-      { nom: "Été", debut: "04/07/2026", fin: "01/09/2026" }
-    ],
-    "C": [
-      { nom: "Toussaint", debut: "25/10/2025", fin: "03/11/2025" },
-      { nom: "Noël", debut: "20/12/2025", fin: "05/01/2026" },
-      { nom: "Hiver", debut: "07/03/2026", fin: "23/03/2026" },
-      { nom: "Printemps", debut: "25/04/2026", fin: "11/05/2026" },
-      { nom: "Été", debut: "04/07/2026", fin: "01/09/2026" }
-    ]
-};
-
-let currentZone = "A"; // Bergerac est en Zone A
-
-function displayVacances(zone) {
-    const list = document.getElementById('vacances-list');
-    list.innerHTML = '';
-    const now = new Date();
-
-    vacancesZones[zone].forEach(vac => {
-        const [d, m, y] = vac.debut.split('/').map(n => parseInt(n, 10));
-        const debut = new Date(y, m - 1, d); // Les mois JS sont 0-indexés
-
-        let status = '';
-        let statusClass = 'text-white/80';
-
-        if (debut > now) {
-            const diffTime = debut - now;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            status = `(dans ${diffDays} j.)`;
-            statusClass = 'text-green-300 font-bold';
-        } else {
-            // Check if we are currently in vacation
-            const [df, mf, yf] = vac.fin.split('/').map(n => parseInt(n, 10));
-            const fin = new Date(yf, mf - 1, df);
-            if (now >= debut && now <= fin) {
-                status = `(EN COURS) - Fin le ${vac.fin}`;
-                statusClass = 'text-red-300 font-bold';
-            } else {
-                status = '(Passées)';
-                statusClass = 'text-white/50 italic';
-            }
-        }
-
-        const item = document.createElement('li');
-        item.className = 'flex justify-between items-center text-sm border-b border-white/10 pb-1 last:border-b-0';
-        item.innerHTML = `
-            <span class="font-medium text-indigo-200">${vac.nom}</span>
-            <span class="${statusClass} text-xs md:text-sm">${vac.debut} au ${vac.fin} ${status}</span>
-        `;
-        list.appendChild(item);
+  <script>
+    // Gestion des boutons zones vacances
+    document.querySelectorAll('[data-zone]').forEach(btn => {
+      btn.onclick = function() {
+        document.querySelectorAll('[data-zone]').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        // Ici tu peux ajouter la logique pour changer les vacances affichées
+      };
     });
-}
 
-function initVacances() {
-    // Initial display
-    displayVacances(currentZone);
+    // Mise à jour automatique de la date/heure
+    function updateDateTime() {
+      const now = new Date();
+      const days = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+      const months = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+      
+      document.getElementById('day-of-week').textContent = days[now.getDay()];
+      document.getElementById('date-number').textContent = now.getDate();
+      document.getElementById('month-year').textContent = months[now.getMonth()] + ' ' + now.getFullYear();
+      
+      // Calcul semaine de l'année
+      const start = new Date(now.getFullYear(), 0, 1);
+      const diff = now - start;
+      const weekNumber = Math.ceil(diff / (1000 * 60 * 60 * 24 * 7));
+      document.getElementById('cal-semaine').textContent = weekNumber;
+      
+      // Calcul jours passés/restants
+      const daysPassed = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const daysRemaining = 365 - daysPassed;
+      document.getElementById('cal-days-passes').textContent = daysPassed + ' jours passés';
+      document.getElementById('cal-days-restants').textContent = daysRemaining + ' jours restants';
+    }
 
-    // Event listeners for zone buttons
-    const zoneBtns = document.querySelectorAll('.zone-btn');
-    zoneBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            // Update active state
-            zoneBtns.forEach(b => {
-                b.classList.remove('bg-indigo-500', 'hover:bg-indigo-600');
-                b.classList.add('bg-white/10', 'hover:bg-white/20');
-            });
-            btn.classList.add('bg-indigo-500', 'hover:bg-indigo-600');
-            btn.classList.remove('bg-white/10', 'hover:bg-white/20');
-            
-            // Update content
-            currentZone = btn.dataset.zone;
-            displayVacances(currentZone);
-        });
-    });
-}
-// =========================================================
-
-// === JOURS FÉRIÉS (2025/2026) ===
-// Mise à jour de la liste pour inclure la fin 2025 (à partir de maintenant, 3 oct 2025) et 2026.
-const feries = [
-    // Reste de 2025 (après le 3 octobre)
-    { nom: "Toussaint", date: "01/11/2025" },
-    { nom: "Armistice 1918", date: "11/11/2025" },
-    { nom: "Noël", date: "25/12/2025" },
-    // Année 2026
-    { nom: "Jour de l'An", date: "01/01/2026" },
-    { nom: "Lundi de Pâques", date: "06/04/2026" },
-    { nom: "Fête du Travail", date: "01/05/2026" },
-    { nom: "Victoire 1945", date: "08/05/2026" },
-    { nom: "Ascension", date: "14/05/2026" },
-    { nom: "Lundi de Pentecôte", date: "25/05/2026" },
-    { nom: "Fête Nationale", date: "14/07/2026" },
-    { nom: "Assomption", date: "15/08/2026" },
-    { nom: "Toussaint", date: "01/11/2026" },
-    { nom: "Armistice 1918", date: "11/11/2026" },
-    { nom: "Noël", date: "25/12/2026" }
-];
-
-function calculateNextFerie() {
-    const now = new Date();
-    // On met l'heure à 00:00:00 pour comparer uniquement les jours
-    now.setHours(0, 0, 0, 0); 
-
-    let prochainFerie = null;
-    let minDiff = Infinity;
-
-    // Convertit une date DD/MM/YYYY en objet Date
-    const parseDate = (dateStr) => {
-        const [d, m, y] = dateStr.split('/').map(n => parseInt(n, 10));
-        // Les mois JS sont 0-indexés (m-1)
-        const dateObj = new Date(y, m - 1, d); 
-        // Assurez-vous que l'heure est minuit pour la comparaison
-        dateObj.setHours(0, 0, 0, 0); 
-        return dateObj;
+    // Initialisation
+    window.onload = function() {
+      updateDateTime();
+      // Mise à jour toutes les heures
+      setInterval(updateDateTime, 3600000);
     };
-
-    for (const ferie of feries) {
-        let ferieDate = parseDate(ferie.date);
-        
-        const diff = ferieDate - now;
-
-        // Si la différence est positive ou nulle (jour J), c'est un jour férié futur ou actuel.
-        if (diff >= 0 && diff < minDiff) {
-            minDiff = diff;
-            prochainFerie = ferie;
-            prochainFerie.objDate = ferieDate;
-        }
-    }
-
-    const ferieNomEl = document.getElementById('ferie-nom');
-    const ferieDateEl = document.getElementById('ferie-date');
-    const ferieTempsRestantEl = document.getElementById('ferie-temps-restant');
-
-    if (prochainFerie) {
-        const joursRestants = Math.ceil(minDiff / (1000 * 60 * 60 * 24));
-        ferieNomEl.textContent = prochainFerie.nom;
-        ferieDateEl.textContent = prochainFerie.date;
-        
-        if (joursRestants === 0) {
-            ferieTempsRestantEl.textContent = "AUJOURD'HUI ! Profitez-en !";
-            ferieTempsRestantEl.classList.remove('text-white/70');
-            ferieTempsRestantEl.classList.add('text-red-400', 'font-extrabold');
-        } else if (joursRestants === 1) {
-            ferieTempsRestantEl.textContent = "C'est DEMAIN ! Préparez-vous !";
-            ferieTempsRestantEl.classList.add('text-white/70');
-            ferieTempsRestantEl.classList.remove('text-red-400', 'font-extrabold');
-        } else {
-            ferieTempsRestantEl.textContent = `Plus que ${joursRestants} jours !`;
-            ferieTempsRestantEl.classList.add('text-white/70');
-            ferieTempsRestantEl.classList.remove('text-red-400', 'font-extrabold');
-        }
-    } else {
-        ferieNomEl.textContent = "Fin de la liste des jours fériés.";
-        ferieDateEl.textContent = "";
-        ferieTempsRestantEl.textContent = "Veuillez mettre à jour la liste pour l'année prochaine.";
-    }
-}
-// =========================================================
-
-// === CALENDRIER (Saints, Jours écoulés) ===
-function updateCalendarInfo() {
-    const now = new Date();
-    const startOfYear = new Date(now.getFullYear(), 0, 1);
-    
-    // Calcul de la semaine et des jours
-    const oneDay = 1000 * 60 * 60 * 24;
-    const dayOfYear = Math.floor((now - startOfYear) / oneDay) + 1;
-    const weekNumber = Math.ceil((dayOfYear + startOfYear.getDay() - 1) / 7);
-    const totalDays = now.getFullYear() % 4 === 0 ? 366 : 365;
-    const daysRemaining = totalDays - dayOfYear;
-    
-    // Liste des Saints (simplifiée pour l'exemple)
-    const saints = [
-        "Octave", "Thérèse", "Gérard", "François", "Fleur", "Bruno", "Serge", "Pélagie", 
-        "Denis", "Ghislain", "Firmin", "Wilfrid", "Géraud", "Juste", "Thérèse d'Avila", 
-        "Edwige", "Baudouin", "Luc", "René", "Adeline", "Céline", "Elodie", "Jean de Capistran", 
-        "Florentin", "Crépin", "Dimitri", "Emeline", "Simon", "Narcisse", "Bienvenue", "Quentin", 
-        "Toussaint", "Hubert", "Charles", "Sylvie", "Léonard", "Bertille", "Carine", "Achille", 
-        "Théodore", "Christian", "Martin", "Benoît", "Sidoine", "Albert", "Marguerite", "Elisabeth", 
-        "Présence", "Edmond", "Rufin", "Catherine", "Delphine", "Séverin", "Jacques", "André", 
-        "Florence", "Barbara", "Nicolas", "Gérald", "Ambroise", "Perrine", "Conception", "Auxence", 
-        "Daniel", "Mireille", "Gatien", "Noël"
-    ]; 
-    const saintJour = saints[(now.getMonth() * 31 + now.getDate()) % saints.length]; // Approximation
-
-    // Mise à jour de l'affichage
-    document.getElementById('cal-semaine').textContent = `Nous sommes la Semaine n°${weekNumber}.`;
-    document.getElementById('cal-days-passes').textContent = `Jour écoulé : ${dayOfYear} / ${totalDays} (Sainte : ${saintJour})`;
-    document.getElementById('cal-days-restants').textContent = `Jours restants en ${now.getFullYear()} : ${daysRemaining}`;
-    document.getElementById('calendrier-update').textContent = 'MAJ : ' + new Date().toLocaleTimeString('fr-FR');
-}
-// =========================================================
-
-// === CITATION DU JOUR (Statique) ===
-function setCitation() {
-    const citations = [
-        "La vie est un mystère qu'il faut vivre, et non un problème à résoudre. - Gandhi",
-        "Le plus grand risque est de ne prendre aucun risque. - Mark Zuckerberg",
-        "Il n'y a qu'une façon d'échouer, c'est d'abandonner avant d'avoir réussi. - Georges Clemenceau",
-        "L'action n'est pas seulement l'expression d'une pensée, elle en est aussi la formation. - Paul Valéry",
-        "Le succès n'est pas final, l'échec n'est pas fatal : c'est le courage de continuer qui compte. - Winston Churchill",
-        "Le secret du changement, c'est de concentrer toute son énergie non pas à lutter contre le passé, mais à construire l'avenir. - Socrate"
-    ];
-    // Utiliser le jour de l'année pour choisir une citation unique chaque jour
-    const now = new Date();
-    const start = new Date(now.getFullYear(), 0, 0);
-    const diff = now - start;
-    const oneDay = 1000 * 60 * 60 * 24;
-    const dayOfYear = Math.floor(diff / oneDay);
-    
-    const citation = citations[dayOfYear % citations.length];
-    document.getElementById('citation-jour').textContent = `« ${citation} »`;
-}
-// =========================================================
-
-
-// === MODE SOMBRE & INITIALISATION ===
-function setupDarkModeToggle() {
-    const body = document.body;
-    const toggleBtn = document.getElementById('toggle-dark');
-
-    // Initialisation par défaut au mode sombre
-    body.classList.add('dark-mode');
-    toggleBtn.textContent = '☀️ Mode jour';
-
-    toggleBtn.addEventListener('click', () => {
-        if (body.classList.contains('dark-mode')) {
-            body.classList.remove('dark-mode');
-            toggleBtn.textContent = '🌙 Mode nuit';
-        } else {
-            body.classList.add('dark-mode');
-            toggleBtn.textContent = '☀️ Mode jour';
-        }
-    });
-}
-
-// Lancement de toutes les fonctions d'initialisation
-window.onload = function() {
-    setupDarkModeToggle();
-    updateDateTime();
-    updateMoonPhase(); // Mise à jour statique de la lune
-    fetchSunData();    // Récupération des heures de soleil
-    fetchWeather();    // Récupération de la météo
-    initVacances();    // Initialisation des vacances (Zone A par défaut)
-    calculateNextFerie(); // Calcul du prochain jour férié
-    updateCalendarInfo(); // Mise à jour des infos calendrier/saints
-    setCitation();     // Définition de la citation
-
-    // Rafraîchissement des données dynamiques (météo) toutes les heures
-    setInterval(fetchWeather, 3600000); // 1 heure
-    
-    // Rafraîchissement des données de date, lune et fériés chaque jour
-    setInterval(() => {
-        updateDateTime();
-        updateMoonPhase();
-        fetchSunData();
-        calculateNextFerie();
-        updateCalendarInfo();
-        setCitation();
-        displayVacances(currentZone);
-    }, 86400000); // 24 heures
-
-    // Rafraîchissement de l'heure toutes les 5 secondes (pour l'affichage statique)
-    setInterval(updateDateTime, 5000);
-};
-
-</script>
+  </script>
 </body>
 </html>
