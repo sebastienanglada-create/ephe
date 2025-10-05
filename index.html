@@ -136,21 +136,33 @@
             <button class="neon-btn active" data-zone="B">Zone B</button>
             <button class="neon-btn" data-zone="C">Zone C</button>
           </div>
-          <div id="vacances-list" class="grid grid-cols-1 gap-2">
-            <div class="card-neon text-sm p-2">
-              <div class="font-semibold">Vacances de la Toussaint</div>
-              <div>Du 19 octobre au 4 novembre 2025</div>
-            </div>
-            <div class="card-neon text-sm p-2">
-              <div class="font-semibold">Vacances de Noël</div>
-              <div>Du 21 décembre 2025 au 6 janvier 2026</div>
-            </div>
+          <!-- Toutes les vacances des 3 zones -->
+          <div id="vacances-a" class="vacances-zone grid grid-cols-1 gap-2" style="display:none;">
+            <div class="card-neon text-sm p-2"><div class="font-semibold">Toussaint</div><div>19 oct. — 4 nov. 2025</div></div>
+            <div class="card-neon text-sm p-2"><div class="font-semibold">Noël</div><div>21 déc. 2025 — 6 janv. 2026</div></div>
+            <div class="card-neon text-sm p-2"><div class="font-semibold">Hiver</div><div>15 fév. — 2 mars 2026</div></div>
+            <div class="card-neon text-sm p-2"><div class="font-semibold">Printemps</div><div>5 avril — 20 avril 2026</div></div>
+            <div class="card-neon text-sm p-2"><div class="font-semibold">Été</div><div>À partir du 5 juillet 2026</div></div>
+          </div>
+          <div id="vacances-b" class="vacances-zone grid grid-cols-1 gap-2">
+            <div class="card-neon text-sm p-2"><div class="font-semibold">Toussaint</div><div>19 oct. — 4 nov. 2025</div></div>
+            <div class="card-neon text-sm p-2"><div class="font-semibold">Noël</div><div>21 déc. 2025 — 6 janv. 2026</div></div>
+            <div class="card-neon text-sm p-2"><div class="font-semibold">Hiver</div><div>22 fév. — 9 mars 2026</div></div>
+            <div class="card-neon text-sm p-2"><div class="font-semibold">Printemps</div><div>19 avril — 4 mai 2026</div></div>
+            <div class="card-neon text-sm p-2"><div class="font-semibold">Été</div><div>À partir du 5 juillet 2026</div></div>
+          </div>
+          <div id="vacances-c" class="vacances-zone grid grid-cols-1 gap-2" style="display:none;">
+            <div class="card-neon text-sm p-2"><div class="font-semibold">Toussaint</div><div>19 oct. — 4 nov. 2025</div></div>
+            <div class="card-neon text-sm p-2"><div class="font-semibold">Noël</div><div>21 déc. 2025 — 6 janv. 2026</div></div>
+            <div class="card-neon text-sm p-2"><div class="font-semibold">Hiver</div><div>8 fév. — 23 fév. 2026</div></div>
+            <div class="card-neon text-sm p-2"><div class="font-semibold">Printemps</div><div>22 mars — 6 avril 2026</div></div>
+            <div class="card-neon text-sm p-2"><div class="font-semibold">Été</div><div>À partir du 5 juillet 2026</div></div>
           </div>
         </section>
       </div>
     </main>
 
-    <!-- Module Liste de courses Google Sheet collaborative -->
+    <!-- Liste de courses Google Sheet collaborative centrée -->
     <section class="neon-section p-4 text-center mb-8">
       <h2 class="text-xl font-bold mb-2 section-title-yellow">Liste de courses collaborative</h2>
       <div class="card-neon flex flex-col items-center text-center py-4">
@@ -167,7 +179,7 @@
       </div>
     </section>
 
-    <!-- Module Numéros utiles cliquables -->
+    <!-- Numéros utiles cliquables -->
     <section class="neon-section p-4 text-center mb-8">
       <h2 class="text-xl font-bold mb-2 section-title-yellow">Numéros utiles</h2>
       <div class="card-neon flex flex-col gap-3 items-center text-center py-6">
@@ -192,42 +204,36 @@
   </div>
 
   <script>
-    // Gestion des boutons zones vacances
-    document.querySelectorAll('[data-zone]').forEach(btn => {
-      btn.onclick = function() {
-        document.querySelectorAll('[data-zone]').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        // Ici tu peux ajouter la logique pour changer les vacances affichées
-      };
-    });
-
-    // Mise à jour automatique de la date/heure
-    function updateDateTime() {
-      const now = new Date();
-      const days = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
-      const months = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
-      
-      document.getElementById('day-of-week').textContent = days[now.getDay()];
-      document.getElementById('date-number').textContent = now.getDate();
-      document.getElementById('month-year').textContent = months[now.getMonth()] + ' ' + now.getFullYear();
-      
-      // Calcul semaine de l'année
-      const start = new Date(now.getFullYear(), 0, 1);
-      const diff = now - start;
-      const weekNumber = Math.ceil(diff / (1000 * 60 * 60 * 24 * 7));
-      document.getElementById('cal-semaine').textContent = weekNumber;
-      
-      // Calcul jours passés/restants
-      const daysPassed = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const daysRemaining = 365 - daysPassed;
-      document.getElementById('cal-days-passes').textContent = daysPassed + ' jours passés';
-      document.getElementById('cal-days-restants').textContent = daysRemaining + ' jours restants';
-    }
-
-    // Initialisation
+    // Zones vacances dynamiques
     window.onload = function() {
+      document.querySelectorAll('[data-zone]').forEach(btn => {
+        btn.onclick = function() {
+          document.querySelectorAll('[data-zone]').forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          document.querySelectorAll('.vacances-zone').forEach(zone => zone.style.display = 'none');
+          document.getElementById('vacances-' + this.dataset.zone.toLowerCase()).style.display = '';
+        };
+      });
+
+      // Calendrier dynamique
+      function updateDateTime() {
+        const now = new Date();
+        const days = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+        const months = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+        document.getElementById('day-of-week').textContent = days[now.getDay()];
+        document.getElementById('date-number').textContent = now.getDate();
+        document.getElementById('month-year').textContent = months[now.getMonth()] + ' ' + now.getFullYear();
+        // Semaine/année
+        const start = new Date(now.getFullYear(), 0, 1);
+        const diff = now - start;
+        const weekNumber = Math.ceil(diff / (1000 * 60 * 60 * 24 * 7));
+        document.getElementById('cal-semaine').textContent = weekNumber;
+        const daysPassed = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const daysRemaining = 365 - daysPassed;
+        document.getElementById('cal-days-passes').textContent = daysPassed + ' jours passés';
+        document.getElementById('cal-days-restants').textContent = daysRemaining + ' jours restants';
+      }
       updateDateTime();
-      // Mise à jour toutes les heures
       setInterval(updateDateTime, 3600000);
     };
   </script>
