@@ -799,6 +799,23 @@
             .shopping-list-card {
                 grid-column: span 1;
             }
+            
+            .week-calendar {
+                grid-template-columns: repeat(7, 1fr);
+                gap: 5px;
+            }
+            
+            .day-cell {
+                padding: 8px 3px;
+            }
+            
+            .day-name {
+                font-size: 0.7rem;
+            }
+            
+            .day-icon {
+                font-size: 1.2rem;
+            }
         }
     </style>
 </head>
@@ -1674,6 +1691,10 @@
                     }
                 });
             }
+            
+            // Initialiser le calendrier des poubelles
+            displayWeekCalendar();
+            checkPoubelleAlert();
         });
         
         // Charger Firebase dynamiquement puis initialiser
