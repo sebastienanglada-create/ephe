@@ -185,6 +185,38 @@
             transition: width 1s ease;
         }
 
+        /* Bouton mode nuit */
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px var(--shadow-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            opacity: 0.7;
+        }
+
+        .theme-toggle:hover {
+            opacity: 1;
+            transform: scale(1.1) rotate(20deg);
+            box-shadow: 0 6px 20px var(--shadow-color);
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.95);
+        }
+
         .date-info {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -425,6 +457,89 @@
 
         .day-icon {
             font-size: 1.5rem;
+        }
+
+        /* Jours fériés */
+        .feries-card {
+            grid-column: span 1;
+        }
+
+        .feries-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .ferie-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ferie-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .ferie-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(5px);
+        }
+
+        .ferie-item.urgent {
+            background: rgba(255, 217, 61, 0.15);
+            border: 1px solid rgba(255, 217, 61, 0.3);
+        }
+
+        .ferie-item.urgent::before {
+            background: linear-gradient(180deg, #ffd93d 0%, #f39c12 100%);
+        }
+
+        .ferie-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .ferie-info {
+            flex: 1;
+        }
+
+        .ferie-name {
+            font-weight: 700;
+            font-size: 1.05rem;
+            margin-bottom: 5px;
+        }
+
+        .ferie-date {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .ferie-countdown {
+            display: inline-block;
+            background: rgba(79, 172, 254, 0.2);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #4facfe;
+        }
+
+        .ferie-item.urgent .ferie-countdown {
+            background: rgba(255, 217, 61, 0.3);
+            color: #f39c12;
         }
 
         /* Numéros utiles */
@@ -963,6 +1078,18 @@
                 </div>
             </div>
 
+            <!-- Prochains Jours Fériés -->
+            <div class="card feries-card">
+                <div class="card-title">
+                    <span class="card-icon">🎉</span>
+                    Prochains Jours Fériés
+                </div>
+                
+                <div id="feriesList" class="feries-list">
+                    <!-- Rempli dynamiquement -->
+                </div>
+            </div>
+
             <!-- Numéros Utiles -->
             <div class="card">
                 <div class="card-title">
@@ -1325,6 +1452,129 @@
             document.getElementById('progressBar').style.width = percentage + '%';
         }
 
+        // === FONCTIONS JOURS FÉRIÉS ===
+        
+        // Calculer la date de Pâques (algorithme de Meeus)
+        function calculateEaster(year) {
+            const a = year % 19;
+            const b = Math.floor(year / 100);
+            const c = year % 100;
+            const d = Math.floor(b / 4);
+            const e = b % 4;
+            const f = Math.floor((b + 8) / 25);
+            const g = Math.floor((b - f + 1) / 3);
+            const h = (19 * a + b - d - g + 15) % 30;
+            const i = Math.floor(c / 4);
+            const k = c % 4;
+            const l = (32 + 2 * e + 2 * i - h - k) % 7;
+            const m = Math.floor((a + 11 * h + 22 * l) / 451);
+            const month = Math.floor((h + l - 7 * m + 114) / 31);
+            const day = ((h + l - 7 * m + 114) % 31) + 1;
+            return new Date(year, month - 1, day);
+        }
+        
+        // Obtenir tous les jours fériés français pour une année
+        function getFrenchHolidays(year) {
+            const easter = calculateEaster(year);
+            const easterMonday = new Date(easter);
+            easterMonday.setDate(easter.getDate() + 1);
+            const ascension = new Date(easter);
+            ascension.setDate(easter.getDate() + 39);
+            const pentecostMonday = new Date(easter);
+            pentecostMonday.setDate(easter.getDate() + 50);
+            
+            return [
+                { name: 'Nouvel An', date: new Date(year, 0, 1), icon: '🎊' },
+                { name: 'Lundi de Pâques', date: easterMonday, icon: '🐣' },
+                { name: 'Fête du Travail', date: new Date(year, 4, 1), icon: '⚒️' },
+                { name: 'Victoire 1945', date: new Date(year, 4, 8), icon: '🇫🇷' },
+                { name: 'Ascension', date: ascension, icon: '☁️' },
+                { name: 'Lundi de Pentecôte', date: pentecostMonday, icon: '🕊️' },
+                { name: 'Fête Nationale', date: new Date(year, 6, 14), icon: '🎆' },
+                { name: 'Assomption', date: new Date(year, 7, 15), icon: '⛪' },
+                { name: 'Toussaint', date: new Date(year, 10, 1), icon: '🕯️' },
+                { name: 'Armistice 1918', date: new Date(year, 10, 11), icon: '🎖️' },
+                { name: 'Noël', date: new Date(year, 11, 25), icon: '🎄' }
+            ];
+        }
+        
+        // Obtenir les prochains jours fériés
+        function getUpcomingHolidays() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const currentYear = today.getFullYear();
+            
+            // Récupérer les jours fériés de cette année et l'année prochaine
+            let holidays = [
+                ...getFrenchHolidays(currentYear),
+                ...getFrenchHolidays(currentYear + 1)
+            ];
+            
+            // Filtrer les jours fériés futurs
+            holidays = holidays.filter(h => h.date >= today);
+            
+            // Trier par date
+            holidays.sort((a, b) => a.date - b.date);
+            
+            // Prendre les 5 prochains
+            return holidays.slice(0, 5);
+        }
+        
+        // Formater la date en français
+        function formatFrenchDate(date) {
+            const months = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 
+                           'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+            return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+        }
+        
+        // Calculer le nombre de jours restants
+        function getDaysUntil(date) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const targetDate = new Date(date);
+            targetDate.setHours(0, 0, 0, 0);
+            const diffTime = targetDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) return "Aujourd'hui !";
+            if (diffDays === 1) return "Demain";
+            if (diffDays <= 7) return `Dans ${diffDays} jours`;
+            
+            const weeks = Math.floor(diffDays / 7);
+            if (diffDays <= 30) {
+                return weeks === 1 ? "Dans 1 semaine" : `Dans ${weeks} semaines`;
+            }
+            
+            const months = Math.floor(diffDays / 30);
+            if (diffDays <= 365) {
+                return months === 1 ? "Dans 1 mois" : `Dans ${months} mois`;
+            }
+            
+            return `Dans ${diffDays} jours`;
+        }
+        
+        // Afficher les jours fériés
+        function displayFeries() {
+            const container = document.getElementById('feriesList');
+            const holidays = getUpcomingHolidays();
+            
+            container.innerHTML = holidays.map(holiday => {
+                const daysUntil = getDaysUntil(holiday.date);
+                const isUrgent = holiday.date - new Date() < 7 * 24 * 60 * 60 * 1000; // Moins de 7 jours
+                
+                return `
+                    <div class="ferie-item ${isUrgent ? 'urgent' : ''}">
+                        <div class="ferie-icon">${holiday.icon}</div>
+                        <div class="ferie-info">
+                            <div class="ferie-name">${holiday.name}</div>
+                            <div class="ferie-date">${formatFrenchDate(holiday.date)}</div>
+                            <div class="ferie-countdown">⏱️ ${daysUntil}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
         // === FONCTIONS CALENDRIER DES POUBELLES ===
         
         // Configuration des poubelles
@@ -1695,6 +1945,9 @@
             // Initialiser le calendrier des poubelles
             displayWeekCalendar();
             checkPoubelleAlert();
+            
+            // Initialiser les jours fériés
+            displayFeries();
         });
         
         // Charger Firebase dynamiquement puis initialiser
