@@ -1212,11 +1212,108 @@
             return 'Variable';
         }
 
+        // Fonction pour obtenir un conseil vestimentaire intelligent
+        function getDressAdvice(temp, code, wind, humidity) {
+            // Priorité 1 : Conditions dangereuses ou exceptionnelles
+            if ([95, 96, 99].includes(code)) {
+                return "⛈️ <strong>Orage</strong> : restez à l'abri, sortie déconseillée !";
+            }
+            
+            if ([71, 73, 75, 77, 85, 86].includes(code)) {
+                return "❄️ <strong>Neige</strong> : vêtements chauds imperméables, chaussures adaptées !";
+            }
+            
+            // Priorité 2 : Pluie (très fréquent, doit primer sur température)
+            if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) {
+                if (temp <= 10) {
+                    return "🌧️☔ <strong>Pluie et froid</strong> : veste imperméable chaude, parapluie indispensable !";
+                } else {
+                    return "🌧️☂️ <strong>Pluie</strong> : imperméable ou parapluie nécessaire.";
+                }
+            }
+            
+            // Priorité 3 : Vent fort (modifie le ressenti)
+            if (wind > 40) {
+                return "💨 <strong>Vent très fort</strong> : coupe-vent robuste, attention aux objets !";
+            } else if (wind > 30) {
+                if (temp <= 15) {
+                    return "💨🧥 <strong>Vent fort et frais</strong> : coupe-vent chaud recommandé.";
+                } else {
+                    return "💨 <strong>Vent fort</strong> : veste coupe-vent conseillée.";
+                }
+            }
+            
+            // Priorité 4 : Température avec nuances saisonnières
+            const month = new Date().getMonth() + 1; // 1-12
+            const isSummer = month >= 6 && month <= 8;
+            const isWinter = month === 12 || month <= 2;
+            
+            // Températures extrêmes
+            if (temp >= 32) {
+                return "🥵☀️ <strong>Canicule</strong> : vêtements très légers, chapeau, hydratation ++";
+            }
+            
+            if (temp <= 0) {
+                return "🥶❄️ <strong>Gelée</strong> : doudoune, gants, bonnet, écharpe indispensables !";
+            }
+            
+            // Températures froides
+            if (temp <= 5) {
+                return "🧥🧣 <strong>Très froid</strong> : manteau épais, bonnet, gants, écharpe !";
+            }
+            
+            if (temp > 5 && temp <= 10) {
+                if (wind > 15) {
+                    return "🧥 <strong>Froid venteux</strong> : veste chaude coupe-vent, écharpe.";
+                }
+                return "🧥 <strong>Froid</strong> : veste chaude, écharpe conseillée.";
+            }
+            
+            // Températures fraîches
+            if (temp > 10 && temp <= 15) {
+                if (isWinter) {
+                    return "🧥 <strong>Frais</strong> : veste, pull ou gilet recommandé.";
+                }
+                return "👔 <strong>Frais</strong> : veste légère ou pull suffisant.";
+            }
+            
+            // Températures douces
+            if (temp > 15 && temp <= 20) {
+                if (wind > 20) {
+                    return "👕🧥 <strong>Doux mais venteux</strong> : manches longues + veste légère.";
+                }
+                return "👕 <strong>Doux</strong> : manches longues, veste légère au besoin.";
+            }
+            
+            // Températures agréables
+            if (temp > 20 && temp <= 25) {
+                if (humidity > 70 && isSummer) {
+                    return "👚💧 <strong>Agréable mais humide</strong> : t-shirt léger, hydratation.";
+                }
+                return "👚 <strong>Agréable</strong> : t-shirt, vêtements légers.";
+            }
+            
+            // Températures chaudes
+            if (temp > 25 && temp <= 30) {
+                return "🩳☀️ <strong>Chaud</strong> : vêtements légers, lunettes, casquette, eau !";
+            }
+            
+            if (temp > 30) {
+                return "🩳🕶️ <strong>Très chaud</strong> : habits très légers, chapeau, crème solaire !";
+            }
+            
+            // Cas par défaut (ne devrait jamais arriver)
+            return "👌 Temps correct, habillez-vous selon votre confort.";
+        }
+
         // Fonction pour afficher la météo
         function displayWeather(data, elementId) {
             const element = document.getElementById(elementId);
             const temp = Math.round(data.temp);
             const icon = getWeatherIcon(data.code);
+            
+            // Obtenir le conseil vestimentaire
+            const advice = getDressAdvice(data.temp, data.code, data.wind, data.humidity);
             
             element.innerHTML = `
                 <div class="weather-info">
@@ -1229,6 +1326,9 @@
                 <div class="weather-extra">
                     <span>💨 ${data.wind} km/h</span>
                     <span>💧 ${data.humidity}%</span>
+                </div>
+                <div style="margin-top: 15px; padding: 12px; background: rgba(255, 255, 255, 0.15); border-radius: 10px; font-size: 0.95rem; line-height: 1.4;">
+                    ${advice}
                 </div>
             `;
         }
