@@ -4,21 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Éphéméride - Dashboard</title>
-    
-    <!-- Icônes pour iPhone/iPad -->
-    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM2NjdlZWE7c3RvcC1vcGFjaXR5OjEiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6Izc2NGJhMjtzdG9wLW9wYWNpdHk6MSIgLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIiBmaWxsPSJ1cmwoI2dyYWQpIiByeD0iNDAiLz4KICA8dGV4dCB4PSI1MCUiIHk9IjM1JSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjcwIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPjEyPC90ZXh0PgogIDx0ZXh0IHg9IjUwJSIgeT0iNjUlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjUiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5PQ1Q8L3RleHQ+CiAgPHRleHQgeD0iNTAlIiB5PSI4NSUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjgpIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5CaXpldDwvdGV4dD4KPC9zdmc+">
-    <link rel="apple-touch-icon" sizes="152x152" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUyIiBoZWlnaHQ9IjE1MiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM2NjdlZWE7c3RvcC1vcGFjaXR5OjEiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6Izc2NGJhMjtzdG9wLW9wYWNpdHk6MSIgLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSIxNTIiIGhlaWdodD0iMTUyIiBmaWxsPSJ1cmwoI2dyYWQpIiByeD0iMzUiLz4KICA8dGV4dCB4PSI1MCUiIHk9IjM1JSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjYwIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPjEyPC90ZXh0PgogIDx0ZXh0IHg9IjUwJSIgeT0iNjUlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5PQ1Q8L3RleHQ+CiAgPHRleHQgeD0iNTAlIiB5PSI4NSUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjgpIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5CaXpldDwvdGV4dD4KPC9zdmc+">
-    <link rel="apple-touch-icon" sizes="120x120" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM2NjdlZWE7c3RvcC1vcGFjaXR5OjEiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6Izc2NGJhMjtzdG9wLW9wYWNpdHk6MSIgLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiBmaWxsPSJ1cmwoI2dyYWQpIiByeD0iMjUiLz4KICA8dGV4dCB4PSI1MCUiIHk9IjM1JSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPjEyPC90ZXh0PgogIDx0ZXh0IHg9IjUwJSIgeT0iNjUlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5PQ1Q8L3RleHQ+CiAgPHRleHQgeD0iNTAlIiB5PSI4NSUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjgpIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5CaXpldDwvdGV4dD4KPC9zdmc+">
-    
-    <!-- Icône favicon standard -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNjY3ZWVhO3N0b3Atb3BhY2l0eToxIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM3NjRiYTI7c3RvcC1vcGFjaXR5OjEiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIGZpbGw9InVybCgjZ3JhZCkiIHJ4PSI2Ii8+CiAgPHRleHQgeD0iNTAlIiB5PSI2NSUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj4xMjwvdGV4dD4KPC9zdmc+">
-    
-    <!-- Meta pour l'apparence -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Bizet">
-    
+    <title>Éphéméride - 2 rue Georges Bizet</title>
     <style>
         * {
             margin: 0;
@@ -84,13 +70,9 @@
         }
 
         .current-date {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             font-weight: 500;
             letter-spacing: 1px;
-        }
-
-        .current-date {
-            font-size: 1.2rem;
             opacity: 0.9;
         }
 
@@ -129,19 +111,6 @@
 
         .card-icon {
             font-size: 1.5rem;
-        }
-
-        .big-number {
-            font-size: 3.5rem;
-            font-weight: 700;
-            line-height: 1;
-            margin: 15px 0;
-        }
-
-        .label {
-            font-size: 0.9rem;
-            opacity: 0.8;
-            margin-top: 10px;
         }
 
         .weather-info {
@@ -199,38 +168,6 @@
             transition: width 1s ease;
         }
 
-        /* Bouton mode nuit */
-        .theme-toggle {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--card-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 15px var(--shadow-color);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            transition: all 0.3s ease;
-            z-index: 1000;
-            opacity: 0.7;
-        }
-
-        .theme-toggle:hover {
-            opacity: 1;
-            transform: scale(1.1) rotate(20deg);
-            box-shadow: 0 6px 20px var(--shadow-color);
-        }
-
-        .theme-toggle:active {
-            transform: scale(0.95);
-        }
-
         .date-info {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -256,43 +193,13 @@
             margin-top: 5px;
         }
 
-        .calendar-progress-card {
-            grid-column: span 1;
-        }
-
         .loading {
             text-align: center;
             opacity: 0.7;
             font-size: 0.9rem;
         }
 
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
         /* Vacances scolaires */
-        .vacances-card {
-            grid-column: span 1;
-        }
-
         .zone-buttons {
             display: flex;
             gap: 10px;
@@ -345,10 +252,6 @@
         }
 
         /* Poubelles */
-        .poubelles-card {
-            grid-column: span 1;
-        }
-
         .poubelle-alert {
             background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
             padding: 15px 20px;
@@ -474,10 +377,6 @@
         }
 
         /* Jours fériés */
-        .feries-card {
-            grid-column: span 1;
-        }
-
         .feries-list {
             display: flex;
             flex-direction: column;
@@ -883,14 +782,25 @@
             }
         }
 
-        @keyframes popIn {
+        @keyframes fadeInDown {
             from {
                 opacity: 0;
-                transform: translate(-50%, -50%) scale(0.8);
+                transform: translateY(-30px);
             }
             to {
                 opacity: 1;
-                transform: translate(-50%, -50%) scale(1);
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
 
@@ -917,16 +827,8 @@
                 margin-bottom: 30px;
             }
             
-            .big-number {
-                font-size: 2.5rem;
-            }
-            
             .grid {
                 grid-template-columns: 1fr;
-            }
-            
-            .shopping-list-card {
-                grid-column: span 1;
             }
             
             .week-calendar {
@@ -959,7 +861,7 @@
         </div>
 
         <div class="grid">
-            <!-- Liste de Courses - EN PREMIER pour mobile -->
+            <!-- Liste de Courses -->
             <div class="card shopping-list-card">
                 <div class="card-title">
                     <span class="card-icon">🛒</span>
@@ -1000,14 +902,13 @@
                 <div id="weatherTomorrow" class="loading">Chargement...</div>
             </div>
 
-            <!-- Calendrier & Progression de l'Année (fusionné) -->
+            <!-- Calendrier & Progression -->
             <div class="card calendar-progress-card">
                 <div class="card-title">
                     <span class="card-icon">📅</span>
                     Calendrier & Progression
                 </div>
                 
-                <!-- Informations date -->
                 <div class="date-info">
                     <div class="date-item">
                         <div class="number" id="saintOfDay" style="font-size: 1.3rem; text-align: center;">Chargement...</div>
@@ -1019,7 +920,6 @@
                     </div>
                 </div>
                 
-                <!-- Progression de l'année -->
                 <div style="margin-top: 25px;">
                     <div class="date-info">
                         <div class="date-item">
@@ -1069,9 +969,7 @@
                     </div>
                 </div>
                 
-                <div class="week-calendar" id="weekCalendar">
-                    <!-- Rempli dynamiquement -->
-                </div>
+                <div class="week-calendar" id="weekCalendar"></div>
             </div>
 
             <!-- Prochains Jours Fériés -->
@@ -1080,10 +978,7 @@
                     <span class="card-icon">🎉</span>
                     Prochains Jours Fériés
                 </div>
-                
-                <div id="feriesList" class="feries-list">
-                    <!-- Rempli dynamiquement -->
-                </div>
+                <div id="feriesList" class="feries-list"></div>
             </div>
 
             <!-- Vacances Scolaires -->
@@ -1099,9 +994,7 @@
                     <button class="zone-btn" data-zone="C">Zone C</button>
                 </div>
                 
-                <div id="vacancesList" class="vacances-list">
-                    <!-- Rempli dynamiquement -->
-                </div>
+                <div id="vacancesList" class="vacances-list"></div>
             </div>
 
             <!-- Numéros Utiles -->
@@ -1191,26 +1084,24 @@
         const LATITUDE = 44.85;
         const LONGITUDE = 0.48;
         
-        // Stockage de la liste de courses en mémoire (synchronisé avec Firebase)
+        // Stockage de la liste de courses
         let shoppingItems = [];
         let database = null;
         let shoppingListRef = null;
         
         // Fonction pour obtenir les icônes météo selon le code WMO
         function getWeatherIcon(weatherCode) {
-            // Codes WMO Weather interpretation
-            if (weatherCode === 0) return '☀️'; // Clear sky
-            if (weatherCode <= 3) return '⛅'; // Partly cloudy
-            if (weatherCode <= 48) return '🌫️'; // Fog
-            if (weatherCode <= 67) return '🌧️'; // Rain
-            if (weatherCode <= 77) return '🌨️'; // Snow
-            if (weatherCode <= 82) return '🌧️'; // Rain showers
-            if (weatherCode <= 86) return '🌨️'; // Snow showers
-            if (weatherCode >= 95) return '⛈️'; // Thunderstorm
+            if (weatherCode === 0) return '☀️';
+            if (weatherCode <= 3) return '⛅';
+            if (weatherCode <= 48) return '🌫️';
+            if (weatherCode <= 67) return '🌧️';
+            if (weatherCode <= 77) return '🌨️';
+            if (weatherCode <= 82) return '🌧️';
+            if (weatherCode <= 86) return '🌨️';
+            if (weatherCode >= 95) return '⛈️';
             return '🌤️';
         }
 
-        // Fonction pour obtenir la description météo
         function getWeatherDescription(weatherCode) {
             if (weatherCode === 0) return 'Ciel dégagé';
             if (weatherCode === 1) return 'Principalement dégagé';
@@ -1226,7 +1117,6 @@
             return 'Variable';
         }
 
-        // Fonction pour afficher la météo
         function displayWeather(data, elementId) {
             const element = document.getElementById(elementId);
             const temp = Math.round(data.temp);
@@ -1247,38 +1137,16 @@
             `;
         }
 
-        // Fonction pour récupérer la météo via Open-Meteo
         async function getWeather() {
-            console.log('Chargement météo pour Bergerac...');
             try {
-                // Météo actuelle
                 const currentUrl = `https://api.open-meteo.com/v1/forecast?latitude=${LATITUDE}&longitude=${LONGITUDE}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&timezone=Europe/Paris`;
-                console.log('URL météo actuelle:', currentUrl);
-                
                 const currentResponse = await fetch(currentUrl);
-                if (!currentResponse.ok) {
-                    throw new Error(`Erreur HTTP: ${currentResponse.status}`);
-                }
                 const currentData = await currentResponse.json();
-                console.log('Données météo actuelle:', currentData);
                 
-                // Prévisions pour demain
                 const forecastUrl = `https://api.open-meteo.com/v1/forecast?latitude=${LATITUDE}&longitude=${LONGITUDE}&daily=weather_code,temperature_2m_max,temperature_2m_min,wind_speed_10m_max&timezone=Europe/Paris&forecast_days=2`;
-                console.log('URL prévisions:', forecastUrl);
-                
                 const forecastResponse = await fetch(forecastUrl);
-                if (!forecastResponse.ok) {
-                    throw new Error(`Erreur HTTP: ${forecastResponse.status}`);
-                }
                 const forecastData = await forecastResponse.json();
-                console.log('Données prévisions:', forecastData);
                 
-                // Vérifier que les données sont présentes
-                if (!currentData.current || !forecastData.daily) {
-                    throw new Error('Données météo incomplètes');
-                }
-                
-                // Météo aujourd'hui
                 const todayWeather = {
                     temp: currentData.current.temperature_2m,
                     condition: getWeatherDescription(currentData.current.weather_code),
@@ -1287,53 +1155,22 @@
                     humidity: currentData.current.relative_humidity_2m
                 };
                 
-                // Météo demain (index 1 dans le tableau daily)
                 const tomorrowWeather = {
                     temp: Math.round((forecastData.daily.temperature_2m_max[1] + forecastData.daily.temperature_2m_min[1]) / 2),
                     condition: getWeatherDescription(forecastData.daily.weather_code[1]),
                     code: forecastData.daily.weather_code[1],
                     wind: Math.round(forecastData.daily.wind_speed_10m_max[1] || 0),
-                    humidity: Math.round(currentData.current.relative_humidity_2m) // Estimation
+                    humidity: Math.round(currentData.current.relative_humidity_2m)
                 };
-                
-                console.log('Météo aujourd\'hui:', todayWeather);
-                console.log('Météo demain:', tomorrowWeather);
                 
                 displayWeather(todayWeather, 'weatherToday');
                 displayWeather(tomorrowWeather, 'weatherTomorrow');
-                
-                // Mise à jour de l'heure de dernière mise à jour
-                const now = new Date();
-                const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-                const updateInfo = document.createElement('div');
-                updateInfo.style.cssText = 'text-align: right; font-size: 0.75rem; opacity: 0.7; margin-top: 10px;';
-                updateInfo.textContent = `Dernière mise à jour : ${timeStr}`;
-                
-                // Ajouter l'info de mise à jour si elle n'existe pas déjà
-                const weatherToday = document.getElementById('weatherToday');
-                if (weatherToday && weatherToday.parentElement) {
-                    const existingUpdate = weatherToday.parentElement.querySelector('.weather-update');
-                    if (existingUpdate) {
-                        existingUpdate.remove();
-                    }
-                    updateInfo.className = 'weather-update';
-                    weatherToday.parentElement.appendChild(updateInfo);
-                }
-                
-                console.log('✅ Météo chargée avec succès');
-                
             } catch (error) {
-                console.error('❌ Erreur météo détaillée:', error);
-                console.error('Message:', error.message);
-                console.error('Stack:', error.stack);
-                
-                const errorMsg = `❌ Erreur: ${error.message}`;
-                document.getElementById('weatherToday').innerHTML = `<div class="loading">${errorMsg}</div>`;
-                document.getElementById('weatherTomorrow').innerHTML = `<div class="loading">${errorMsg}</div>`;
+                document.getElementById('weatherToday').innerHTML = '<div class="loading">❌ Erreur chargement météo</div>';
+                document.getElementById('weatherTomorrow').innerHTML = '<div class="loading">❌ Erreur chargement météo</div>';
             }
         }
 
-        // Fonction pour calculer le numéro de semaine
         function getWeekNumber(date) {
             const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
             const dayNum = d.getUTCDay() || 7;
@@ -1342,9 +1179,7 @@
             return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
         }
 
-        // Fonction pour obtenir le saint/prénom du jour
         function getSaintOfDay() {
-            // Calendrier complet des prénoms
             const saints = {
                 '01-01': 'Marie', '01-02': 'Basile', '01-03': 'Geneviève', '01-04': 'Odilon', '01-05': 'Édouard',
                 '01-06': 'Mélaine', '01-07': 'Raymond', '01-08': 'Lucien', '01-09': 'Alix', '01-10': 'Guillaume',
@@ -1427,32 +1262,19 @@
             
             const saint = saints[key] || 'Bonne fête !';
             document.getElementById('saintOfDay').textContent = saint;
-            console.log(`Prénom du jour (${key}):`, saint);
         }
 
-        // Calendrier de secours avec les prénoms principaux
-        function useFallbackSaint() {
-            // Cette fonction n'est plus nécessaire car on utilise directement le calendrier complet
-            getSaintOfDay();
-        }
-
-        // Fonction pour mettre à jour les informations de date
         function updateDateInfo() {
             const now = new Date();
             const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
             const months = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
             
-            // Date actuelle
             const dateStr = `${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
             document.getElementById('currentDate').textContent = dateStr;
             
-            // Prénom du jour
             getSaintOfDay();
-            
-            // Numéro de semaine
             document.getElementById('weekNumber').textContent = `S${getWeekNumber(now)}`;
             
-            // Calcul des jours de l'année
             const startOfYear = new Date(now.getFullYear(), 0, 1);
             const endOfYear = new Date(now.getFullYear(), 11, 31);
             
@@ -1466,9 +1288,6 @@
             document.getElementById('progressBar').style.width = percentage + '%';
         }
 
-        // === FONCTIONS JOURS FÉRIÉS ===
-        
-        // Calculer la date de Pâques (algorithme de Meeus)
         function calculateEaster(year) {
             const a = year % 19;
             const b = Math.floor(year / 100);
@@ -1487,7 +1306,6 @@
             return new Date(year, month - 1, day);
         }
         
-        // Obtenir tous les jours fériés français pour une année
         function getFrenchHolidays(year) {
             const easter = calculateEaster(year);
             const easterMonday = new Date(easter);
@@ -1512,36 +1330,28 @@
             ];
         }
         
-        // Obtenir les prochains jours fériés
         function getUpcomingHolidays() {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             const currentYear = today.getFullYear();
             
-            // Récupérer les jours fériés de cette année et l'année prochaine
             let holidays = [
                 ...getFrenchHolidays(currentYear),
                 ...getFrenchHolidays(currentYear + 1)
             ];
             
-            // Filtrer les jours fériés futurs
             holidays = holidays.filter(h => h.date >= today);
-            
-            // Trier par date
             holidays.sort((a, b) => a.date - b.date);
             
-            // Prendre les 5 prochains
             return holidays.slice(0, 5);
         }
         
-        // Formater la date en français
         function formatFrenchDate(date) {
             const months = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 
                            'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
             return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
         }
         
-        // Calculer le nombre de jours restants
         function getDaysUntil(date) {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -1567,14 +1377,13 @@
             return `Dans ${diffDays} jours`;
         }
         
-        // Afficher les jours fériés
         function displayFeries() {
             const container = document.getElementById('feriesList');
             const holidays = getUpcomingHolidays();
             
             container.innerHTML = holidays.map(holiday => {
                 const daysUntil = getDaysUntil(holiday.date);
-                const isUrgent = holiday.date - new Date() < 7 * 24 * 60 * 60 * 1000; // Moins de 7 jours
+                const isUrgent = holiday.date - new Date() < 7 * 24 * 60 * 60 * 1000;
                 
                 return `
                     <div class="ferie-item ${isUrgent ? 'urgent' : ''}">
@@ -1589,15 +1398,11 @@
             }).join('');
         }
         
-        // === FONCTIONS CALENDRIER DES POUBELLES ===
-        
-        // Configuration des poubelles
         const poubellesConfig = {
-            jaune: { jour: 3, heure: '8h00', nom: 'Jaune', type: 'Recyclage' }, // Mercredi = 3
-            noir: { jour: 4, heure: '6h00', nom: 'Noire', type: 'Ordures ménagères' } // Jeudi = 4
+            jaune: { jour: 3, heure: '8h00', nom: 'Jaune', type: 'Recyclage' },
+            noir: { jour: 4, heure: '6h00', nom: 'Noire', type: 'Ordures ménagères' }
         };
         
-        // Afficher le calendrier de la semaine
         function displayWeekCalendar() {
             const today = new Date();
             const currentDay = today.getDay();
@@ -1610,18 +1415,15 @@
                 let classes = 'day-cell';
                 let icon = '';
                 
-                // Jour actuel
                 if (i === currentDay) {
                     classes += ' today';
                 }
                 
-                // Jour poubelle jaune (Mercredi)
                 if (i === poubellesConfig.jaune.jour) {
                     classes += ' yellow-day';
                     icon = '🟡';
                 }
                 
-                // Jour poubelle noire (Jeudi)
                 if (i === poubellesConfig.noir.jour) {
                     classes += ' black-day';
                     icon = '⚫';
@@ -1638,14 +1440,11 @@
             calendar.innerHTML = html;
         }
         
-        // Vérifier si une poubelle doit être sortie ce soir
         function checkPoubelleAlert() {
             const today = new Date();
             const currentDay = today.getDay();
             const alertDiv = document.getElementById('poubelleAlert');
             
-            // Mardi soir -> sortir jaune pour mercredi
-            // Mercredi soir -> sortir noir pour jeudi
             const needAlert = (currentDay === 2 || currentDay === 3);
             
             if (needAlert) {
@@ -1662,9 +1461,6 @@
             }
         }
         
-        // === FONCTIONS VACANCES SCOLAIRES ===
-        
-        // Données des vacances scolaires 2024-2025 et 2025-2026
         const vacancesData = {
             A: [
                 { nom: "Vacances de la Toussaint", dates: "19 oct. - 4 nov. 2025" },
@@ -1691,7 +1487,6 @@
         
         let currentZone = 'A';
         
-        // Afficher les vacances selon la zone
         function displayVacances(zone) {
             const container = document.getElementById('vacancesList');
             const vacances = vacancesData[zone];
@@ -1704,21 +1499,13 @@
             `).join('');
         }
         
-        // Gérer le changement de zone
         window.addEventListener('DOMContentLoaded', function() {
-            // Afficher les vacances de la zone A par défaut
             displayVacances('A');
             
-            // Gérer les clics sur les boutons de zone
             document.querySelectorAll('.zone-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
-                    // Retirer la classe active de tous les boutons
                     document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
-                    
-                    // Ajouter la classe active au bouton cliqué
                     this.classList.add('active');
-                    
-                    // Récupérer la zone et afficher les vacances
                     const zone = this.dataset.zone;
                     currentZone = zone;
                     displayVacances(zone);
@@ -1726,11 +1513,7 @@
             });
         });
         
-        // === FONCTIONS LISTE DE COURSES ===
-        
-        // Fonction pour initialiser Firebase
         function initFirebase() {
-            // Configuration Firebase
             const firebaseConfig = {
                 apiKey: "AIzaSyBKGhtmhwrI1_vNKrdeHw0NBkLNs26D1xg",
                 authDomain: "ephemeride-liste.firebaseapp.com",
@@ -1741,12 +1524,10 @@
                 appId: "1:781643477607:web:39abbcae081b3579fe1ac2"
             };
 
-            // Initialiser Firebase
             firebase.initializeApp(firebaseConfig);
             database = firebase.database();
             shoppingListRef = database.ref('shoppingList');
             
-            // Écouter les changements en temps réel depuis Firebase
             shoppingListRef.on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
@@ -1761,12 +1542,8 @@
             });
         }
         
-        // Ajouter un article (fonction globale)
         window.addItem = function() {
-            if (!shoppingListRef) {
-                console.error('Firebase pas encore initialisé');
-                return;
-            }
+            if (!shoppingListRef) return;
             
             const input = document.getElementById('newItem');
             const itemText = input.value.trim();
@@ -1785,7 +1562,6 @@
             input.value = '';
         }
         
-        // Basculer l'état complété (fonction globale)
         window.toggleItem = function(id) {
             if (!shoppingListRef) return;
             
@@ -1797,13 +1573,11 @@
             }
         }
         
-        // Supprimer un article (fonction globale)
         window.deleteItem = function(id) {
             if (!shoppingListRef) return;
             shoppingListRef.child(id.toString()).remove();
         }
         
-        // Supprimer les articles cochés (fonction globale)
         window.clearCompleted = function() {
             if (!shoppingListRef) return;
             const completedItems = shoppingItems.filter(item => item.completed);
@@ -1812,11 +1586,9 @@
             });
         }
         
-        // Partager la liste (fonction globale)
         window.shareList = function() {
             const shareURL = window.location.href.split('?')[0];
             
-            // Créer une popup élégante pour le partage
             const popup = document.createElement('div');
             popup.style.cssText = `
                 position: fixed;
@@ -1860,7 +1632,6 @@
                 </p>
             `;
             
-            // Overlay
             const overlay = document.createElement('div');
             overlay.id = 'shareOverlay';
             overlay.style.cssText = `
@@ -1879,7 +1650,6 @@
             popup.id = 'sharePopup';
         }
         
-        // Copier l'URL de partage (fonction globale)
         window.copyShareURL = function(url) {
             navigator.clipboard.writeText(url).then(() => {
                 const btn = event.target;
@@ -1893,7 +1663,6 @@
             });
         }
         
-        // Fermer la popup (fonction globale)
         window.closePopup = function() {
             const popup = document.getElementById('sharePopup');
             const overlay = document.getElementById('shareOverlay');
@@ -1901,29 +1670,6 @@
             if (overlay) overlay.remove();
         }
         
-        // Copier l'URL de partage
-        function copyShareURL(url) {
-            navigator.clipboard.writeText(url).then(() => {
-                const btn = event.target;
-                const originalText = btn.innerHTML;
-                btn.innerHTML = '✓ Copié !';
-                btn.style.background = 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)';
-                setTimeout(() => {
-                    btn.innerHTML = originalText;
-                    btn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-                }, 2000);
-            });
-        }
-        
-        // Fermer la popup
-        function closePopup() {
-            const popup = document.getElementById('sharePopup');
-            const overlay = document.getElementById('shareOverlay');
-            if (popup) popup.remove();
-            if (overlay) overlay.remove();
-        }
-        
-        // Afficher la liste
         function renderShoppingList() {
             const listContainer = document.getElementById('shoppingList');
             const counter = document.getElementById('itemCounter');
@@ -1945,7 +1691,6 @@
             `).join('');
         }
         
-        // Gérer la touche Entrée pour ajouter un article
         document.addEventListener('DOMContentLoaded', function() {
             const input = document.getElementById('newItem');
             if (input) {
@@ -1956,15 +1701,11 @@
                 });
             }
             
-            // Initialiser le calendrier des poubelles
             displayWeekCalendar();
             checkPoubelleAlert();
-            
-            // Initialiser les jours fériés
             displayFeries();
         });
         
-        // Charger Firebase dynamiquement puis initialiser
         function loadFirebase() {
             const script1 = document.createElement('script');
             script1.src = 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js';
@@ -1974,35 +1715,29 @@
                 script2.src = 'https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js';
                 
                 script2.onload = function() {
-                    // Firebase est chargé, on peut l'initialiser
                     initFirebase();
                 };
                 
                 script2.onerror = function() {
-                    console.error('Erreur de chargement Firebase Database');
-                    document.getElementById('shoppingList').innerHTML = '<div class="empty-state">❌ Erreur de chargement Firebase</div>';
+                    document.getElementById('shoppingList').innerHTML = '<div class="empty-state">❌ Erreur Firebase</div>';
                 };
                 
                 document.head.appendChild(script2);
             };
             
             script1.onerror = function() {
-                console.error('Erreur de chargement Firebase App');
-                document.getElementById('shoppingList').innerHTML = '<div class="empty-state">❌ Erreur de chargement Firebase</div>';
+                document.getElementById('shoppingList').innerHTML = '<div class="empty-state">❌ Erreur Firebase</div>';
             };
             
             document.head.appendChild(script1);
         }
         
-        // Initialisation
         window.addEventListener('load', function() {
             updateDateInfo();
             getWeather();
             loadFirebase();
             
-            // Mise à jour toutes les minutes
             setInterval(updateDateInfo, 60000);
-            // Mise à jour de la météo toutes les 30 minutes
             setInterval(getWeather, 1800000);
         });
     </script>
