@@ -5,6 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Éphéméride - Dashboard</title>
+    
+    <!-- Icônes pour iPhone/iPad -->
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM2NjdlZWE7c3RvcC1vcGFjaXR5OjEiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6Izc2NGJhMjtzdG9wLW9wYWNpdHk6MSIgLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIiBmaWxsPSJ1cmwoI2dyYWQpIiByeD0iNDAiLz4KICA8dGV4dCB4PSI1MCUiIHk9IjM1JSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjcwIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPjEyPC90ZXh0PgogIDx0ZXh0IHg9IjUwJSIgeT0iNjUlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjUiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5PQ1Q8L3RleHQ+CiAgPHRleHQgeD0iNTAlIiB5PSI4NSUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjgpIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5CaXpldDwvdGV4dD4KPC9zdmc+">
+    <link rel="apple-touch-icon" sizes="152x152" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUyIiBoZWlnaHQ9IjE1MiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM2NjdlZWE7c3RvcC1vcGFjaXR5OjEiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6Izc2NGJhMjtzdG9wLW9wYWNpdHk6MSIgLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSIxNTIiIGhlaWdodD0iMTUyIiBmaWxsPSJ1cmwoI2dyYWQpIiByeD0iMzUiLz4KICA8dGV4dCB4PSI1MCUiIHk9IjM1JSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjYwIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPjEyPC90ZXh0PgogIDx0ZXh0IHg9IjUwJSIgeT0iNjUlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5PQ1Q8L3RleHQ+CiAgPHRleHQgeD0iNTAlIiB5PSI4NSUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjgpIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5CaXpldDwvdGV4dD4KPC9zdmc+">
+    <link rel="apple-touch-icon" sizes="120x120" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM2NjdlZWE7c3RvcC1vcGFjaXR5OjEiIC8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6Izc2NGJhMjtzdG9wLW9wYWNpdHk6MSIgLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiBmaWxsPSJ1cmwoI2dyYWQpIiByeD0iMjUiLz4KICA8dGV4dCB4PSI1MCUiIHk9IjM1JSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPjEyPC90ZXh0PgogIDx0ZXh0IHg9IjUwJSIgeT0iNjUlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5PQ1Q8L3RleHQ+CiAgPHRleHQgeD0iNTAlIiB5PSI4NSUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjgpIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5CaXpldDwvdGV4dD4KPC9zdmc+">
+    
+    <!-- Icône favicon standard -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNjY3ZWVhO3N0b3Atb3BhY2l0eToxIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM3NjRiYTI7c3RvcC1vcGFjaXR5OjEiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIGZpbGw9InVybCgjZ3JhZCkiIHJ4PSI2Ii8+CiAgPHRleHQgeD0iNTAlIiB5PSI2NSUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj4xMjwvdGV4dD4KPC9zdmc+">
+    
+    <!-- Meta pour l'apparence -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Bizet">
+    
     <style>
         * {
             margin: 0;
@@ -1212,108 +1226,11 @@
             return 'Variable';
         }
 
-        // Fonction pour obtenir un conseil vestimentaire intelligent
-        function getDressAdvice(temp, code, wind, humidity) {
-            // Priorité 1 : Conditions dangereuses ou exceptionnelles
-            if ([95, 96, 99].includes(code)) {
-                return "⛈️ <strong>Orage</strong> : restez à l'abri, sortie déconseillée !";
-            }
-            
-            if ([71, 73, 75, 77, 85, 86].includes(code)) {
-                return "❄️ <strong>Neige</strong> : vêtements chauds imperméables, chaussures adaptées !";
-            }
-            
-            // Priorité 2 : Pluie (très fréquent, doit primer sur température)
-            if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) {
-                if (temp <= 10) {
-                    return "🌧️☔ <strong>Pluie et froid</strong> : veste imperméable chaude, parapluie indispensable !";
-                } else {
-                    return "🌧️☂️ <strong>Pluie</strong> : imperméable ou parapluie nécessaire.";
-                }
-            }
-            
-            // Priorité 3 : Vent fort (modifie le ressenti)
-            if (wind > 40) {
-                return "💨 <strong>Vent très fort</strong> : coupe-vent robuste, attention aux objets !";
-            } else if (wind > 30) {
-                if (temp <= 15) {
-                    return "💨🧥 <strong>Vent fort et frais</strong> : coupe-vent chaud recommandé.";
-                } else {
-                    return "💨 <strong>Vent fort</strong> : veste coupe-vent conseillée.";
-                }
-            }
-            
-            // Priorité 4 : Température avec nuances saisonnières
-            const month = new Date().getMonth() + 1; // 1-12
-            const isSummer = month >= 6 && month <= 8;
-            const isWinter = month === 12 || month <= 2;
-            
-            // Températures extrêmes
-            if (temp >= 32) {
-                return "🥵☀️ <strong>Canicule</strong> : vêtements très légers, chapeau, hydratation ++";
-            }
-            
-            if (temp <= 0) {
-                return "🥶❄️ <strong>Gelée</strong> : doudoune, gants, bonnet, écharpe indispensables !";
-            }
-            
-            // Températures froides
-            if (temp <= 5) {
-                return "🧥🧣 <strong>Très froid</strong> : manteau épais, bonnet, gants, écharpe !";
-            }
-            
-            if (temp > 5 && temp <= 10) {
-                if (wind > 15) {
-                    return "🧥 <strong>Froid venteux</strong> : veste chaude coupe-vent, écharpe.";
-                }
-                return "🧥 <strong>Froid</strong> : veste chaude, écharpe conseillée.";
-            }
-            
-            // Températures fraîches
-            if (temp > 10 && temp <= 15) {
-                if (isWinter) {
-                    return "🧥 <strong>Frais</strong> : veste, pull ou gilet recommandé.";
-                }
-                return "👔 <strong>Frais</strong> : veste légère ou pull suffisant.";
-            }
-            
-            // Températures douces
-            if (temp > 15 && temp <= 20) {
-                if (wind > 20) {
-                    return "👕🧥 <strong>Doux mais venteux</strong> : manches longues + veste légère.";
-                }
-                return "👕 <strong>Doux</strong> : manches longues, veste légère au besoin.";
-            }
-            
-            // Températures agréables
-            if (temp > 20 && temp <= 25) {
-                if (humidity > 70 && isSummer) {
-                    return "👚💧 <strong>Agréable mais humide</strong> : t-shirt léger, hydratation.";
-                }
-                return "👚 <strong>Agréable</strong> : t-shirt, vêtements légers.";
-            }
-            
-            // Températures chaudes
-            if (temp > 25 && temp <= 30) {
-                return "🩳☀️ <strong>Chaud</strong> : vêtements légers, lunettes, casquette, eau !";
-            }
-            
-            if (temp > 30) {
-                return "🩳🕶️ <strong>Très chaud</strong> : habits très légers, chapeau, crème solaire !";
-            }
-            
-            // Cas par défaut (ne devrait jamais arriver)
-            return "👌 Temps correct, habillez-vous selon votre confort.";
-        }
-
         // Fonction pour afficher la météo
         function displayWeather(data, elementId) {
             const element = document.getElementById(elementId);
             const temp = Math.round(data.temp);
             const icon = getWeatherIcon(data.code);
-            
-            // Obtenir le conseil vestimentaire
-            const advice = getDressAdvice(data.temp, data.code, data.wind, data.humidity);
             
             element.innerHTML = `
                 <div class="weather-info">
@@ -1326,9 +1243,6 @@
                 <div class="weather-extra">
                     <span>💨 ${data.wind} km/h</span>
                     <span>💧 ${data.humidity}%</span>
-                </div>
-                <div style="margin-top: 15px; padding: 12px; background: rgba(255, 255, 255, 0.15); border-radius: 10px; font-size: 0.95rem; line-height: 1.4;">
-                    ${advice}
                 </div>
             `;
         }
