@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -150,6 +149,52 @@
             display: flex;
             align-items: center;
             gap: 5px;
+        }
+
+        /* NOUVEAUX STYLES POUR LES CONSEILS VESTIMENTAIRES */
+        .clothing-advice {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .clothing-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0.95;
+        }
+
+        .clothing-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .clothing-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .clothing-item:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .clothing-icon {
+            font-size: 1.2rem;
         }
 
         .progress-bar {
@@ -847,6 +892,15 @@
             .day-icon {
                 font-size: 1.2rem;
             }
+
+            .clothing-items {
+                gap: 8px;
+            }
+
+            .clothing-item {
+                font-size: 0.8rem;
+                padding: 6px 10px;
+            }
         }
     </style>
 </head>
@@ -1117,10 +1171,64 @@
             return 'Variable';
         }
 
+        // ===== NOUVELLE FONCTION : CONSEILS VESTIMENTAIRES =====
+        function getClothingAdvice(temp, weatherCode, windSpeed) {
+            const clothes = [];
+            
+            // Conseils basés sur la température
+            if (temp < 0) {
+                clothes.push({ icon: '🧥', text: 'Manteau chaud' });
+                clothes.push({ icon: '🧣', text: 'Écharpe' });
+                clothes.push({ icon: '🧤', text: 'Gants' });
+                clothes.push({ icon: '🎿', text: 'Bonnet' });
+            } else if (temp < 10) {
+                clothes.push({ icon: '🧥', text: 'Manteau' });
+                clothes.push({ icon: '🧣', text: 'Écharpe' });
+            } else if (temp < 15) {
+                clothes.push({ icon: '🧥', text: 'Veste' });
+                clothes.push({ icon: '👕', text: 'Pull léger' });
+            } else if (temp < 20) {
+                clothes.push({ icon: '👔', text: 'Veste légère' });
+                clothes.push({ icon: '👕', text: 'Manches longues' });
+            } else if (temp < 25) {
+                clothes.push({ icon: '👕', text: 'T-shirt' });
+                clothes.push({ icon: '👖', text: 'Pantalon léger' });
+            } else {
+                clothes.push({ icon: '👕', text: 'T-shirt' });
+                clothes.push({ icon: '🩳', text: 'Short' });
+                clothes.push({ icon: '🕶️', text: 'Lunettes de soleil' });
+            }
+            
+            // Conseils basés sur les conditions météo
+            if (weatherCode >= 51 && weatherCode <= 82) {
+                clothes.push({ icon: '☔', text: 'Parapluie' });
+                clothes.push({ icon: '🧥', text: 'Imperméable' });
+            }
+            
+            if (weatherCode >= 71 && weatherCode <= 86) {
+                clothes.push({ icon: '🥾', text: 'Bottes' });
+            }
+            
+            // Conseils basés sur le vent
+            if (windSpeed > 30) {
+                clothes.push({ icon: '🧥', text: 'Coupe-vent' });
+            }
+            
+            // Si temps ensoleillé
+            if (weatherCode === 0 && temp > 20) {
+                clothes.push({ icon: '🧴', text: 'Crème solaire' });
+            }
+            
+            return clothes;
+        }
+
         function displayWeather(data, elementId) {
             const element = document.getElementById(elementId);
             const temp = Math.round(data.temp);
             const icon = getWeatherIcon(data.code);
+            
+            // Obtenir les conseils vestimentaires
+            const clothingAdvice = getClothingAdvice(temp, data.code, data.wind);
             
             element.innerHTML = `
                 <div class="weather-info">
@@ -1133,6 +1241,20 @@
                 <div class="weather-extra">
                     <span>💨 ${data.wind} km/h</span>
                     <span>💧 ${data.humidity}%</span>
+                </div>
+                <div class="clothing-advice">
+                    <div class="clothing-title">
+                        <span>👔</span>
+                        <span>Conseils vestimentaires</span>
+                    </div>
+                    <div class="clothing-items">
+                        ${clothingAdvice.map(item => `
+                            <div class="clothing-item">
+                                <span class="clothing-icon">${item.icon}</span>
+                                <span>${item.text}</span>
+                            </div>
+                        `).join('')}
+                    </div>
                 </div>
             `;
         }
