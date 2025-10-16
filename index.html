@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Éphéméride - 2 rue Georges Bizet</title>
+    <title>Éphéméride - Dashboard</title>
     <style>
         * {
             margin: 0;
@@ -69,9 +70,13 @@
         }
 
         .current-date {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 500;
             letter-spacing: 1px;
+        }
+
+        .current-date {
+            font-size: 1.2rem;
             opacity: 0.9;
         }
 
@@ -112,6 +117,19 @@
             font-size: 1.5rem;
         }
 
+        .big-number {
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1;
+            margin: 15px 0;
+        }
+
+        .label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 10px;
+        }
+
         .weather-info {
             display: flex;
             align-items: center;
@@ -149,52 +167,6 @@
             display: flex;
             align-items: center;
             gap: 5px;
-        }
-
-        /* NOUVEAUX STYLES POUR LES CONSEILS VESTIMENTAIRES */
-        .clothing-advice {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .clothing-title {
-            font-size: 0.95rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            opacity: 0.95;
-        }
-
-        .clothing-items {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .clothing-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(255, 255, 255, 0.15);
-            padding: 8px 12px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .clothing-item:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: translateY(-2px);
-        }
-
-        .clothing-icon {
-            font-size: 1.2rem;
         }
 
         .progress-bar {
@@ -238,13 +210,43 @@
             margin-top: 5px;
         }
 
+        .calendar-progress-card {
+            grid-column: span 1;
+        }
+
         .loading {
             text-align: center;
             opacity: 0.7;
             font-size: 0.9rem;
         }
 
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         /* Vacances scolaires */
+        .vacances-card {
+            grid-column: span 1;
+        }
+
         .zone-buttons {
             display: flex;
             gap: 10px;
@@ -297,6 +299,10 @@
         }
 
         /* Poubelles */
+        .poubelles-card {
+            grid-column: span 1;
+        }
+
         .poubelle-alert {
             background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
             padding: 15px 20px;
@@ -422,6 +428,10 @@
         }
 
         /* Jours fériés */
+        .feries-card {
+            grid-column: span 1;
+        }
+
         .feries-list {
             display: flex;
             flex-direction: column;
@@ -816,6 +826,174 @@
             background: rgba(255, 255, 255, 0.2);
         }
 
+        /* Actualités Locales */
+        .actualites-card {
+            grid-column: span 1;
+        }
+
+        .refresh-btn {
+            margin-left: auto;
+            width: 35px;
+            height: 35px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .refresh-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(180deg);
+        }
+
+        .news-filter {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-color: transparent;
+        }
+
+        .news-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .news-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .news-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .news-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+
+        .news-item {
+            display: flex;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            animation: slideIn 0.3s ease;
+        }
+
+        .news-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(5px);
+        }
+
+        .news-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .news-placeholder {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(79, 172, 254, 0.3) 0%, rgba(0, 242, 254, 0.3) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .news-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .news-source {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            font-weight: 600;
+            color: #4facfe;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .news-title {
+            font-weight: 700;
+            font-size: 1rem;
+            line-height: 1.3;
+            margin: 0;
+        }
+
+        .news-description {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .news-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 0.75rem;
+            opacity: 0.6;
+            margin-top: auto;
+        }
+
+        .news-date {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .news-error {
+            text-align: center;
+            opacity: 0.7;
+            padding: 30px;
+            font-style: italic;
+        }
+
         @keyframes slideIn {
             from {
                 opacity: 0;
@@ -827,26 +1005,241 @@
             }
         }
 
-        @keyframes fadeInDown {
+        @keyframes popIn {
             from {
                 opacity: 0;
-                transform: translateY(-30px);
+                transform: translate(-50%, -50%) scale(0.8);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translate(-50%, -50%) scale(1);
             }
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        /* Styles pour les actualités */
+        .news-card {
+            grid-column: span 1;
+        }
+
+        .news-filter {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-color: transparent;
+        }
+        
+        /* Boutons actualités nationales - même style que les locaux */
+        .filter-btn-national {
+            padding: 8px 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn-national:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .filter-btn-national.active {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-color: transparent;
+        }
+        
+        /* Boutons actualités internationales - même style */
+        .filter-btn-international {
+            padding: 8px 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn-international:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .filter-btn-international.active {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-color: transparent;
+        }
+
+        .refresh-btn {
+            padding: 5px 10px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: auto;
+        }
+
+        .refresh-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.1);
+        }
+
+        .news-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .news-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .news-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .news-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+
+        .news-item {
+            display: flex;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            border-left: 4px solid #4facfe;
+            cursor: pointer;
+            animation: slideIn 0.3s ease;
+        }
+
+        .news-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Style spécifique pour les actualités nationales */
+        #nationalNewsList .news-item {
+            border-left: 4px solid #667eea;
+        }
+        
+        #nationalNewsList .news-item:hover {
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        /* Style spécifique pour les actualités internationales */
+        #internationalNewsList .news-item {
+            border-left: 4px solid #00d4aa;
+        }
+        
+        #internationalNewsList .news-item:hover {
+            box-shadow: 0 4px 15px rgba(0, 212, 170, 0.3);
+        }
+
+        .news-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .news-placeholder {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .news-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .news-source {
+            font-size: 0.75rem;
+            color: #4facfe;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .news-title {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            line-height: 1.3;
+            color: #fff;
+        }
+
+        .news-description {
+            font-size: 0.85rem;
+            opacity: 0.85;
+            line-height: 1.4;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .news-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+
+        .news-date {
+            font-style: italic;
+        }
+
+        .news-error {
+            text-align: center;
+            padding: 40px 20px;
+            opacity: 0.7;
         }
 
         @media (max-width: 768px) {
@@ -872,8 +1265,16 @@
                 margin-bottom: 30px;
             }
             
+            .big-number {
+                font-size: 2.5rem;
+            }
+            
             .grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .shopping-list-card {
+                grid-column: span 1;
             }
             
             .week-calendar {
@@ -893,13 +1294,21 @@
                 font-size: 1.2rem;
             }
 
-            .clothing-items {
-                gap: 8px;
+            .news-image, .news-placeholder {
+                width: 60px;
+                height: 60px;
             }
-
-            .clothing-item {
-                font-size: 0.8rem;
-                padding: 6px 10px;
+            
+            .news-placeholder {
+                font-size: 1.5rem;
+            }
+            
+            .news-title {
+                font-size: 0.95rem;
+            }
+            
+            .news-description {
+                display: none;
             }
         }
     </style>
@@ -915,7 +1324,7 @@
         </div>
 
         <div class="grid">
-            <!-- Liste de Courses -->
+            <!-- Liste de Courses - EN PREMIER pour mobile -->
             <div class="card shopping-list-card">
                 <div class="card-title">
                     <span class="card-icon">🛒</span>
@@ -956,13 +1365,14 @@
                 <div id="weatherTomorrow" class="loading">Chargement...</div>
             </div>
 
-            <!-- Calendrier & Progression -->
+            <!-- Calendrier & Progression de l'Année (fusionné) -->
             <div class="card calendar-progress-card">
                 <div class="card-title">
                     <span class="card-icon">📅</span>
                     Calendrier & Progression
                 </div>
                 
+                <!-- Informations date -->
                 <div class="date-info">
                     <div class="date-item">
                         <div class="number" id="saintOfDay" style="font-size: 1.3rem; text-align: center;">Chargement...</div>
@@ -974,6 +1384,7 @@
                     </div>
                 </div>
                 
+                <!-- Progression de l'année -->
                 <div style="margin-top: 25px;">
                     <div class="date-info">
                         <div class="date-item">
@@ -1023,7 +1434,9 @@
                     </div>
                 </div>
                 
-                <div class="week-calendar" id="weekCalendar"></div>
+                <div class="week-calendar" id="weekCalendar">
+                    <!-- Rempli dynamiquement -->
+                </div>
             </div>
 
             <!-- Prochains Jours Fériés -->
@@ -1032,7 +1445,10 @@
                     <span class="card-icon">🎉</span>
                     Prochains Jours Fériés
                 </div>
-                <div id="feriesList" class="feries-list"></div>
+                
+                <div id="feriesList" class="feries-list">
+                    <!-- Rempli dynamiquement -->
+                </div>
             </div>
 
             <!-- Vacances Scolaires -->
@@ -1048,7 +1464,9 @@
                     <button class="zone-btn" data-zone="C">Zone C</button>
                 </div>
                 
-                <div id="vacancesList" class="vacances-list"></div>
+                <div id="vacancesList" class="vacances-list">
+                    <!-- Rempli dynamiquement -->
+                </div>
             </div>
 
             <!-- Numéros Utiles -->
@@ -1129,6 +1547,65 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Actualités Internationales Dynamiques (RSS) -->
+            <div class="card news-card">
+                <div class="card-title">
+                    <span class="card-icon">🌍</span>
+                    Actualités Internationales
+                    <button onclick="refreshInternationalNews()" class="refresh-btn" title="Actualiser">🔄</button>
+                </div>
+                
+                <div class="news-filter">
+                    <button class="filter-btn-international active" data-filter="all">Toutes</button>
+                    <button class="filter-btn-international" data-filter="europe">Europe</button>
+                    <button class="filter-btn-international" data-filter="ameriques">Amériques</button>
+                    <button class="filter-btn-international" data-filter="monde">Monde</button>
+                </div>
+                
+                <div id="internationalNewsList" class="news-list">
+                    <div class="loading">⏳ Chargement des actualités internationales...</div>
+                </div>
+            </div>
+
+            <!-- Actualités Nationales Dynamiques (RSS) -->
+            <div class="card news-card">
+                <div class="card-title">
+                    <span class="card-icon">🇫🇷</span>
+                    Actualités France
+                    <button onclick="refreshNationalNews()" class="refresh-btn" title="Actualiser">🔄</button>
+                </div>
+                
+                <div class="news-filter">
+                    <button class="filter-btn-national active" data-filter="all">Toutes</button>
+                    <button class="filter-btn-national" data-filter="politique">Politique</button>
+                    <button class="filter-btn-national" data-filter="economie">Économie</button>
+                    <button class="filter-btn-national" data-filter="societe">Société</button>
+                </div>
+                
+                <div id="nationalNewsList" class="news-list">
+                    <div class="loading">⏳ Chargement des actualités nationales...</div>
+                </div>
+            </div>
+
+            <!-- Actualités Locales Dynamiques (RSS) -->
+            <div class="card news-card">
+                <div class="card-title">
+                    <span class="card-icon">📰</span>
+                    Actualités Bergerac & Dordogne
+                    <button onclick="refreshNews()" class="refresh-btn" title="Actualiser">🔄</button>
+                </div>
+                
+                <div class="news-filter">
+                    <button class="filter-btn active" data-filter="all">Toutes</button>
+                    <button class="filter-btn" data-filter="bergerac">Bergerac</button>
+                    <button class="filter-btn" data-filter="dordogne">Dordogne</button>
+                </div>
+                
+                <div id="newsList" class="news-list">
+                    <div class="loading">⏳ Chargement des actualités en temps réel...</div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1138,10 +1615,672 @@
         const LATITUDE = 44.85;
         const LONGITUDE = 0.48;
         
-        // Stockage de la liste de courses
+        // Stockage de la liste de courses en mémoire (synchronisé avec Firebase)
         let shoppingItems = [];
         let database = null;
         let shoppingListRef = null;
+        
+        // === FONCTIONS ACTUALITÉS LOCALES - FLUX RSS DYNAMIQUES ===
+        
+        let currentNewsFilter = 'all';
+        let cachedNews = [];
+        
+        // === FONCTIONS ACTUALITÉS NATIONALES - FLUX RSS DYNAMIQUES ===
+        
+        let currentNationalNewsFilter = 'all';
+        let cachedNationalNews = [];
+        
+        // === FONCTIONS ACTUALITÉS INTERNATIONALES - FLUX RSS DYNAMIQUES ===
+        
+        let currentInternationalNewsFilter = 'all';
+        let cachedInternationalNews = [];
+        
+        // Configuration des flux RSS internationaux
+        const INTERNATIONAL_RSS_FEEDS = [
+            {
+                name: 'BBC News',
+                url: 'http://feeds.bbci.co.uk/news/world/rss.xml',
+                category: 'monde',
+                proxy: 'https://api.rss2json.com/v1/api.json?rss_url='
+            },
+            {
+                name: 'France 24',
+                url: 'https://www.france24.com/fr/rss',
+                category: 'monde',
+                proxy: 'https://api.rss2json.com/v1/api.json?rss_url='
+            },
+            {
+                name: 'RFI',
+                url: 'https://www.rfi.fr/fr/rss',
+                category: 'monde',
+                proxy: 'https://api.rss2json.com/v1/api.json?rss_url='
+            },
+            {
+                name: 'Euronews',
+                url: 'https://fr.euronews.com/rss',
+                category: 'europe',
+                proxy: 'https://api.rss2json.com/v1/api.json?rss_url='
+            },
+            {
+                name: 'Le Monde - Europe',
+                url: 'https://www.lemonde.fr/europe/rss_full.xml',
+                category: 'europe',
+                proxy: 'https://api.rss2json.com/v1/api.json?rss_url='
+            },
+            {
+                name: 'Le Monde - Amériques',
+                url: 'https://www.lemonde.fr/ameriques/rss_full.xml',
+                category: 'ameriques',
+                proxy: 'https://api.rss2json.com/v1/api.json?rss_url='
+            }
+        ];
+        
+        // Fonction pour récupérer les actualités internationales
+        async function fetchInternationalNews() {
+            console.log('🔄 Chargement des actualités internationales...');
+            const newsContainer = document.getElementById('internationalNewsList');
+            newsContainer.innerHTML = '<div class="loading">⏳ Chargement des actualités en direct...</div>';
+            
+            try {
+                let allNews = [];
+                
+                // Charger les flux RSS en parallèle
+                const feedPromises = INTERNATIONAL_RSS_FEEDS.map(async (feed) => {
+                    try {
+                        const proxyUrl = feed.proxy + encodeURIComponent(feed.url);
+                        const response = await fetch(proxyUrl);
+                        
+                        if (!response.ok) {
+                            console.warn(`Erreur chargement ${feed.name}:`, response.status);
+                            return [];
+                        }
+                        
+                        const data = await response.json();
+                        
+                        if (data.status === 'ok' && data.items) {
+                            return data.items.slice(0, 5).map(item => ({
+                                title: item.title || 'Sans titre',
+                                description: cleanDescription(item.description || item.content || ''),
+                                source: feed.name,
+                                date: formatNewsDate(item.pubDate),
+                                url: item.link || item.guid || '#',
+                                category: feed.category,
+                                timestamp: new Date(item.pubDate).getTime()
+                            }));
+                        }
+                        
+                        return [];
+                    } catch (error) {
+                        console.error(`Erreur ${feed.name}:`, error);
+                        return [];
+                    }
+                });
+                
+                // Attendre tous les flux
+                const results = await Promise.all(feedPromises);
+                allNews = results.flat();
+                
+                // Si aucune actualité n'a été chargée
+                if (allNews.length === 0) {
+                    newsContainer.innerHTML = `
+                        <div class="news-error">
+                            ⚠️ Impossible de charger les actualités internationales<br>
+                            <small style="opacity: 0.7; margin-top: 10px; display: block;">
+                                Les flux RSS peuvent être temporairement indisponibles.
+                                Réessayez dans quelques instants.
+                            </small>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Trier par date (plus récent en premier)
+                allNews.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                
+                // Limiter à 15 actualités
+                allNews = allNews.slice(0, 15);
+                
+                console.log(`✅ ${allNews.length} actualités internationales chargées`);
+                
+                cachedInternationalNews = allNews;
+                displayInternationalNews(allNews);
+                
+                // Afficher l'heure de dernière mise à jour
+                updateLastRefreshTime('international');
+                
+            } catch (error) {
+                console.error('❌ Erreur chargement actualités internationales:', error);
+                newsContainer.innerHTML = `
+                    <div class="news-error">
+                        ❌ Erreur de chargement<br>
+                        <small style="opacity: 0.7; margin-top: 10px; display: block;">
+                            ${error.message}
+                        </small>
+                    </div>
+                `;
+            }
+        }
+        
+        // Fonction pour afficher les actualités internationales
+        function displayInternationalNews(newsArray) {
+            const newsContainer = document.getElementById('internationalNewsList');
+            
+            // Filtrer selon la catégorie sélectionnée
+            let filteredNews = newsArray;
+            if (currentInternationalNewsFilter !== 'all') {
+                filteredNews = newsArray.filter(news => news.category === currentInternationalNewsFilter);
+            }
+            
+            if (filteredNews.length === 0) {
+                newsContainer.innerHTML = '<div class="news-error">Aucune actualité trouvée pour ce filtre</div>';
+                return;
+            }
+            
+            newsContainer.innerHTML = filteredNews.map(news => `
+                <div class="news-item" onclick="window.open('${news.url}', '_blank')">
+                    ${news.image ? 
+                        `<img src="${news.image}" alt="${news.title}" class="news-image">` :
+                        `<div class="news-placeholder">🌍</div>`
+                    }
+                    <div class="news-content">
+                        <div class="news-source">${news.source}</div>
+                        <h4 class="news-title">${news.title}</h4>
+                        <p class="news-description">${news.description}</p>
+                        <div class="news-meta">
+                            <span class="news-date">🕒 ${news.date}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Fonction pour rafraîchir les actualités internationales (fonction globale)
+        window.refreshInternationalNews = function() {
+            const btn = event.target;
+            btn.style.transform = 'rotate(360deg)';
+            setTimeout(() => {
+                btn.style.transform = 'rotate(0deg)';
+            }, 600);
+            
+            document.getElementById('internationalNewsList').innerHTML = '<div class="loading">Actualisation...</div>';
+            setTimeout(() => {
+                fetchInternationalNews();
+            }, 500);
+        }
+        
+        // Configuration des flux RSS nationaux
+        const NATIONAL_RSS_FEEDS = [
+            {
+                name: 'Le Monde',
+                url: 'https://www.lemonde.fr/rss/une.xml',
+                category: 'all',
+                proxy: 'https://api.rss2json.com/v1/api.json?rss_url='
+            },
+            {
+                name: 'Le Figaro',
+                url: 'https://www.lefigaro.fr/rss/figaro_actualites.xml',
+                category: 'all',
+                proxy: 'https://api.rss2json.com/v1/api.json?rss_url='
+            },
+            {
+                name: 'France Info',
+                url: 'https://www.francetvinfo.fr/titres.rss',
+                category: 'all',
+                proxy: 'https://api.rss2json.com/v1/api.json?rss_url='
+            },
+            {
+                name: 'Le Monde - Politique',
+                url: 'https://www.lemonde.fr/politique/rss_full.xml',
+                category: 'politique',
+                proxy: 'https://api.rss2json.com/v1/api.json?rss_url='
+            },
+            {
+                name: 'Les Échos',
+                url: 'https://www.lesechos.fr/rss/economie-france.xml',
+                category: 'economie',
+                proxy: 'https://api.rss2json.com/v1/api.json?rss_url='
+            },
+            {
+                name: 'Le Monde - Société',
+                url: 'https://www.lemonde.fr/societe/rss_full.xml',
+                category: 'societe',
+                proxy: 'https://api.rss2json.com/v1/api.json?rss_url='
+            }
+        ];
+        
+        // Fonction pour récupérer les actualités nationales
+        async function fetchNationalNews() {
+            console.log('🔄 Chargement des actualités nationales...');
+            const newsContainer = document.getElementById('nationalNewsList');
+            newsContainer.innerHTML = '<div class="loading">⏳ Chargement des actualités en direct...</div>';
+            
+            try {
+                let allNews = [];
+                
+                // Charger les flux RSS en parallèle
+                const feedPromises = NATIONAL_RSS_FEEDS.map(async (feed) => {
+                    try {
+                        const proxyUrl = feed.proxy + encodeURIComponent(feed.url);
+                        const response = await fetch(proxyUrl);
+                        
+                        if (!response.ok) {
+                            console.warn(`Erreur chargement ${feed.name}:`, response.status);
+                            return [];
+                        }
+                        
+                        const data = await response.json();
+                        
+                        if (data.status === 'ok' && data.items) {
+                            return data.items.slice(0, 5).map(item => ({
+                                title: item.title || 'Sans titre',
+                                description: cleanDescription(item.description || item.content || ''),
+                                source: feed.name,
+                                date: formatNewsDate(item.pubDate),
+                                url: item.link || item.guid || '#',
+                                category: feed.category,
+                                timestamp: new Date(item.pubDate).getTime()
+                            }));
+                        }
+                        
+                        return [];
+                    } catch (error) {
+                        console.error(`Erreur ${feed.name}:`, error);
+                        return [];
+                    }
+                });
+                
+                // Attendre tous les flux
+                const results = await Promise.all(feedPromises);
+                allNews = results.flat();
+                
+                // Si aucune actualité n'a été chargée
+                if (allNews.length === 0) {
+                    newsContainer.innerHTML = `
+                        <div class="news-error">
+                            ⚠️ Impossible de charger les actualités nationales<br>
+                            <small style="opacity: 0.7; margin-top: 10px; display: block;">
+                                Les flux RSS peuvent être temporairement indisponibles.
+                                Réessayez dans quelques instants.
+                            </small>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Trier par date (plus récent en premier)
+                allNews.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                
+                // Limiter à 15 actualités
+                allNews = allNews.slice(0, 15);
+                
+                console.log(`✅ ${allNews.length} actualités nationales chargées`);
+                
+                cachedNationalNews = allNews;
+                displayNationalNews(allNews);
+                
+                // Afficher l'heure de dernière mise à jour
+                updateLastRefreshTime('national');
+                
+            } catch (error) {
+                console.error('❌ Erreur chargement actualités nationales:', error);
+                newsContainer.innerHTML = `
+                    <div class="news-error">
+                        ❌ Erreur de chargement<br>
+                        <small style="opacity: 0.7; margin-top: 10px; display: block;">
+                            ${error.message}
+                        </small>
+                    </div>
+                `;
+            }
+        }
+        
+        // Fonction pour afficher les actualités nationales
+        function displayNationalNews(newsArray) {
+            const newsContainer = document.getElementById('nationalNewsList');
+            
+            // Filtrer selon la catégorie sélectionnée
+            let filteredNews = newsArray;
+            if (currentNationalNewsFilter !== 'all') {
+                filteredNews = newsArray.filter(news => news.category === currentNationalNewsFilter);
+            }
+            
+            if (filteredNews.length === 0) {
+                newsContainer.innerHTML = '<div class="news-error">Aucune actualité trouvée pour ce filtre</div>';
+                return;
+            }
+            
+            newsContainer.innerHTML = filteredNews.map(news => `
+                <div class="news-item" onclick="window.open('${news.url}', '_blank')">
+                    ${news.image ? 
+                        `<img src="${news.image}" alt="${news.title}" class="news-image">` :
+                        `<div class="news-placeholder">🇫🇷</div>`
+                    }
+                    <div class="news-content">
+                        <div class="news-source">${news.source}</div>
+                        <h4 class="news-title">${news.title}</h4>
+                        <p class="news-description">${news.description}</p>
+                        <div class="news-meta">
+                            <span class="news-date">🕒 ${news.date}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Fonction pour rafraîchir les actualités nationales (fonction globale)
+        window.refreshNationalNews = function() {
+            const btn = event.target;
+            btn.style.transform = 'rotate(360deg)';
+            setTimeout(() => {
+                btn.style.transform = 'rotate(0deg)';
+            }, 600);
+            
+            document.getElementById('nationalNewsList').innerHTML = '<div class="loading">Actualisation...</div>';
+            setTimeout(() => {
+                fetchNationalNews();
+            }, 500);
+        }
+        
+        // Configuration des flux RSS locaux
+        const RSS_FEEDS = [
+            {
+                name: 'Sud Ouest Dordogne',
+                url: 'https://www.sudouest.fr/dordogne/rss.xml',
+                category: 'dordogne',
+                proxy: 'https://api.rss2json.com/v1/api.json?rss_url='
+            },
+            {
+                name: 'France Bleu Périgord',
+                url: 'https://www.francebleu.fr/rss/infos/locales/perigord.xml',
+                category: 'dordogne',
+                proxy: 'https://api.rss2json.com/v1/api.json?rss_url='
+            },
+            {
+                name: 'Actu.fr Bergerac',
+                url: 'https://actu.fr/nouvelle-aquitaine/bergerac_24037/feed/',
+                category: 'bergerac',
+                proxy: 'https://api.rss2json.com/v1/api.json?rss_url='
+            }
+        ];
+        
+        // Fonction pour récupérer les actualités dynamiques
+        async function fetchNews() {
+            console.log('🔄 Chargement des actualités en temps réel...');
+            const newsContainer = document.getElementById('newsList');
+            newsContainer.innerHTML = '<div class="loading">⏳ Chargement des actualités en direct...</div>';
+            
+            try {
+                let allNews = [];
+                
+                // Charger les flux RSS en parallèle
+                const feedPromises = RSS_FEEDS.map(async (feed) => {
+                    try {
+                        const proxyUrl = feed.proxy + encodeURIComponent(feed.url);
+                        const response = await fetch(proxyUrl);
+                        
+                        if (!response.ok) {
+                            console.warn(`Erreur chargement ${feed.name}:`, response.status);
+                            return [];
+                        }
+                        
+                        const data = await response.json();
+                        
+                        if (data.status === 'ok' && data.items) {
+                            return data.items.slice(0, 5).map(item => ({
+                                title: item.title || 'Sans titre',
+                                description: cleanDescription(item.description || item.content || ''),
+                                source: feed.name,
+                                date: formatNewsDate(item.pubDate),
+                                url: item.link || item.guid || '#',
+                                category: feed.category,
+                                timestamp: new Date(item.pubDate).getTime()
+                            }));
+                        }
+                        
+                        return [];
+                    } catch (error) {
+                        console.error(`Erreur ${feed.name}:`, error);
+                        return [];
+                    }
+                });
+                
+                // Attendre tous les flux
+                const results = await Promise.all(feedPromises);
+                allNews = results.flat();
+                
+                // Si aucune actualité n'a été chargée, afficher un message
+                if (allNews.length === 0) {
+                    newsContainer.innerHTML = `
+                        <div class="news-error">
+                            ⚠️ Impossible de charger les actualités en temps réel<br>
+                            <small style="opacity: 0.7; margin-top: 10px; display: block;">
+                                Les flux RSS peuvent être temporairement indisponibles.
+                                Réessayez dans quelques instants.
+                            </small>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Trier par date (plus récent en premier)
+                allNews.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                
+                // Limiter à 15 actualités
+                allNews = allNews.slice(0, 15);
+                
+                console.log(`✅ ${allNews.length} actualités chargées avec succès`);
+                
+                cachedNews = allNews;
+                displayNews(allNews);
+                
+                // Afficher l'heure de dernière mise à jour
+                updateLastRefreshTime();
+                
+            } catch (error) {
+                console.error('❌ Erreur globale chargement actualités:', error);
+                newsContainer.innerHTML = `
+                    <div class="news-error">
+                        ❌ Erreur de chargement des actualités<br>
+                        <small style="opacity: 0.7; margin-top: 10px; display: block;">
+                            ${error.message}
+                        </small>
+                    </div>
+                `;
+            }
+        }
+        
+        // Fonction pour nettoyer les descriptions HTML
+        function cleanDescription(html) {
+            // Créer un élément temporaire pour parser le HTML
+            const temp = document.createElement('div');
+            temp.innerHTML = html;
+            
+            // Extraire le texte sans les balises
+            let text = temp.textContent || temp.innerText || '';
+            
+            // Nettoyer les caractères spéciaux et espaces multiples
+            text = text.replace(/\s+/g, ' ').trim();
+            
+            // Limiter la longueur
+            if (text.length > 200) {
+                text = text.substring(0, 200) + '...';
+            }
+            
+            return text || 'Cliquez pour lire l\'article complet';
+        }
+        
+        // Fonction pour mettre à jour l'heure de dernière actualisation
+        function updateLastRefreshTime(type = 'local') {
+            const now = new Date();
+            const timeStr = now.getHours().toString().padStart(2, '0') + ':' + 
+                           now.getMinutes().toString().padStart(2, '0');
+            
+            let className, cardSelector;
+            
+            if (type === 'international') {
+                className = '.international-refresh-info';
+                cardSelector = '.news-card:has(#internationalNewsList)';
+            } else if (type === 'national') {
+                className = '.national-refresh-info';
+                cardSelector = '.news-card:has(#nationalNewsList)';
+            } else {
+                className = '.news-refresh-info';
+                cardSelector = '.news-card:has(#newsList)';
+            }
+            
+            // Chercher ou créer l'élément d'affichage
+            let refreshInfo = document.querySelector(className);
+            if (!refreshInfo) {
+                refreshInfo = document.createElement('div');
+                refreshInfo.className = className.substring(1);
+                refreshInfo.style.cssText = `
+                    text-align: center;
+                    font-size: 0.75rem;
+                    opacity: 0.6;
+                    margin-top: 10px;
+                    font-style: italic;
+                `;
+                const card = document.querySelector(cardSelector);
+                if (card) card.appendChild(refreshInfo);
+            }
+            
+            refreshInfo.textContent = `Dernière mise à jour : ${timeStr}`;
+        }
+        
+        // Fonction pour afficher les actualités filtrées
+        function displayNews(newsArray) {
+            const newsContainer = document.getElementById('newsList');
+            
+            // Filtrer selon la catégorie sélectionnée
+            let filteredNews = newsArray;
+            if (currentNewsFilter !== 'all') {
+                filteredNews = newsArray.filter(news => news.category === currentNewsFilter);
+            }
+            
+            if (filteredNews.length === 0) {
+                newsContainer.innerHTML = '<div class="news-error">Aucune actualité trouvée pour ce filtre</div>';
+                return;
+            }
+            
+            newsContainer.innerHTML = filteredNews.map(news => `
+                <div class="news-item" onclick="window.open('${news.url}', '_blank')">
+                    ${news.image ? 
+                        `<img src="${news.image}" alt="${news.title}" class="news-image">` :
+                        `<div class="news-placeholder">📰</div>`
+                    }
+                    <div class="news-content">
+                        <div class="news-source">${news.source}</div>
+                        <h4 class="news-title">${news.title}</h4>
+                        <p class="news-description">${news.description}</p>
+                        <div class="news-meta">
+                            <span class="news-date">🕒 ${news.date}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Fonction pour rafraîchir les actualités (fonction globale)
+        window.refreshNews = function() {
+            const btn = event.target;
+            btn.style.transform = 'rotate(360deg)';
+            setTimeout(() => {
+                btn.style.transform = 'rotate(0deg)';
+            }, 600);
+            
+            document.getElementById('newsList').innerHTML = '<div class="loading">Actualisation...</div>';
+            setTimeout(() => {
+                fetchNews();
+            }, 500);
+        }
+        
+        // Fonction pour formater la date d'une actualité
+        function formatNewsDate(dateString) {
+            if (!dateString) return 'Date inconnue';
+            
+            try {
+                const now = new Date();
+                const date = new Date(dateString);
+                const diffMs = now - date;
+                const diffMins = Math.floor(diffMs / 60000);
+                const diffHours = Math.floor(diffMs / 3600000);
+                const diffDays = Math.floor(diffMs / 86400000);
+                
+                if (diffMins < 1) return 'À l\'instant';
+                if (diffMins < 60) return `Il y a ${diffMins} minute${diffMins > 1 ? 's' : ''}`;
+                if (diffHours < 24) return `Il y a ${diffHours} heure${diffHours > 1 ? 's' : ''}`;
+                if (diffDays === 1) return 'Hier';
+                if (diffDays < 7) return `Il y a ${diffDays} jours`;
+                if (diffDays < 30) {
+                    const weeks = Math.floor(diffDays / 7);
+                    return `Il y a ${weeks} semaine${weeks > 1 ? 's' : ''}`;
+                }
+                
+                return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+            } catch (error) {
+                return 'Date inconnue';
+            }
+        }
+        
+        // Gestion des filtres d'actualités
+        document.addEventListener('DOMContentLoaded', function() {
+            // Filtres actualités locales
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Retirer la classe active de tous les boutons
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    
+                    // Ajouter la classe active au bouton cliqué
+                    this.classList.add('active');
+                    
+                    // Récupérer le filtre
+                    currentNewsFilter = this.dataset.filter;
+                    
+                    // Afficher les actualités filtrées
+                    displayNews(cachedNews);
+                });
+            });
+            
+            // Filtres actualités nationales
+            const nationalFilterButtons = document.querySelectorAll('.filter-btn-national');
+            
+            nationalFilterButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Retirer la classe active de tous les boutons
+                    nationalFilterButtons.forEach(b => b.classList.remove('active'));
+                    
+                    // Ajouter la classe active au bouton cliqué
+                    this.classList.add('active');
+                    
+                    // Récupérer le filtre
+                    currentNationalNewsFilter = this.dataset.filter;
+                    
+                    // Afficher les actualités filtrées
+                    displayNationalNews(cachedNationalNews);
+                });
+            });
+            
+            // Filtres actualités internationales
+            const internationalFilterButtons = document.querySelectorAll('.filter-btn-international');
+            
+            internationalFilterButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Retirer la classe active de tous les boutons
+                    internationalFilterButtons.forEach(b => b.classList.remove('active'));
+                    
+                    // Ajouter la classe active au bouton cliqué
+                    this.classList.add('active');
+                    
+                    // Récupérer le filtre
+                    currentInternationalNewsFilter = this.dataset.filter;
+                    
+                    // Afficher les actualités filtrées
+                    displayInternationalNews(cachedInternationalNews);
+                });
+            });
+        });
         
         // Fonction pour obtenir les icônes météo selon le code WMO
         function getWeatherIcon(weatherCode) {
@@ -1156,6 +2295,7 @@
             return '🌤️';
         }
 
+        // Fonction pour obtenir la description météo
         function getWeatherDescription(weatherCode) {
             if (weatherCode === 0) return 'Ciel dégagé';
             if (weatherCode === 1) return 'Principalement dégagé';
@@ -1171,64 +2311,96 @@
             return 'Variable';
         }
 
-        // ===== NOUVELLE FONCTION : CONSEILS VESTIMENTAIRES =====
-        function getClothingAdvice(temp, weatherCode, windSpeed) {
-            const clothes = [];
-            
-            // Conseils basés sur la température
-            if (temp < 0) {
-                clothes.push({ icon: '🧥', text: 'Manteau chaud' });
-                clothes.push({ icon: '🧣', text: 'Écharpe' });
-                clothes.push({ icon: '🧤', text: 'Gants' });
-                clothes.push({ icon: '🎿', text: 'Bonnet' });
-            } else if (temp < 10) {
-                clothes.push({ icon: '🧥', text: 'Manteau' });
-                clothes.push({ icon: '🧣', text: 'Écharpe' });
-            } else if (temp < 15) {
-                clothes.push({ icon: '🧥', text: 'Veste' });
-                clothes.push({ icon: '👕', text: 'Pull léger' });
-            } else if (temp < 20) {
-                clothes.push({ icon: '👔', text: 'Veste légère' });
-                clothes.push({ icon: '👕', text: 'Manches longues' });
-            } else if (temp < 25) {
-                clothes.push({ icon: '👕', text: 'T-shirt' });
-                clothes.push({ icon: '👖', text: 'Pantalon léger' });
-            } else {
-                clothes.push({ icon: '👕', text: 'T-shirt' });
-                clothes.push({ icon: '🩳', text: 'Short' });
-                clothes.push({ icon: '🕶️', text: 'Lunettes de soleil' });
+        // Fonction pour obtenir un conseil vestimentaire intelligent
+        function getDressAdvice(temp, code, wind, humidity) {
+            if ([95, 96, 99].includes(code)) {
+                return "⛈️ <strong>Orage</strong> : restez à l'abri, sortie déconseillée !";
             }
             
-            // Conseils basés sur les conditions météo
-            if (weatherCode >= 51 && weatherCode <= 82) {
-                clothes.push({ icon: '☔', text: 'Parapluie' });
-                clothes.push({ icon: '🧥', text: 'Imperméable' });
+            if ([71, 73, 75, 77, 85, 86].includes(code)) {
+                return "❄️ <strong>Neige</strong> : vêtements chauds imperméables, chaussures adaptées !";
             }
             
-            if (weatherCode >= 71 && weatherCode <= 86) {
-                clothes.push({ icon: '🥾', text: 'Bottes' });
+            if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) {
+                if (temp <= 10) {
+                    return "🌧️☔ <strong>Pluie et froid</strong> : veste imperméable chaude, parapluie indispensable !";
+                } else {
+                    return "🌧️☂️ <strong>Pluie</strong> : imperméable ou parapluie nécessaire.";
+                }
             }
             
-            // Conseils basés sur le vent
-            if (windSpeed > 30) {
-                clothes.push({ icon: '🧥', text: 'Coupe-vent' });
+            if (wind > 40) {
+                return "💨 <strong>Vent très fort</strong> : coupe-vent robuste, attention aux objets !";
+            } else if (wind > 30) {
+                if (temp <= 15) {
+                    return "💨🧥 <strong>Vent fort et frais</strong> : coupe-vent chaud recommandé.";
+                } else {
+                    return "💨 <strong>Vent fort</strong> : veste coupe-vent conseillée.";
+                }
             }
             
-            // Si temps ensoleillé
-            if (weatherCode === 0 && temp > 20) {
-                clothes.push({ icon: '🧴', text: 'Crème solaire' });
+            const month = new Date().getMonth() + 1;
+            const isSummer = month >= 6 && month <= 8;
+            const isWinter = month === 12 || month <= 2;
+            
+            if (temp >= 32) {
+                return "🥵☀️ <strong>Canicule</strong> : vêtements très légers, chapeau, hydratation ++";
             }
             
-            return clothes;
+            if (temp <= 0) {
+                return "🥶❄️ <strong>Gelée</strong> : doudoune, gants, bonnet, écharpe indispensables !";
+            }
+            
+            if (temp <= 5) {
+                return "🧥🧣 <strong>Très froid</strong> : manteau épais, bonnet, gants, écharpe !";
+            }
+            
+            if (temp > 5 && temp <= 10) {
+                if (wind > 15) {
+                    return "🧥 <strong>Froid venteux</strong> : veste chaude coupe-vent, écharpe.";
+                }
+                return "🧥 <strong>Froid</strong> : veste chaude, écharpe conseillée.";
+            }
+            
+            if (temp > 10 && temp <= 15) {
+                if (isWinter) {
+                    return "🧥 <strong>Frais</strong> : veste, pull ou gilet recommandé.";
+                }
+                return "👔 <strong>Frais</strong> : veste légère ou pull suffisant.";
+            }
+            
+            if (temp > 15 && temp <= 20) {
+                if (wind > 20) {
+                    return "👕🧥 <strong>Doux mais venteux</strong> : manches longues + veste légère.";
+                }
+                return "👕 <strong>Doux</strong> : manches longues, veste légère au besoin.";
+            }
+            
+            if (temp > 20 && temp <= 25) {
+                if (humidity > 70 && isSummer) {
+                    return "👚💧 <strong>Agréable mais humide</strong> : t-shirt léger, hydratation.";
+                }
+                return "👚 <strong>Agréable</strong> : t-shirt, vêtements légers.";
+            }
+            
+            if (temp > 25 && temp <= 30) {
+                return "🩳☀️ <strong>Chaud</strong> : vêtements légers, lunettes, casquette, eau !";
+            }
+            
+            if (temp > 30) {
+                return "🩳🕶️ <strong>Très chaud</strong> : habits très légers, chapeau, crème solaire !";
+            }
+            
+            return "👌 Temps correct, habillez-vous selon votre confort.";
         }
 
+        // Fonction pour afficher la météo
         function displayWeather(data, elementId) {
             const element = document.getElementById(elementId);
             const temp = Math.round(data.temp);
             const icon = getWeatherIcon(data.code);
             
-            // Obtenir les conseils vestimentaires
-            const clothingAdvice = getClothingAdvice(temp, data.code, data.wind);
+            const advice = getDressAdvice(data.temp, data.code, data.wind, data.humidity);
             
             element.innerHTML = `
                 <div class="weather-info">
@@ -1242,32 +2414,35 @@
                     <span>💨 ${data.wind} km/h</span>
                     <span>💧 ${data.humidity}%</span>
                 </div>
-                <div class="clothing-advice">
-                    <div class="clothing-title">
-                        <span>👔</span>
-                        <span>Conseils vestimentaires</span>
-                    </div>
-                    <div class="clothing-items">
-                        ${clothingAdvice.map(item => `
-                            <div class="clothing-item">
-                                <span class="clothing-icon">${item.icon}</span>
-                                <span>${item.text}</span>
-                            </div>
-                        `).join('')}
-                    </div>
+                <div style="margin-top: 15px; padding: 12px; background: rgba(255, 255, 255, 0.15); border-radius: 10px; font-size: 0.95rem; line-height: 1.4;">
+                    ${advice}
                 </div>
             `;
         }
 
+        // Fonction pour récupérer la météo via Open-Meteo
         async function getWeather() {
+            console.log('Chargement météo pour Bergerac...');
             try {
                 const currentUrl = `https://api.open-meteo.com/v1/forecast?latitude=${LATITUDE}&longitude=${LONGITUDE}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&timezone=Europe/Paris`;
+                
                 const currentResponse = await fetch(currentUrl);
+                if (!currentResponse.ok) {
+                    throw new Error(`Erreur HTTP: ${currentResponse.status}`);
+                }
                 const currentData = await currentResponse.json();
                 
                 const forecastUrl = `https://api.open-meteo.com/v1/forecast?latitude=${LATITUDE}&longitude=${LONGITUDE}&daily=weather_code,temperature_2m_max,temperature_2m_min,wind_speed_10m_max&timezone=Europe/Paris&forecast_days=2`;
+                
                 const forecastResponse = await fetch(forecastUrl);
+                if (!forecastResponse.ok) {
+                    throw new Error(`Erreur HTTP: ${forecastResponse.status}`);
+                }
                 const forecastData = await forecastResponse.json();
+                
+                if (!currentData.current || !forecastData.daily) {
+                    throw new Error('Données météo incomplètes');
+                }
                 
                 const todayWeather = {
                     temp: currentData.current.temperature_2m,
@@ -1287,12 +2462,18 @@
                 
                 displayWeather(todayWeather, 'weatherToday');
                 displayWeather(tomorrowWeather, 'weatherTomorrow');
+                
+                console.log('✅ Météo chargée avec succès');
+                
             } catch (error) {
-                document.getElementById('weatherToday').innerHTML = '<div class="loading">❌ Erreur chargement météo</div>';
-                document.getElementById('weatherTomorrow').innerHTML = '<div class="loading">❌ Erreur chargement météo</div>';
+                console.error('❌ Erreur météo:', error);
+                const errorMsg = `❌ Erreur: ${error.message}`;
+                document.getElementById('weatherToday').innerHTML = `<div class="loading">${errorMsg}</div>`;
+                document.getElementById('weatherTomorrow').innerHTML = `<div class="loading">${errorMsg}</div>`;
             }
         }
 
+        // Fonction pour calculer le numéro de semaine
         function getWeekNumber(date) {
             const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
             const dayNum = d.getUTCDay() || 7;
@@ -1301,6 +2482,7 @@
             return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
         }
 
+        // Fonction pour obtenir le saint/prénom du jour
         function getSaintOfDay() {
             const saints = {
                 '01-01': 'Marie', '01-02': 'Basile', '01-03': 'Geneviève', '01-04': 'Odilon', '01-05': 'Édouard',
@@ -1386,6 +2568,7 @@
             document.getElementById('saintOfDay').textContent = saint;
         }
 
+        // Fonction pour mettre à jour les informations de date
         function updateDateInfo() {
             const now = new Date();
             const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
@@ -1395,6 +2578,7 @@
             document.getElementById('currentDate').textContent = dateStr;
             
             getSaintOfDay();
+            
             document.getElementById('weekNumber').textContent = `S${getWeekNumber(now)}`;
             
             const startOfYear = new Date(now.getFullYear(), 0, 1);
@@ -1410,6 +2594,8 @@
             document.getElementById('progressBar').style.width = percentage + '%';
         }
 
+        // === FONCTIONS JOURS FÉRIÉS ===
+        
         function calculateEaster(year) {
             const a = year % 19;
             const b = Math.floor(year / 100);
@@ -1520,6 +2706,8 @@
             }).join('');
         }
         
+        // === FONCTIONS CALENDRIER DES POUBELLES ===
+        
         const poubellesConfig = {
             jaune: { jour: 3, heure: '8h00', nom: 'Jaune', type: 'Recyclage' },
             noir: { jour: 4, heure: '6h00', nom: 'Noire', type: 'Ordures ménagères' }
@@ -1583,6 +2771,8 @@
             }
         }
         
+        // === FONCTIONS VACANCES SCOLAIRES ===
+        
         const vacancesData = {
             A: [
                 { nom: "Vacances de la Toussaint", dates: "19 oct. - 4 nov. 2025" },
@@ -1621,19 +2811,7 @@
             `).join('');
         }
         
-        window.addEventListener('DOMContentLoaded', function() {
-            displayVacances('A');
-            
-            document.querySelectorAll('.zone-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    const zone = this.dataset.zone;
-                    currentZone = zone;
-                    displayVacances(zone);
-                });
-            });
-        });
+        // === FONCTIONS LISTE DE COURSES ===
         
         function initFirebase() {
             const firebaseConfig = {
@@ -1665,7 +2843,10 @@
         }
         
         window.addItem = function() {
-            if (!shoppingListRef) return;
+            if (!shoppingListRef) {
+                console.error('Firebase pas encore initialisé');
+                return;
+            }
             
             const input = document.getElementById('newItem');
             const itemText = input.value.trim();
@@ -1813,21 +2994,6 @@
             `).join('');
         }
         
-        document.addEventListener('DOMContentLoaded', function() {
-            const input = document.getElementById('newItem');
-            if (input) {
-                input.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        window.addItem();
-                    }
-                });
-            }
-            
-            displayWeekCalendar();
-            checkPoubelleAlert();
-            displayFeries();
-        });
-        
         function loadFirebase() {
             const script1 = document.createElement('script');
             script1.src = 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js';
@@ -1841,26 +3007,74 @@
                 };
                 
                 script2.onerror = function() {
-                    document.getElementById('shoppingList').innerHTML = '<div class="empty-state">❌ Erreur Firebase</div>';
+                    console.error('Erreur de chargement Firebase Database');
+                    document.getElementById('shoppingList').innerHTML = '<div class="empty-state">❌ Erreur de chargement Firebase</div>';
                 };
                 
                 document.head.appendChild(script2);
             };
             
             script1.onerror = function() {
-                document.getElementById('shoppingList').innerHTML = '<div class="empty-state">❌ Erreur Firebase</div>';
+                console.error('Erreur de chargement Firebase App');
+                document.getElementById('shoppingList').innerHTML = '<div class="empty-state">❌ Erreur de chargement Firebase</div>';
             };
             
             document.head.appendChild(script1);
         }
         
+        // === INITIALISATION ===
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.getElementById('newItem');
+            if (input) {
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        window.addItem();
+                    }
+                });
+            }
+            
+            displayWeekCalendar();
+            checkPoubelleAlert();
+            displayFeries();
+            displayVacances('A');
+            
+            // Gérer les boutons de zone des vacances
+            document.querySelectorAll('.zone-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    const zone = this.dataset.zone;
+                    currentZone = zone;
+                    displayVacances(zone);
+                });
+            });
+            
+            // Initialiser les filtres d'actualités
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentNewsFilter = this.dataset.filter;
+                    displayNews(cachedNews);
+                });
+            });
+        });
+        
         window.addEventListener('load', function() {
             updateDateInfo();
             getWeather();
             loadFirebase();
+            fetchNews(); // Charger les actualités locales au démarrage
+            fetchNationalNews(); // Charger les actualités nationales au démarrage
+            fetchInternationalNews(); // Charger les actualités internationales au démarrage
             
-            setInterval(updateDateInfo, 60000);
-            setInterval(getWeather, 1800000);
+            // Mise à jour automatique
+            setInterval(updateDateInfo, 60000); // Toutes les minutes
+            setInterval(getWeather, 1800000); // Toutes les 30 minutes
+            setInterval(fetchNews, 600000); // Actualités locales toutes les 10 minutes
+            setInterval(fetchNationalNews, 600000); // Actualités nationales toutes les 10 minutes
+            setInterval(fetchInternationalNews, 600000); // Actualités internationales toutes les 10 minutes
         });
     </script>
 </body>
