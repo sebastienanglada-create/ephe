@@ -195,6 +195,16 @@
             text-transform: capitalize;
         }
 
+        .weather-location {
+            font-size: 0.95rem;
+            opacity: 0.85;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+        }
+
         .weather-extra {
             display: flex;
             gap: 15px;
@@ -1451,10 +1461,47 @@
             background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
         }
 
+        /* ===== BOUTON GEOLOCALISATION ===== */
+        .geolocation-btn {
+            position: fixed;
+            bottom: 90px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .geolocation-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(59, 130, 246, 0.6);
+        }
+
+        .geolocation-btn.active {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        }
+
         /* ===== RESPONSIVE NOTIFICATIONS ===== */
         @media (max-width: 768px) {
             .notification-btn {
                 bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 1.3rem;
+            }
+            
+            .geolocation-btn {
+                bottom: 80px;
                 right: 20px;
                 width: 50px;
                 height: 50px;
@@ -1505,7 +1552,7 @@
             <div class="card">
                 <div class="card-title">
                     <span class="card-icon">🌤️</span>
-                    Météo Bergerac - Aujourd'hui
+                    <span id="weatherTodayTitle">Météo - Aujourd'hui</span>
                 </div>
                 <div id="weatherToday" class="loading">Chargement...</div>
             </div>
@@ -1514,7 +1561,7 @@
             <div class="card">
                 <div class="card-title">
                     <span class="card-icon">🌅</span>
-                    Météo Bergerac - Demain
+                    <span id="weatherTomorrowTitle">Météo - Demain</span>
                 </div>
                 <div id="weatherTomorrow" class="loading">Chargement...</div>
             </div>
@@ -1764,15 +1811,91 @@
     </div>
 
     <script>
-        // Configuration météo Bergerac
-        const CITY = 'Bergerac';
-        const LATITUDE = 44.85;
-        const LONGITUDE = 0.48;
+        // Configuration météo - Par défaut Bergerac, sera remplacé par géolocalisation
+        let CITY = 'Bergerac';
+        let LATITUDE = 44.85;
+        let LONGITUDE = 0.48;
+        let isUsingGeolocation = false;
+        
+        // Fonction pour obtenir la ville depuis les coordonnées GPS
+        async function getCityFromCoordinates(lat, lon) {
+            try {
+                // Utilisation de l'API de géocodage inversé (Nominatim - OpenStreetMap)
+                const response = await fetch(
+                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10&addressdetails=1`,
+                    {
+                        headers: {
+                            'Accept-Language': 'fr'
+                        }
+                    }
+                );
+                
+                if (!response.ok) {
+                    throw new Error('Erreur de géocodage');
+                }
+                
+                const data = await response.json();
+                
+                // Extraire le nom de la ville
+                const city = data.address.city || 
+                            data.address.town || 
+                            data.address.village || 
+                            data.address.municipality ||
+                            'Votre position';
+                
+                return city;
+            } catch (error) {
+                console.error('Erreur récupération ville:', error);
+                return 'Votre position';
+            }
+        }
+        
+        // Fonction pour activer la géolocalisation
+        async function enableGeolocation() {
+            if (!navigator.geolocation) {
+                console.log('Géolocalisation non supportée');
+                return false;
+            }
+            
+            try {
+                const position = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 300000 // 5 minutes de cache
+                    });
+                });
+                
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                
+                // Mettre à jour les coordonnées
+                LATITUDE = lat;
+                LONGITUDE = lon;
+                
+                // Récupérer le nom de la ville
+                const cityName = await getCityFromCoordinates(lat, lon);
+                CITY = cityName;
+                isUsingGeolocation = true;
+                
+                console.log(`✅ Géolocalisation activée: ${CITY} (${lat.toFixed(2)}, ${lon.toFixed(2)})`);
+                
+                // Sauvegarder la préférence
+                localStorage.setItem('geolocationEnabled', 'true');
+                
+                return true;
+            } catch (error) {
+                console.log('Géolocalisation refusée ou erreur:', error.message);
+                localStorage.setItem('geolocationEnabled', 'false');
+                return false;
+            }
+        }
         
         // Stockage de la liste de courses en mémoire (synchronisé avec Firebase)
         let shoppingItems = [];
         let database = null;
         let shoppingListRef = null;
+
         
         // === FONCTIONS ACTUALITÉS LOCALES - FLUX RSS DYNAMIQUES ===
         
@@ -2701,6 +2824,7 @@
                     <div class="weather-details">
                         <div class="temperature">${temp}°C</div>
                         <div class="weather-description">${data.condition}</div>
+                        <div class="weather-location">📍 ${CITY}</div>
                     </div>
                 </div>
                 <div class="weather-extra">
@@ -2735,7 +2859,14 @@
 
         // Fonction pour récupérer la météo via Open-Meteo
         async function getWeather() {
-            console.log('Chargement météo pour Bergerac...');
+            console.log(`Chargement météo pour ${CITY}...`);
+            
+            // Les titres restent génériques
+            const todayTitle = document.getElementById('weatherTodayTitle');
+            const tomorrowTitle = document.getElementById('weatherTomorrowTitle');
+            if (todayTitle) todayTitle.textContent = `Météo - Aujourd'hui`;
+            if (tomorrowTitle) tomorrowTitle.textContent = `Météo - Demain`;
+            
             try {
                 const currentUrl = `https://api.open-meteo.com/v1/forecast?latitude=${LATITUDE}&longitude=${LONGITUDE}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&timezone=Europe/Paris`;
                 
@@ -3379,7 +3510,13 @@
             });
         });
         
-        window.addEventListener('load', function() {
+        window.addEventListener('load', async function() {
+            // Tenter d'activer la géolocalisation si l'utilisateur l'avait acceptée
+            const geolocationPref = localStorage.getItem('geolocationEnabled');
+            if (geolocationPref !== 'false') {
+                await enableGeolocation();
+            }
+            
             updateDateInfo();
             getWeather();
             loadFirebase();
@@ -3412,7 +3549,63 @@
         🔕
     </button>
 
+    <!-- ===== BOUTON GEOLOCALISATION ===== -->
+    <button class="geolocation-btn" id="geolocationBtn" title="Activer la géolocalisation">
+        📍
+    </button>
+
     <script>
+        // ===== EVENT LISTENER BOUTON GEOLOCALISATION =====
+        const geoBtn = document.getElementById('geolocationBtn');
+        
+        // Mettre à jour l'apparence du bouton au chargement
+        function updateGeolocationButton() {
+            if (geoBtn) {
+                if (isUsingGeolocation) {
+                    geoBtn.classList.add('active');
+                    geoBtn.title = `Géolocalisation active (${CITY})`;
+                } else {
+                    geoBtn.classList.remove('active');
+                    geoBtn.title = 'Activer la géolocalisation';
+                }
+            }
+        }
+        
+        if (geoBtn) {
+            geoBtn.addEventListener('click', async () => {
+                if (!navigator.geolocation) {
+                    alert('Votre navigateur ne supporte pas la géolocalisation');
+                    return;
+                }
+                
+                if (!isUsingGeolocation) {
+                    // Activer la géolocalisation
+                    const success = await enableGeolocation();
+                    if (success) {
+                        updateGeolocationButton();
+                        // Recharger la météo avec la nouvelle position
+                        getWeather();
+                        alert(`✅ Géolocalisation activée !\nVille détectée: ${CITY}`);
+                    } else {
+                        alert('❌ Impossible d\'activer la géolocalisation.\nVeuillez autoriser l\'accès à votre position dans les paramètres du navigateur.');
+                    }
+                } else {
+                    // Désactiver la géolocalisation (retour à Bergerac)
+                    LATITUDE = 44.85;
+                    LONGITUDE = 0.48;
+                    CITY = 'Bergerac';
+                    isUsingGeolocation = false;
+                    localStorage.setItem('geolocationEnabled', 'false');
+                    updateGeolocationButton();
+                    getWeather();
+                    alert('📍 Retour à la position par défaut (Bergerac)');
+                }
+            });
+        }
+        
+        // Mettre à jour le bouton au chargement
+        setTimeout(updateGeolocationButton, 1000);
+        
         // ===== EVENT LISTENER BOUTON NOTIFICATIONS =====
         const notifBtn = document.getElementById('notificationBtn');
         
