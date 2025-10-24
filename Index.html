@@ -32,7 +32,7 @@
 
 <!-- Meta tags pour Android -->
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#4facfe">
+<meta name="theme-color" content="#3b82f6">
 
 <!-- Meta tags Open Graph -->
 <meta property="og:title" content="Éphéméride Dashboard">
@@ -54,7 +54,7 @@
 
     body {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
         min-height: 100vh;
         padding: 20px;
         color: #fff;
@@ -75,7 +75,7 @@
         font-size: 3.5rem;
         font-weight: 800;
         margin-bottom: 20px;
-        background: linear-gradient(135deg, #ffffff 0%, #4facfe 100%);
+        background: linear-gradient(135deg, #ffffff 0%, #93c5fd 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -86,10 +86,10 @@
     .header-divider {
         width: 150px;
         height: 3px;
-        background: linear-gradient(90deg, transparent 0%, #4facfe 50%, transparent 100%);
+        background: linear-gradient(90deg, transparent 0%, #60a5fa 50%, transparent 100%);
         margin: 0 auto 30px;
         border-radius: 10px;
-        box-shadow: 0 0 15px rgba(79, 172, 254, 0.5);
+        box-shadow: 0 0 15px rgba(96, 165, 250, 0.6);
     }
 
     .date-bubble {
@@ -128,19 +128,20 @@
     }
 
     .card {
-        background: rgba(255, 255, 255, 0.15);
-        backdrop-filter: blur(10px);
+        background: rgba(30, 58, 138, 0.75);
+        backdrop-filter: blur(20px);
         border-radius: 20px;
         padding: 30px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(147, 197, 253, 0.2);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         transition: all 0.3s ease;
     }
 
     .card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
-        background: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 12px 40px rgba(59, 130, 246, 0.3);
+        background: rgba(37, 99, 235, 0.65);
+        border-color: rgba(147, 197, 253, 0.3);
     }
 
     .card-title {
@@ -220,7 +221,7 @@
 
     .progress-fill {
         height: 100%;
-        background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+        background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%);
         border-radius: 10px;
         transition: width 1s ease;
     }
@@ -311,7 +312,7 @@
     }
 
     .zone-btn.active {
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
         border-color: transparent;
     }
 
@@ -497,7 +498,7 @@
         top: 0;
         bottom: 0;
         width: 4px;
-        background: linear-gradient(180deg, #4facfe 0%, #00f2fe 100%);
+        background: linear-gradient(180deg, #3b82f6 0%, #60a5fa 100%);
     }
 
     .ferie-item:hover {
@@ -714,7 +715,7 @@
         height: 45px;
         border: none;
         border-radius: 50%;
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
         color: #fff;
         font-size: 1.5rem;
         cursor: pointer;
@@ -726,7 +727,7 @@
 
     .add-button:hover {
         transform: rotate(90deg) scale(1.1);
-        box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+        box-shadow: 0 5px 15px rgba(59, 130, 246, 0.5);
     }
 
     .shopping-list {
@@ -798,7 +799,7 @@
     }
 
     .checkbox.checked {
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
         border-color: transparent;
     }
 
@@ -848,7 +849,7 @@
     }
 
     .btn-primary {
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
         color: #fff;
     }
 
@@ -917,7 +918,7 @@
     }
 
     .filter-btn.active {
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
         border-color: transparent;
     }
 
@@ -1086,7 +1087,7 @@
     }
 
     .filter-btn.active {
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
         border-color: transparent;
     }
     
@@ -1109,7 +1110,7 @@
     }
 
     .filter-btn-national.active {
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
         border-color: transparent;
     }
     
@@ -1132,7 +1133,7 @@
     }
 
     .filter-btn-international.active {
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
         border-color: transparent;
     }
 
@@ -1349,6 +1350,121 @@
         
         .news-description {
             display: none;
+        }
+    }
+
+    /* ===== CONSEILS VESTIMENTAIRES AMÉLIORÉS ===== */
+    .clothing-advice {
+        margin-top: 20px;
+        padding: 15px;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(37, 99, 235, 0.15) 100%);
+        border-radius: 12px;
+        border: 1px solid rgba(96, 165, 250, 0.25);
+    }
+
+    .clothing-advice h3 {
+        font-size: 1.05rem;
+        color: #93c5fd;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .clothing-advice h3::before {
+        content: "👔";
+        font-size: 1.2rem;
+    }
+
+    .advice-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 8px;
+    }
+
+    .advice-item {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 8px 10px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+    }
+
+    .advice-item:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: scale(1.02);
+    }
+
+    .advice-item-icon {
+        font-size: 1.3rem;
+    }
+
+    .advice-alert {
+        background: rgba(239, 68, 68, 0.2);
+        border: 1px solid rgba(239, 68, 68, 0.35);
+        padding: 10px 12px;
+        border-radius: 8px;
+        margin-top: 10px;
+        color: #fca5a5;
+        font-weight: 500;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .advice-alert::before {
+        content: "⚠️";
+        font-size: 1.1rem;
+    }
+
+    /* ===== BOUTON NOTIFICATIONS ===== */
+    .notification-btn {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+        transition: all 0.3s ease;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .notification-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 30px rgba(59, 130, 246, 0.6);
+    }
+
+    .notification-btn.active {
+        background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+    }
+
+    /* ===== RESPONSIVE NOTIFICATIONS ===== */
+    @media (max-width: 768px) {
+        .notification-btn {
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            font-size: 1.3rem;
+        }
+        
+        .advice-grid {
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
         }
     }
 </style>
@@ -2265,6 +2381,122 @@
         }
     }
     
+    // ===== GESTION DES NOTIFICATIONS =====
+    let notificationsEnabled = localStorage.getItem('notificationsEnabled') === 'true';
+    let notificationPermission = 'default';
+
+    function initNotifications() {
+        if ('Notification' in window) {
+            notificationPermission = Notification.permission;
+            updateNotificationButton();
+            
+            // Si notifications activées, planifier la notification quotidienne
+            if (notificationsEnabled && notificationPermission === 'granted') {
+                scheduleDailyNotification();
+            }
+        }
+    }
+
+    function updateNotificationButton() {
+        const btn = document.getElementById('notificationBtn');
+        if (!btn) return;
+        
+        if (notificationsEnabled && notificationPermission === 'granted') {
+            btn.classList.add('active');
+            btn.textContent = '🔔';
+            btn.title = 'Notifications activées';
+        } else {
+            btn.classList.remove('active');
+            btn.textContent = '🔕';
+            btn.title = 'Activer les notifications';
+        }
+    }
+
+    function sendNotification(title, body) {
+        if (notificationPermission === 'granted' && notificationsEnabled) {
+            try {
+                new Notification(title, {
+                    body: body,
+                    icon: 'icon-192.png',
+                    badge: 'icon-192.png',
+                    tag: 'weather-notification',
+                    requireInteraction: false
+                });
+            } catch (error) {
+                console.error('Erreur notification:', error);
+            }
+        }
+    }
+
+    function checkWeatherAlerts(currentData, forecastData) {
+        if (!notificationsEnabled || notificationPermission !== 'granted') return;
+        if (!forecastData || !forecastData.daily) return;
+        
+        const temp = Math.round(
+            (Number(forecastData.daily.temperature_2m_min[1]) + 
+             Number(forecastData.daily.temperature_2m_max[1])) / 2
+        );
+        const rain = Number(forecastData.daily.precipitation_sum[1]) || 0;
+        const wind = Math.round(Number(forecastData.daily.wind_speed_10m_max[1]) || 0);
+        
+        let alertMessage = '';
+        
+        if (temp < 0) {
+            alertMessage = '🥶 Attention ! Températures glaciales demain. Couvrez-vous bien !';
+        } else if (temp > 30) {
+            alertMessage = '🌡️ Forte chaleur prévue demain. Pensez à vous hydrater !';
+        } else if (rain > 10) {
+            alertMessage = '🌧️ Fortes pluies attendues demain. N\'oubliez pas votre parapluie !';
+        } else if (wind > 40) {
+            alertMessage = '💨 Vents forts prévus demain. Soyez prudent !';
+        }
+        
+        if (alertMessage) {
+            sendNotification('Alerte Météo Demain', alertMessage);
+        }
+    }
+
+    function scheduleDailyNotification() {
+        const now = new Date();
+        let scheduledTime = new Date();
+        scheduledTime.setHours(7, 0, 0, 0);
+        
+        if (now > scheduledTime) {
+            scheduledTime.setDate(scheduledTime.getDate() + 1);
+        }
+        
+        const timeUntilNotification = scheduledTime - now;
+        
+        setTimeout(() => {
+            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LATITUDE}&longitude=${LONGITUDE}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=Europe/Paris&forecast_days=1`)
+                .then(res => res.json())
+                .then(data => {
+                    if (!data || !data.daily) return;
+                    
+                    const temp = Math.round(
+                        (Number(data.daily.temperature_2m_min[0]) + 
+                         Number(data.daily.temperature_2m_max[0])) / 2
+                    );
+                    const rain = Number(data.daily.precipitation_sum[0]) || 0;
+                    
+                    let message = `Température: ${temp}°C`;
+                    if (rain > 0) {
+                        message += ` - Pluie prévue: ${rain}mm`;
+                    }
+                    
+                    sendNotification('☀️ Météo du jour à Bergerac', message);
+                    
+                    // Replanifier pour le lendemain
+                    setTimeout(() => {
+                        scheduleDailyNotification();
+                    }, 24 * 60 * 60 * 1000);
+                })
+                .catch(error => {
+                    console.error('Erreur notification quotidienne:', error);
+                });
+        }, timeUntilNotification);
+    }
+    
     // Gestion des filtres d'actualités
     document.addEventListener('DOMContentLoaded', function() {
         // Filtres actualités locales
@@ -2355,97 +2587,120 @@
     }
 
     // Fonction pour obtenir un conseil vestimentaire intelligent
-    function getDressAdvice(temp, code, wind, humidity) {
-        if ([95, 96, 99].includes(code)) {
-            return "⛈️ <strong>Orage</strong> : restez à l'abri, sortie déconseillée !";
+    // ===== CONSEILS VESTIMENTAIRES AMÉLIORÉS =====
+    function getAdvancedClothingAdvice(temp, code, wind, rain, humidity) {
+        let advice = [];
+        let alerts = [];
+        
+        // Validation des entrées
+        temp = Number(temp) || 20;
+        code = Number(code) || 0;
+        wind = Number(wind) || 0;
+        rain = Number(rain) || 0;
+        humidity = Number(humidity) || 50;
+        
+        // Conseils basés sur la température
+        if (temp < 0) {
+            advice.push({ icon: '🧥', text: 'Doudoune épaisse' });
+            advice.push({ icon: '🧣', text: 'Écharpe' });
+            advice.push({ icon: '🧤', text: 'Gants' });
+            advice.push({ icon: '🎿', text: 'Bonnet' });
+            alerts.push('Températures glaciales ! Protégez-vous du froid.');
+        } else if (temp < 5) {
+            advice.push({ icon: '🧥', text: 'Manteau chaud' });
+            advice.push({ icon: '🧣', text: 'Écharpe' });
+            advice.push({ icon: '🎿', text: 'Bonnet' });
+        } else if (temp < 10) {
+            advice.push({ icon: '🧥', text: 'Veste chaude' });
+            advice.push({ icon: '🧣', text: 'Écharpe légère' });
+        } else if (temp < 15) {
+            advice.push({ icon: '🧥', text: 'Veste ou gilet' });
+            advice.push({ icon: '👕', text: 'Pull' });
+        } else if (temp < 20) {
+            advice.push({ icon: '👕', text: 'Pull léger' });
+            advice.push({ icon: '🧥', text: 'Veste légère' });
+        } else if (temp < 25) {
+            advice.push({ icon: '👕', text: 'T-shirt' });
+            advice.push({ icon: '👖', text: 'Pantalon léger' });
+        } else if (temp < 30) {
+            advice.push({ icon: '👕', text: 'T-shirt léger' });
+            advice.push({ icon: '🩳', text: 'Short' });
+            advice.push({ icon: '🕶️', text: 'Lunettes' });
+        } else {
+            advice.push({ icon: '👕', text: 'Vêtements légers' });
+            advice.push({ icon: '🩳', text: 'Short' });
+            advice.push({ icon: '🕶️', text: 'Lunettes' });
+            advice.push({ icon: '🧴', text: 'Crème solaire' });
+            alerts.push('Forte chaleur ! Hydratez-vous régulièrement.');
         }
         
-        if ([71, 73, 75, 77, 85, 86].includes(code)) {
-            return "❄️ <strong>Neige</strong> : vêtements chauds imperméables, chaussures adaptées !";
-        }
-        
-        if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) {
-            if (temp <= 10) {
-                return "🌧️☔ <strong>Pluie et froid</strong> : veste imperméable chaude, parapluie indispensable !";
-            } else {
-                return "🌧️☂️ <strong>Pluie</strong> : imperméable ou parapluie nécessaire.";
-            }
-        }
-        
+        // Conseils basés sur le vent
         if (wind > 40) {
-            return "💨 <strong>Vent très fort</strong> : coupe-vent robuste, attention aux objets !";
-        } else if (wind > 30) {
-            if (temp <= 15) {
-                return "💨🧥 <strong>Vent fort et frais</strong> : coupe-vent chaud recommandé.";
-            } else {
-                return "💨 <strong>Vent fort</strong> : veste coupe-vent conseillée.";
-            }
+            advice.push({ icon: '🧥', text: 'Coupe-vent' });
+            alerts.push('Vents forts prévus ! Soyez prudent.');
+        } else if (wind > 25) {
+            advice.push({ icon: '🧥', text: 'Veste fermée' });
         }
         
-        const month = new Date().getMonth() + 1;
-        const isSummer = month >= 6 && month <= 8;
-        const isWinter = month === 12 || month <= 2;
-        
-        if (temp >= 32) {
-            return "🥵☀️ <strong>Canicule</strong> : vêtements très légers, chapeau, hydratation ++";
+        // Conseils basés sur la pluie
+        if (rain > 10) {
+            advice.push({ icon: '☂️', text: 'Parapluie' });
+            advice.push({ icon: '🌧️', text: 'Imperméable' });
+            advice.push({ icon: '🥾', text: 'Bottes' });
+            alerts.push('Fortes précipitations attendues !');
+        } else if (rain > 2) {
+            advice.push({ icon: '☂️', text: 'Parapluie' });
+            advice.push({ icon: '🥾', text: 'Chaussures imperméables' });
+        } else if (rain > 0) {
+            advice.push({ icon: '☂️', text: 'Parapluie (précaution)' });
         }
         
-        if (temp <= 0) {
-            return "🥶❄️ <strong>Gelée</strong> : doudoune, gants, bonnet, écharpe indispensables !";
+        // Conseils basés sur les codes météo
+        if (code >= 95) {
+            advice.push({ icon: '⚡', text: 'Restez à l\'intérieur' });
+            alerts.push('Risque d\'orage ! Évitez les sorties.');
+        } else if (code >= 71 && code <= 77) {
+            advice.push({ icon: '❄️', text: 'Habits chauds' });
+            advice.push({ icon: '🥾', text: 'Bottes' });
+            alerts.push('Chutes de neige prévues !');
         }
         
-        if (temp <= 5) {
-            return "🧥🧣 <strong>Très froid</strong> : manteau épais, bonnet, gants, écharpe !";
+        // Création du HTML
+        let html = '<div class="clothing-advice">';
+        html += '<h3>À porter demain</h3>';
+        
+        if (advice.length > 0) {
+            html += '<div class="advice-grid">';
+            advice.forEach(item => {
+                html += `
+                    <div class="advice-item">
+                        <span class="advice-item-icon">${item.icon}</span>
+                        <span>${item.text}</span>
+                    </div>
+                `;
+            });
+            html += '</div>';
         }
         
-        if (temp > 5 && temp <= 10) {
-            if (wind > 15) {
-                return "🧥 <strong>Froid venteux</strong> : veste chaude coupe-vent, écharpe.";
-            }
-            return "🧥 <strong>Froid</strong> : veste chaude, écharpe conseillée.";
+        if (alerts.length > 0) {
+            alerts.forEach(alert => {
+                html += `<div class="advice-alert">${alert}</div>`;
+            });
         }
         
-        if (temp > 10 && temp <= 15) {
-            if (isWinter) {
-                return "🧥 <strong>Frais</strong> : veste, pull ou gilet recommandé.";
-            }
-            return "👔 <strong>Frais</strong> : veste légère ou pull suffisant.";
-        }
+        html += '</div>';
         
-        if (temp > 15 && temp <= 20) {
-            if (wind > 20) {
-                return "👕🧥 <strong>Doux mais venteux</strong> : manches longues + veste légère.";
-            }
-            return "👕 <strong>Doux</strong> : manches longues, veste légère au besoin.";
-        }
-        
-        if (temp > 20 && temp <= 25) {
-            if (humidity > 70 && isSummer) {
-                return "👚💧 <strong>Agréable mais humide</strong> : t-shirt léger, hydratation.";
-            }
-            return "👚 <strong>Agréable</strong> : t-shirt, vêtements légers.";
-        }
-        
-        if (temp > 25 && temp <= 30) {
-            return "🩳☀️ <strong>Chaud</strong> : vêtements légers, lunettes, casquette, eau !";
-        }
-        
-        if (temp > 30) {
-            return "🩳🕶️ <strong>Très chaud</strong> : habits très légers, chapeau, crème solaire !";
-        }
-        
-        return "👌 Temps correct, habillez-vous selon votre confort.";
+        return html;
     }
 
     // Fonction pour afficher la météo
-    function displayWeather(data, elementId) {
+    // ===== AFFICHAGE MÉTÉO AVEC CONSEILS AMÉLIORÉS =====
+    function displayWeather(data, elementId, showAdvice = false, forecastData = null) {
         const element = document.getElementById(elementId);
         const temp = Math.round(data.temp);
         const icon = getWeatherIcon(data.code);
         
-        const advice = getDressAdvice(data.temp, data.code, data.wind, data.humidity);
-        
-        element.innerHTML = `
+        let html = `
             <div class="weather-info">
                 <div class="weather-icon">${icon}</div>
                 <div class="weather-details">
@@ -2457,10 +2712,22 @@
                 <span>💨 ${data.wind} km/h</span>
                 <span>💧 ${data.humidity}%</span>
             </div>
-            <div style="margin-top: 15px; padding: 12px; background: rgba(255, 255, 255, 0.15); border-radius: 10px; font-size: 0.95rem; line-height: 1.4;">
-                ${advice}
-            </div>
         `;
+        
+        // Ajouter les conseils vestimentaires pour demain
+        if (showAdvice && forecastData && forecastData.daily) {
+            const tomorrowTemp = Math.round(
+                (forecastData.daily.temperature_2m_min[1] + forecastData.daily.temperature_2m_max[1]) / 2
+            );
+            const tomorrowCode = forecastData.daily.weather_code[1];
+            const tomorrowWind = Math.round(forecastData.daily.wind_speed_10m_max[1] || 0);
+            const tomorrowRain = forecastData.daily.precipitation_sum[1] || 0;
+            const humidity = data.humidity;
+            
+            html += getAdvancedClothingAdvice(tomorrowTemp, tomorrowCode, tomorrowWind, tomorrowRain, humidity);
+        }
+        
+        element.innerHTML = html;
     }
 
     // Fonction pour récupérer la météo via Open-Meteo
@@ -2475,7 +2742,8 @@
             }
             const currentData = await currentResponse.json();
             
-            const forecastUrl = `https://api.open-meteo.com/v1/forecast?latitude=${LATITUDE}&longitude=${LONGITUDE}&daily=weather_code,temperature_2m_max,temperature_2m_min,wind_speed_10m_max&timezone=Europe/Paris&forecast_days=2`;
+            // MODIFICATION : Ajouter precipitation_sum pour les conseils
+            const forecastUrl = `https://api.open-meteo.com/v1/forecast?latitude=${LATITUDE}&longitude=${LONGITUDE}&daily=weather_code,temperature_2m_max,temperature_2m_min,wind_speed_10m_max,precipitation_sum&timezone=Europe/Paris&forecast_days=2`;
             
             const forecastResponse = await fetch(forecastUrl);
             if (!forecastResponse.ok) {
@@ -2503,8 +2771,12 @@
                 humidity: Math.round(currentData.current.relative_humidity_2m)
             };
             
-            displayWeather(todayWeather, 'weatherToday');
-            displayWeather(tomorrowWeather, 'weatherTomorrow');
+            // MODIFICATION : Passer false pour aujourd'hui, true + forecastData pour demain
+            displayWeather(todayWeather, 'weatherToday', false);
+            displayWeather(tomorrowWeather, 'weatherTomorrow', true, forecastData);
+            
+            // NOUVEAU : Vérifier les alertes météo
+            checkWeatherAlerts(currentData, forecastData);
             
             console.log('✅ Météo chargée avec succès');
             
@@ -3130,6 +3402,48 @@
                 });
         }
     });
+</script>
+
+<!-- ===== BOUTON NOTIFICATIONS ===== -->
+<button class="notification-btn" id="notificationBtn" title="Activer les notifications">
+    🔕
+</button>
+
+<script>
+    // ===== EVENT LISTENER BOUTON NOTIFICATIONS =====
+    const notifBtn = document.getElementById('notificationBtn');
+    
+    if (notifBtn) {
+        notifBtn.addEventListener('click', async () => {
+            if (!('Notification' in window)) {
+                alert('Votre navigateur ne supporte pas les notifications');
+                return;
+            }
+            
+            if (notificationPermission === 'default') {
+                notificationPermission = await Notification.requestPermission();
+            }
+            
+            if (notificationPermission === 'granted') {
+                notificationsEnabled = !notificationsEnabled;
+                localStorage.setItem('notificationsEnabled', notificationsEnabled);
+                updateNotificationButton();
+                
+                if (notificationsEnabled) {
+                    sendNotification(
+                        'Notifications activées ✅',
+                        'Vous recevrez des alertes météo importantes'
+                    );
+                    scheduleDailyNotification();
+                }
+            } else {
+                alert('Vous devez autoriser les notifications dans les paramètres de votre navigateur');
+            }
+        });
+    }
+    
+    // Initialiser les notifications au chargement de la page
+    initNotifications();
 </script>
 ```
 
