@@ -3,209 +3,307 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suivi Gaz (Hybride Expert)</title>
+    <title>Suivi Gaz - Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', system-ui, sans-serif; background-color: #111827; color: #f3f4f6; }
-        .card { background-color: #1f2937; border: 1px solid #374151; border-radius: 0.75rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        
+        /* --- DESIGN GLASSMORPHISM --- */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #111827 0%, #1e3a8a 50%, #4c1d95 100%);
+            min-height: 100vh;
+            color: #fff;
+            background-attachment: fixed;
+        }
+
+        /* Carte Translucide */
+        .card {
+            background: rgba(31, 41, 55, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Inputs */
+        input, select {
+            background: rgba(0, 0, 0, 0.3) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: white !important;
+            backdrop-filter: blur(5px);
+        }
+        input:focus, select:focus {
+            border-color: #60a5fa !important;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.3);
+        }
+
         /* Graphique */
-        .bar-container { display: flex; align-items: flex-end; justify-content: space-between; height: 220px; gap: 1px; padding-top: 20px; }
-        .bar-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; position: relative; min-width: 2px; }
-        .bar { width: 100%; border-radius: 2px 2px 0 0; transition: all 0.3s; min-height: 2px; }
-        .bar-wrapper:hover { background-color: rgba(255,255,255,0.05); }
-        .bar-wrapper:hover .bar { filter: brightness(1.3); z-index: 10; transform: scaleX(1.5); }
+        .bar-container { display: flex; align-items: flex-end; justify-content: space-between; height: 220px; gap: 2px; padding-top: 20px; }
+        .bar-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; position: relative; min-width: 3px; }
+        .bar { width: 100%; border-radius: 3px 3px 0 0; transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1); min-height: 2px; }
+        .bar-wrapper:hover .bar { filter: brightness(1.3); }
         
         .bar-wrapper:hover::after {
             content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
-            background: #111827; color: white; padding: 6px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 600;
-            white-space: pre; z-index: 50; border: 1px solid #4b5563; pointer-events: none; margin-bottom: 6px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            background: rgba(17, 24, 39, 0.95); color: white; padding: 6px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 600;
+            white-space: pre; z-index: 50; border: 1px solid rgba(255,255,255,0.1); pointer-events: none; margin-bottom: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5); backdrop-filter: blur(4px);
         }
-        .bar-label { font-size: 0.65rem; color: #9ca3af; margin-top: 4px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
+        .bar-label { font-size: 0.65rem; color: #94a3b8; margin-top: 6px; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* Couleurs Sources */
-        .real .bar { background-color: #10b981; }
-        .estimated .bar { background-color: #8b5cf6; }
-        .mixed .bar { background-color: #3b82f6; } /* Bleu pour mois mixte */
-        
+        /* Couleurs Graphique */
+        .real .bar { background: linear-gradient(to top, #059669, #34d399); } /* Vert (GRDF) */
+        .estimated .bar { background: linear-gradient(to top, #7c3aed, #a78bfa); } /* Violet (Estimé) */
+        .mixed .bar { background: linear-gradient(to top, #2563eb, #60a5fa); } /* Bleu (Mensuel) */
+
         /* Calendrier */
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
         .day-cell { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            border-radius: 4px; background-color: #374151; font-size: 0.75rem; position: relative; border: 1px solid transparent; }
-        .day-cell.has-data:hover { transform: scale(1.15); z-index: 20; border-color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.5); background-color: #4b5563; }
-        .marker-dot { position: absolute; top: 3px; right: 3px; width: 6px; height: 6px; border-radius: 50%; }
-        .bg-real { background-color: #10b981; box-shadow: 0 0 5px #10b981; }
-        .intensity-bar { width: 80%; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 2px; overflow: hidden; }
+            border-radius: 8px; background: rgba(255,255,255,0.05); font-size: 0.8rem; position: relative; border: 1px solid transparent; transition: all 0.2s; }
+        .day-cell.has-data:hover { transform: scale(1.1); z-index: 10; border-color: rgba(255,255,255,0.5); box-shadow: 0 8px 20px rgba(0,0,0,0.4); background: rgba(30, 41, 59, 0.9); }
+        
+        .intensity-bar { width: 70%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 4px; overflow: hidden; }
         .intensity-fill { height: 100%; border-radius: 2px; }
+        .marker-dot { position: absolute; top: 4px; right: 4px; width: 6px; height: 6px; border-radius: 50%; box-shadow: 0 0 5px currentColor;}
+        .bg-real { background-color: #10b981; color: #10b981; }
 
-        @media print { .print-hidden { display: none !important; } body { background: white; color: black; } .card { border: 1px solid #ccc; } }
-        .fab { position: fixed; bottom: 1.5rem; right: 1.5rem; width: 3.5rem; height: 3.5rem; border-radius: 9999px; background: #4f46e5; color: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.4); z-index: 50; transition: transform 0.2s; }
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+
+        @media print {
+            .print-hidden { display: none !important; }
+            body { background: white !important; color: black !important; }
+            .card { background: white !important; border: 1px solid #ccc !important; box-shadow: none !important; }
+            .bar { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        }
+
+        .fab { position: fixed; bottom: 2rem; right: 2rem; width: 3.5rem; height: 3.5rem; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4); z-index: 50; transition: transform 0.2s; }
         .fab:active { transform: scale(0.9); }
         @media (min-width: 1024px) { .fab { display: none; } }
         .hidden { display: none; }
     </style>
 </head>
-<body class="p-4 md:p-8 min-h-screen pb-24">
+<body class="p-4 md:p-8 pb-24">
 
-    <div class="max-w-7xl mx-auto space-y-6">
-        <!-- HEADER -->
-        <header class="flex flex-col md:flex-row justify-between items-center pb-4 border-b border-gray-700 print-hidden gap-4">
+    <div class="max-w-7xl mx-auto space-y-8">
+        
+        <!-- EN-TÊTE -->
+        <header class="flex flex-col md:flex-row justify-between items-center pb-6 border-b border-white/10 print-hidden gap-6">
             <div>
-                <h1 class="text-3xl font-bold text-white tracking-tight">Suivi Gaz <span class="text-indigo-400">Expert</span></h1>
-                <div class="flex items-center gap-4 mt-2 text-xs text-gray-400 font-medium">
-                    <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 mr-1.5 shadow-[0_0_8px_rgba(16,185,129,0.6)]"></span> Réel (GRDF)</span>
-                    <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-violet-500 mr-1.5"></span> Estimé (Index)</span>
+                <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-200">Suivi Gaz</h1>
+                <div class="flex items-center gap-4 mt-2 text-sm text-blue-200/80 font-medium">
+                    <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400 mr-2 shadow-[0_0_10px_#34d399]"></span> Réel (GRDF)</span>
+                    <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-violet-400 mr-2 shadow-[0_0_10px_#a78bfa]"></span> Estimé (Index)</span>
                 </div>
             </div>
-            <div class="flex flex-wrap gap-2">
-                <button onclick="document.getElementById('file-input').click()" class="flex items-center space-x-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-lg transition shadow-lg transform hover:scale-105 active:scale-95">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-                    <span>Importer (CSV GRDF)</span>
+            <div class="flex flex-wrap gap-3">
+                <button onclick="document.getElementById('file-input').click()" class="flex items-center space-x-2 px-5 py-2.5 btn-primary rounded-xl shadow-lg transform hover:scale-105 active:scale-95">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                    <span>Importer GRDF</span>
                 </button>
                 <input type="file" id="file-input" class="hidden" accept=".csv,.json,.txt" onchange="handleImport(this)" multiple>
-                <button onclick="exportData()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition">Sauvegarder</button>
-                <button onclick="window.print()" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition">Imprimer</button>
+                
+                <button onclick="exportData()" class="px-5 py-2.5 btn-secondary rounded-xl">Sauvegarder</button>
+                <button onclick="window.print()" class="px-5 py-2.5 btn-secondary rounded-xl">Imprimer</button>
             </div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <!-- GAUCHE -->
-            <div class="lg:col-span-4 space-y-6">
-                <!-- SAISIE -->
-                <section class="card p-5 print-hidden lg:block">
-                    <h2 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Saisie Index Manuel</h2>
-                    <form onsubmit="addManualIndex(event, 'desktop')" class="space-y-4">
-                        <div><label class="text-xs text-gray-500 mb-1 block">Date</label><input type="datetime-local" id="date-desktop" required class="w-full bg-gray-800 border border-gray-600 text-white text-sm rounded-lg p-2.5 focus:ring-indigo-500 focus:border-indigo-500"></div>
-                        <div><label class="text-xs text-gray-500 mb-1 block">Index Compteur (m³)</label><input type="number" id="index-desktop" step="0.001" required placeholder="Ex: 5488" class="w-full bg-gray-800 border border-gray-600 text-white text-sm rounded-lg p-2.5 focus:ring-indigo-500 focus:border-indigo-500"></div>
-                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-sm px-5 py-3 transition shadow-lg">Ajouter</button>
-                    </form>
-                </section>
-
-                <!-- SYNTHÈSE -->
-                <section class="card p-5">
-                    <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
-                        <h2 class="text-lg font-bold text-white">Synthèse</h2>
-                        <div class="flex bg-gray-800 rounded p-1 gap-1 flex-wrap">
-                            <button onclick="setSynth('global')" id="btn-sy-global" class="px-2 py-1 text-xs rounded bg-indigo-600 text-white">Global</button>
-                            <button onclick="setSynth('year')" id="btn-sy-year" class="px-2 py-1 text-xs rounded text-gray-400 hover:text-white">An</button>
-                            <button onclick="setSynth('month')" id="btn-sy-month" class="px-2 py-1 text-xs rounded text-gray-400 hover:text-white">Mois</button>
-                            <button onclick="setSynth('custom')" id="btn-sy-custom" class="px-2 py-1 text-xs rounded text-gray-400 hover:text-white">Perso</button>
+        <!-- GRILLE CONTENU -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- COLONNE GAUCHE -->
+            <div class="lg:col-span-4 space-y-8">
+                
+                <!-- SYNTHÈSE DYNAMIQUE -->
+                <section class="card p-6">
+                    <div class="flex flex-wrap justify-between items-center mb-6 gap-3">
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <span class="text-2xl">📊</span> Synthèse
+                        </h2>
+                        <div class="flex bg-black/20 rounded-lg p-1 gap-1">
+                            <button onclick="setSynth('global')" id="btn-sy-global" class="px-3 py-1.5 text-xs font-medium rounded-md text-white bg-indigo-500 shadow-sm">Global</button>
+                            <button onclick="setSynth('year')" id="btn-sy-year" class="px-3 py-1.5 text-xs font-medium rounded-md text-gray-400 hover:text-white hover:bg-white/5">An</button>
+                            <button onclick="setSynth('month')" id="btn-sy-month" class="px-3 py-1.5 text-xs font-medium rounded-md text-gray-400 hover:text-white hover:bg-white/5">Mois</button>
+                            <button onclick="setSynth('custom')" id="btn-sy-custom" class="px-3 py-1.5 text-xs font-medium rounded-md text-gray-400 hover:text-white hover:bg-white/5">Perso</button>
                         </div>
                     </div>
-                    <div id="synth-controls" class="mb-4 hidden space-y-2">
-                        <select id="synth-year-select" onchange="updateSynth()" class="w-full bg-gray-700 text-white text-xs rounded p-2 hidden"></select>
-                        <input type="month" id="synth-month-select" onchange="updateSynth()" class="w-full bg-gray-700 text-white text-xs rounded p-2 hidden">
+                    
+                    <!-- Filtres dynamiques -->
+                    <div id="synth-controls" class="mb-6 hidden space-y-3 bg-black/20 p-3 rounded-lg border border-white/5">
+                        <select id="synth-year-select" onchange="updateSynth()" class="w-full p-2 rounded-lg text-sm hidden"></select>
+                        <input type="month" id="synth-month-select" onchange="updateSynth()" class="w-full p-2 rounded-lg text-sm hidden">
                         <div id="synth-custom-range" class="hidden flex gap-2">
-                            <input type="date" id="synth-start" onchange="updateSynth()" class="w-1/2 bg-gray-700 text-white text-xs rounded p-2">
-                            <input type="date" id="synth-end" onchange="updateSynth()" class="w-1/2 bg-gray-700 text-white text-xs rounded p-2">
+                            <input type="date" id="synth-start" onchange="updateSynth()" class="w-1/2 p-2 rounded-lg text-sm">
+                            <input type="date" id="synth-end" onchange="updateSynth()" class="w-1/2 p-2 rounded-lg text-sm">
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="bg-gray-800/50 p-3 rounded-lg border border-gray-700">
-                            <div class="text-[0.65rem] text-gray-500 uppercase font-bold">Volume</div>
-                            <div class="text-xl font-bold text-blue-400 mt-1" id="disp-m3">0 m³</div>
-                            <div class="text-xs text-blue-300/70 mt-1" id="disp-kwh">0 kWh</div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-blue-500/10 p-4 rounded-xl border border-blue-500/20 relative overflow-hidden group">
+                            <div class="absolute -right-4 -top-4 w-16 h-16 bg-blue-500/20 rounded-full blur-2xl group-hover:bg-blue-500/30 transition"></div>
+                            <div class="text-xs text-blue-300 uppercase font-bold tracking-wider mb-1">Volume</div>
+                            <div class="text-2xl font-bold text-white" id="disp-m3">0 m³</div>
+                            <div class="text-sm text-blue-200/60 font-mono mt-1" id="disp-kwh">0 kWh</div>
                         </div>
-                        <div class="bg-gray-800/50 p-3 rounded-lg border border-gray-700">
-                            <div class="text-[0.65rem] text-gray-500 uppercase font-bold">Coût TTC</div>
-                            <div class="text-xl font-bold text-emerald-400 mt-1" id="disp-cost">0 €</div>
-                            <div class="text-xs text-gray-400 mt-1" id="disp-cost-ht">HT: 0 €</div>
+                        <div class="bg-emerald-500/10 p-4 rounded-xl border border-emerald-500/20 relative overflow-hidden group">
+                            <div class="absolute -right-4 -top-4 w-16 h-16 bg-emerald-500/20 rounded-full blur-2xl group-hover:bg-emerald-500/30 transition"></div>
+                            <div class="text-xs text-emerald-300 uppercase font-bold tracking-wider mb-1">Coût TTC</div>
+                            <div class="text-2xl font-bold text-white" id="disp-cost">0 €</div>
+                            <div class="text-sm text-emerald-200/60 font-mono mt-1" id="disp-cost-ht">HT: 0 €</div>
                         </div>
-                        <div class="col-span-2 text-[0.65rem] text-center text-gray-500 italic" id="synth-label">Période globale</div>
+                        <div class="col-span-2 text-xs text-center text-gray-500 italic mt-2 border-t border-white/5 pt-2" id="synth-label">Période globale</div>
                     </div>
+                </section>
+                
+                <!-- SAISIE MANUELLE -->
+                <section class="card p-6 print-hidden hidden lg:block relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl">📝</div>
+                    <h2 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-5">Ajouter un Index</h2>
+                    <form onsubmit="addManualIndex(event, 'desktop')" class="space-y-5">
+                        <div>
+                            <label class="text-xs text-gray-500 mb-1.5 block font-medium">Date du relevé</label>
+                            <input type="datetime-local" id="date-desktop" required class="w-full p-3 rounded-xl text-sm">
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-500 mb-1.5 block font-medium">Index Compteur (m³)</label>
+                            <input type="number" id="index-desktop" step="0.001" required placeholder="Ex: 5488" class="w-full p-3 rounded-xl text-sm font-mono">
+                        </div>
+                        <button type="submit" class="w-full btn-primary py-3 rounded-xl text-sm shadow-lg">Enregistrer l'index</button>
+                    </form>
                 </section>
 
                 <!-- PARAMÈTRES -->
                 <section class="card print-hidden">
-                    <button onclick="document.getElementById('params-box').classList.toggle('hidden')" class="w-full p-4 flex justify-between items-center hover:bg-gray-800 transition rounded-lg">
-                        <span class="text-sm font-semibold text-gray-300">Paramètres Facture</span>
-                        <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    <button onclick="document.getElementById('params-box').classList.toggle('hidden')" class="w-full p-5 flex justify-between items-center hover:bg-white/5 transition rounded-xl group">
+                        <span class="text-sm font-semibold text-gray-300 group-hover:text-white flex items-center gap-2">
+                            <span>⚙️</span> Paramètres Facture
+                        </span>
+                        <svg class="w-4 h-4 text-gray-500 group-hover:text-white transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
-                    <div id="params-box" class="hidden px-4 pb-4 pt-2 border-t border-gray-700 space-y-3">
-                        <div class="grid grid-cols-2 gap-3">
-                            <div><label class="text-[0.6rem] uppercase text-gray-500">Prix kWh HT</label><input id="p-kwh" type="number" step="0.0001" value="0.0777" onchange="recalc()" class="w-full bg-gray-900 text-white text-xs rounded p-2 border border-gray-700"></div>
-                            <div><label class="text-[0.6rem] uppercase text-gray-500">Abo/Mois HT</label><input id="p-abo" type="number" step="0.01" value="16.72" onchange="recalc()" class="w-full bg-gray-900 text-white text-xs rounded p-2 border border-gray-700"></div>
-                            <div><label class="text-[0.6rem] uppercase text-gray-500">TVA Conso %</label><input id="p-tva1" type="number" step="0.1" value="20" onchange="recalc()" class="w-full bg-gray-900 text-white text-xs rounded p-2 border border-gray-700"></div>
-                            <div><label class="text-[0.6rem] uppercase text-gray-500">TVA Abo %</label><input id="p-tva2" type="number" step="0.1" value="5.5" onchange="recalc()" class="w-full bg-gray-900 text-white text-xs rounded p-2 border border-gray-700"></div>
-                            <div class="col-span-2"><label class="text-[0.6rem] uppercase text-gray-500">Coef. Conv.</label><input id="p-coef" type="number" step="0.01" value="11.36" onchange="recalc()" class="w-full bg-gray-900 text-white text-xs rounded p-2 border border-gray-700"></div>
+                    <div id="params-box" class="hidden px-5 pb-6 pt-2 border-t border-white/10 space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="text-[0.65rem] uppercase text-gray-500 font-bold mb-1 block">Prix kWh HT</label><input id="p-kwh" type="number" step="0.0001" value="0.0777" onchange="recalc()" class="w-full p-2 rounded-lg text-xs bg-black/20 border border-white/10 font-mono text-indigo-300"></div>
+                            <div><label class="text-[0.65rem] uppercase text-gray-500 font-bold mb-1 block">Abo/Mois HT</label><input id="p-abo" type="number" step="0.01" value="16.72" onchange="recalc()" class="w-full p-2 rounded-lg text-xs bg-black/20 border border-white/10 font-mono text-indigo-300"></div>
+                            <div><label class="text-[0.65rem] uppercase text-gray-500 font-bold mb-1 block">TVA Conso %</label><input id="p-tva1" type="number" step="0.1" value="20" onchange="recalc()" class="w-full p-2 rounded-lg text-xs bg-black/20 border border-white/10 font-mono text-indigo-300"></div>
+                            <div><label class="text-[0.65rem] uppercase text-gray-500 font-bold mb-1 block">TVA Abo %</label><input id="p-tva2" type="number" step="0.1" value="5.5" onchange="recalc()" class="w-full p-2 rounded-lg text-xs bg-black/20 border border-white/10 font-mono text-indigo-300"></div>
+                            <div class="col-span-2"><label class="text-[0.65rem] uppercase text-gray-500 font-bold mb-1 block">Coef. Conv. (kWh/m³)</label><input id="p-coef" type="number" step="0.01" value="11.36" onchange="recalc()" class="w-full p-2 rounded-lg text-xs bg-black/20 border border-white/10 font-mono text-indigo-300"></div>
                         </div>
                     </div>
                 </section>
             </div>
 
-            <!-- DROITE -->
-            <div class="lg:col-span-8 space-y-6">
+            <!-- COLONNE DROITE -->
+            <div class="lg:col-span-8 space-y-8">
+                
                 <!-- GRAPHIQUE -->
-                <section class="card p-5">
-                    <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
-                        <h2 class="text-lg font-bold text-white flex items-center gap-2"><span id="chart-title">Évolution</span></h2>
-                        <div class="flex gap-2">
-                            <div class="flex bg-gray-800 rounded p-1 text-xs">
-                                <button onclick="setChart('day')" id="btn-chart-day" class="px-3 py-1 rounded bg-indigo-600 text-white transition">Jour</button>
-                                <button onclick="setChart('month')" id="btn-chart-month" class="px-3 py-1 rounded text-gray-400 hover:text-white transition">Mois</button>
+                <section class="card p-6">
+                    <div class="flex flex-wrap gap-4 justify-between items-center mb-8">
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <span class="text-2xl">📈</span> <span id="chart-title">Évolution</span>
+                        </h2>
+                        <div class="flex gap-3">
+                            <div class="flex bg-black/20 rounded-lg p-1 text-xs">
+                                <button onclick="setChart('day')" id="btn-chart-day" class="px-3 py-1.5 rounded-md bg-indigo-600 text-white shadow-sm transition">Jour</button>
+                                <button onclick="setChart('month')" id="btn-chart-month" class="px-3 py-1.5 rounded-md text-gray-400 hover:text-white hover:bg-white/5 transition">Mois</button>
                             </div>
-                            <div class="flex bg-gray-800 rounded p-1 text-xs">
-                                <button onclick="setView('cost')" id="btn-view-cost" class="px-3 py-1 rounded bg-emerald-600 text-white transition">€</button>
-                                <button onclick="setView('kwh')" id="btn-view-kwh" class="px-3 py-1 rounded text-gray-400 hover:text-white transition">kWh</button>
+                            <div class="flex bg-black/20 rounded-lg p-1 text-xs">
+                                <button onclick="setView('cost')" id="btn-view-cost" class="px-3 py-1.5 rounded-md bg-emerald-600 text-white shadow-sm transition">€</button>
+                                <button onclick="setView('kwh')" id="btn-view-kwh" class="px-3 py-1.5 rounded-md text-gray-400 hover:text-white hover:bg-white/5 transition">kWh</button>
                             </div>
                         </div>
                     </div>
-                    <div id="chart-container" class="bar-container border-b border-gray-600"></div>
-                    <div id="chart-empty" class="hidden h-full flex items-center justify-center text-gray-500 text-sm italic py-10">Aucune donnée</div>
+                    <div id="chart-container" class="bar-container border-b border-white/10"></div>
+                    <div id="chart-empty" class="hidden h-48 flex items-center justify-center text-gray-500 text-sm italic">Aucune donnée pour cette période</div>
                 </section>
 
                 <!-- CALENDRIER -->
-                <section class="card p-5">
-                    <div class="flex justify-between items-center mb-4">
-                        <button onclick="moveCal(-1)" class="p-1.5 hover:bg-gray-700 rounded-lg transition"><svg class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
-                        <h2 class="text-lg font-bold text-white capitalize w-40 text-center" id="cal-title">--</h2>
-                        <button onclick="moveCal(1)" class="p-1.5 hover:bg-gray-700 rounded-lg transition"><svg class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
+                <section class="card p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <button onclick="moveCal(-1)" class="p-2 hover:bg-white/10 rounded-lg transition text-gray-400 hover:text-white"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
+                        <h2 class="text-xl font-bold text-white capitalize w-48 text-center tracking-wide" id="cal-title">--</h2>
+                        <button onclick="moveCal(1)" class="p-2 hover:bg-white/10 rounded-lg transition text-gray-400 hover:text-white"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
                     </div>
-                    <div class="calendar-grid mb-2 text-center text-[0.65rem] text-gray-500 font-bold uppercase tracking-widest"><div>Lun</div><div>Mar</div><div>Mer</div><div>Jeu</div><div>Ven</div><div>Sam</div><div>Dim</div></div>
-                    <div id="cal-grid" class="calendar-grid gap-1"></div>
+                    <div class="calendar-grid mb-3 text-center text-[0.65rem] text-gray-500 font-bold uppercase tracking-widest">
+                        <div>Lun</div><div>Mar</div><div>Mer</div><div>Jeu</div><div>Ven</div><div>Sam</div><div>Dim</div>
+                    </div>
+                    <div id="cal-grid" class="calendar-grid gap-2"></div>
                 </section>
 
-                <!-- HISTORIQUE -->
+                <!-- HISTORIQUE DES INDEX -->
                 <section class="card overflow-hidden">
-                    <button onclick="document.getElementById('hist-content').classList.toggle('hidden')" class="w-full p-4 flex justify-between items-center hover:bg-gray-800 transition">
-                        <h2 class="text-lg font-semibold text-white">Historique des Index</h2>
-                        <svg class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    <button onclick="document.getElementById('hist-content').classList.toggle('hidden')" class="w-full p-5 flex justify-between items-center hover:bg-white/5 transition group">
+                        <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                            <span class="text-xl">📋</span> Historique des Index
+                        </h2>
+                        <svg class="w-5 h-5 text-gray-500 group-hover:text-white transition" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
-                    <div id="hist-content" class="hidden max-h-80 overflow-y-auto">
+                    <div id="hist-content" class="hidden max-h-80 overflow-y-auto custom-scrollbar">
                         <table class="w-full text-left text-xs text-gray-400">
-                            <thead class="bg-gray-700 text-gray-200 sticky top-0"><tr><th class="px-4 py-2">Date</th><th class="px-4 py-2 text-right">Index</th><th class="px-4 py-2 text-right">Conso (Est.)</th><th class="px-4 py-2 text-right">Coût (Est.)</th><th class="px-4 py-2 text-center">Act</th></tr></thead>
-                            <tbody id="hist-body" class="divide-y divide-gray-700"></tbody>
+                            <thead class="bg-black/20 text-gray-200 sticky top-0 backdrop-blur-sm">
+                                <tr>
+                                    <th class="px-5 py-3 font-semibold">Date</th>
+                                    <th class="px-5 py-3 text-right font-semibold">Index</th>
+                                    <th class="px-5 py-3 text-right font-semibold">Coût Période (Est.)</th>
+                                    <th class="px-5 py-3 text-center font-semibold">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="hist-body" class="divide-y divide-gray-700/50"></tbody>
                         </table>
                     </div>
                 </section>
                 
-                <div class="flex justify-end pt-4 print-hidden"><button onclick="resetAll()" class="text-xs text-red-400 hover:text-red-300 underline">Réinitialiser toutes les données</button></div>
+                <!-- Reset -->
+                <div class="flex justify-end pt-2 print-hidden">
+                    <button onclick="resetAll()" class="text-xs text-red-400/70 hover:text-red-400 hover:underline transition flex items-center gap-1">
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        Réinitialiser les données
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- MOBILE MODAL -->
-    <div id="mob-modal" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4" onclick="if(event.target===this)this.classList.add('hidden')">
-        <div class="bg-gray-800 w-full max-w-sm p-6 rounded-xl shadow-2xl border border-gray-700">
+    <div id="mob-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4" onclick="if(event.target===this)this.classList.add('hidden')">
+        <div class="card w-full max-w-sm p-6 shadow-2xl transform transition-all scale-100">
             <h2 class="text-xl font-bold text-white mb-6">Ajouter Index</h2>
             <form onsubmit="addManualIndex(event, 'mobile')" class="space-y-5">
-                <input type="datetime-local" id="date-mobile" required class="w-full bg-gray-900 text-white p-3 rounded-lg border border-gray-600">
-                <input type="number" id="index-mobile" step="0.001" required placeholder="Index m³" class="w-full bg-gray-900 text-white p-3 rounded-lg border border-gray-600">
-                <button class="w-full bg-indigo-600 text-white font-bold p-3 rounded-lg shadow-lg">Sauvegarder</button>
+                <input type="datetime-local" id="date-mobile" required class="w-full p-3 rounded-lg text-sm">
+                <input type="number" id="index-mobile" step="0.001" required placeholder="Index m³" class="w-full p-3 rounded-lg text-sm">
+                <button class="w-full btn-primary py-3 rounded-lg shadow-lg">Sauvegarder</button>
             </form>
         </div>
     </div>
     <button onclick="openMob()" class="fab print-hidden flex lg:hidden"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg></button>
 
     <script>
-        const APP = { db: { indexes: [], realDays: {}, computedDays: {}, monthly: {} }, ui: { view: 'cost', chartMode: 'day', synthMode: 'global', synthFilter: {}, calDate: new Date() }, limits: { maxD: 1, maxM: 1 } };
+        // --- APP STATE ---
+        const APP = {
+            db: { indexes: [], realDays: {}, computedDays: {}, monthly: {} },
+            ui: { view: 'cost', chartMode: 'day', synthMode: 'global', synthFilter: {}, calDate: new Date() },
+            limits: { maxD: 1, maxM: 1 }
+        };
 
-        document.addEventListener('DOMContentLoaded', () => { initInputs(); loadDB(); recalc(); });
+        // --- INIT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initInputs();
+            loadDB();
+            recalc();
+        });
 
         function initInputs() {
-            const now = new Date(); now.setMinutes(now.getMinutes()-now.getTimezoneOffset()); const iso = now.toISOString().slice(0,16);
+            const now = new Date(); now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            const iso = now.toISOString().slice(0,16);
             if(document.getElementById('date-desktop')) document.getElementById('date-desktop').value = iso;
             if(document.getElementById('date-mobile')) document.getElementById('date-mobile').value = iso;
             
@@ -213,10 +311,18 @@
             APP.ui.synthFilter = { year: y, month: m, start: `${y}-01-01`, end: new Date().toISOString().slice(0,10) };
         }
 
-        function loadDB() { try { const s = localStorage.getItem('gaz_db_final'); if(s) { const d = JSON.parse(s); APP.db.indexes = d.indexes||[]; APP.db.realDays = d.realDays||{}; } } catch(e) { console.error(e); } }
-        function saveDB() { localStorage.setItem('gaz_db_final', JSON.stringify({ indexes: APP.db.indexes, realDays: APP.db.realDays })); }
+        // --- PERSISTENCE ---
+        function loadDB() {
+            try {
+                const s = localStorage.getItem('gaz_db_final_v3');
+                if(s) { const d = JSON.parse(s); APP.db.indexes = d.indexes||[]; APP.db.realDays = d.realDays||{}; }
+            } catch(e) { console.error(e); }
+        }
+        function saveDB() {
+            localStorage.setItem('gaz_db_final_v3', JSON.stringify({ indexes: APP.db.indexes, realDays: APP.db.realDays }));
+        }
 
-        // --- IMPORT ---
+        // --- IMPORT ENGINE ---
         function handleImport(input) {
             const f = input.files[0]; if(!f) return;
             const r = new FileReader();
@@ -227,31 +333,48 @@
                         const j = JSON.parse(txt); if(j.indexes) APP.db.indexes=j.indexes; if(j.realDays) APP.db.realDays=j.realDays; alert("Restauré !");
                     } else {
                         const lines = txt.split(/\r?\n/);
-                        const head = lines.slice(0,10).join(' ').toLowerCase();
-                        const isDaily = head.includes('consommation') && head.includes('date');
-                        const isIndex = head.includes('index') && (head.includes('relevé')||head.includes('distributeur'));
-                        lines.forEach(l => {
-                            const clean = l.replace(/"/g,'').trim(); if(!clean || !/\d/.test(clean)) return;
-                            let p = clean.split(';'); if(p.length<2) p=clean.split(','); if(p.length<2) return;
-                            
-                            let dKey = null; 
-                            if(p[0].match(/^\d{2}\/\d{2}\/\d{4}$/)) { const[d,m,y]=p[0].split('/'); dKey=`${y}-${m}-${d}`; }
-                            else if(p[0].match(/^\d{4}-\d{2}-\d{2}/)) { dKey=p[0].split(' ')[0]; }
-                            if(!dKey) return;
+                        // Scan headers
+                        let headIdx=0, type='unknown';
+                        for(let i=0; i<Math.min(20, lines.length); i++) {
+                            const l = lines[i].toLowerCase();
+                            if(l.includes('date') && l.includes('consommation')) { headIdx=i; type='daily'; break; }
+                            if(l.includes('date') && l.includes('index')) { headIdx=i; type='index'; break; }
+                        }
+                        
+                        if(type==='unknown') throw new Error("Format inconnu");
 
-                            if(isDaily) {
+                        for(let i=headIdx+1; i<lines.length; i++) {
+                            const cl = lines[i].replace(/"/g,'').trim(); if(!cl || !/\d/.test(cl)) continue;
+                            let p = cl.split(';'); if(p.length<2) p=cl.split(','); if(p.length<2) continue;
+
+                            // Date Parse
+                            let dk = null;
+                            const dRaw = p[0].trim();
+                            if(dRaw.match(/^\d{2}\/\d{2}\/\d{4}$/)) { const[d,m,y]=dRaw.split('/'); dk=`${y}-${m}-${d}`; }
+                            else if(dRaw.match(/^\d{4}-\d{2}-\d{2}/)) { dk=dRaw.split(' ')[0]; }
+                            if(!dk) continue;
+
+                            if(type==='daily') {
+                                // Daily: Date; Conso(m3); [Coeff]
                                 let v = p[1]; if(isNaN(parseFloat(v.replace(',','.'))) && p[2]) v=p[2];
                                 const m3 = parseFloat(v.replace(',','.'));
-                                let cf = 11.2; if(p[2] && !isNaN(parseFloat(p[2].replace(',','.')))) cf=parseFloat(p[2].replace(',','.'));
-                                if(!isNaN(m3)) { APP.db.realDays[dKey] = { m3, kwh: m3*cf }; cR++; }
-                            } else if(isIndex) {
+                                let cf = 11.2;
+                                if(p[2] && !isNaN(parseFloat(p[2].replace(',','.')))) cf=parseFloat(p[2].replace(',','.'));
+                                else if(p[3] && !isNaN(parseFloat(p[3].replace(',','.')))) cf=parseFloat(p[3].replace(',','.'));
+                                
+                                if(!isNaN(m3)) { APP.db.realDays[dk] = { m3, kwh: m3*cf }; cR++; }
+                            } else {
+                                // Index: Date; Type; Index
                                 let v = p[1]; if(isNaN(parseFloat(v.replace(',','.'))) && p[2]) v=p[2];
                                 const idx = parseFloat(v.replace(',','.'));
                                 if(!isNaN(idx) && idx>10) {
-                                    if(!APP.db.indexes.some(x=>x.date.startsWith(dKey))) { APP.db.indexes.push({ id: Date.now()+Math.random(), date: dKey+"T12:00", index: idx }); cI++; }
+                                    if(!APP.db.indexes.some(x=>x.date.startsWith(dk))) {
+                                        APP.db.indexes.push({id:Date.now()+Math.random(), date:dk+"T12:00", index: idx});
+                                        cI++;
+                                    }
                                 }
                             }
-                        });
+                        }
                         alert(`Importé: ${cR} jours réels, ${cI} index.`);
                     }
                     saveDB(); recalc();
@@ -264,49 +387,58 @@
         function exportData() {
             const b = new Blob([JSON.stringify({indexes: APP.db.indexes, realDays: APP.db.realDays})], {type:'application/json'});
             const u = URL.createObjectURL(b);
-            const a = document.createElement('a'); a.href=u; a.download=`backup_gaz_${new Date().toISOString().slice(0,10)}.json`;
+            const a = document.createElement('a'); a.href=u; a.download=`gaz_backup_${new Date().toISOString().slice(0,10)}.json`;
             document.body.appendChild(a); a.click(); document.body.removeChild(a);
         }
 
-        // --- CALCUL ---
+        // --- CALCULATION ENGINE ---
         function recalc() {
-            const getP = (id,d) => { const e=document.getElementById(id); return e?(parseFloat(e.value)||d):d; };
-            const P = { kwh: getP('p-kwh', 0.0777), abo: getP('p-abo', 16.72), coef: getP('p-coef', 11.36), tva1: getP('p-tva1', 20)/100, tva2: getP('p-tva2', 5.5)/100 };
-            
+            const P = getParams();
             APP.db.computedDays = {}; APP.db.monthly = {}; APP.limits.maxD = 0; APP.limits.maxM = 0;
 
-            // 1. Real
+            // 1. Real Data
             for(const [k,v] of Object.entries(APP.db.realDays)) {
-                const cost = (v.kwh * P.kwh * (1+P.tva1)) + ((P.abo*12/365)*(1+P.tva2));
-                APP.db.computedDays[k] = { ...v, cost, type: 'real' };
+                const costHT = v.kwh * P.kwh;
+                const costTTC = (costHT*(1+P.tva1)) + ((P.abo*12/365)*(1+P.tva2));
+                APP.db.computedDays[k] = { ...v, cost: costTTC, type: 'real' };
             }
 
             // 2. Index Gap Filling
             APP.db.indexes.sort((a,b) => new Date(a.date) - new Date(b.date));
+            
             for(let i=1; i<APP.db.indexes.length; i++) {
                 const p = APP.db.indexes[i-1], c = APP.db.indexes[i];
                 const d1 = new Date(p.date), d2 = new Date(c.date);
                 const days = Math.ceil((d2-d1)/(86400000));
                 if(days<=0) continue;
 
+                // Calculate Period Cost for History Table
                 const deltaM3 = c.index - p.index;
-                if(deltaM3 < 0) continue;
-                const deltaKwh = deltaM3 * P.coef;
+                if(deltaM3 >= 0) {
+                    const kwhPer = deltaM3 * P.coef;
+                    const costPer = (kwhPer * P.kwh * (1+P.tva1)) + (P.abo * (days/30.5) * (1+P.tva2));
+                    c.costPeriod = costPer; // Store for history table
+                } else continue;
 
-                let realKwhSum = 0, missing = [];
+                const totKwh = deltaM3 * P.coef;
+                let realKwh = 0, missing = [];
+
                 for(let j=0; j<days; j++) {
                     const d = new Date(d1); d.setDate(d.getDate()+j);
                     const k = d.toISOString().slice(0,10);
-                    if(APP.db.computedDays[k] && APP.db.computedDays[k].type==='real') realKwhSum += APP.db.computedDays[k].kwh;
+                    if(APP.db.computedDays[k] && APP.db.computedDays[k].type==='real') realKwh += APP.db.computedDays[k].kwh;
                     else missing.push(k);
                 }
 
                 if(missing.length > 0) {
-                    const remKwh = Math.max(0, deltaKwh - realKwhSum);
-                    const dailyKwh = remKwh / missing.length;
-                    const dailyM3 = (deltaM3 - (realKwhSum/P.coef)) / missing.length;
-                    const dailyCost = (dailyKwh * P.kwh * (1+P.tva1)) + ((P.abo*12/365)*(1+P.tva2));
-                    missing.forEach(k => { if(!APP.db.computedDays[k]) APP.db.computedDays[k] = { kwh: dailyKwh, m3: Math.max(0,dailyM3), cost: dailyCost, type: 'estimated' }; });
+                    const remKwh = Math.max(0, totKwh - realKwh);
+                    const estDay = remKwh / missing.length;
+                    const estM3 = (deltaM3 - (realKwh/P.coef)) / missing.length;
+                    const costDay = (estDay * P.kwh * (1+P.tva1)) + ((P.abo*12/365)*(1+P.tva2));
+
+                    missing.forEach(k => {
+                        if(!APP.db.computedDays[k]) APP.db.computedDays[k] = { kwh: estDay, m3: Math.max(0,estM3), cost: costDay, type: 'estimated' };
+                    });
                 }
             }
 
@@ -328,7 +460,8 @@
 
         function renderAll() { renderSynth(); renderChart(); renderCal(); renderHist(); }
 
-        // --- UI ---
+        // --- RENDERERS ---
+        
         function renderSynth() {
             const mode = APP.ui.synthMode;
             const f = document.getElementById('synth-controls');
@@ -337,17 +470,15 @@
             const cs = document.getElementById('synth-custom-range');
             const lLabel = document.getElementById('synth-label');
 
-            // Update Buttons
             ['global','year','month','custom'].forEach(m => {
                 const b = document.getElementById('btn-sy-'+m);
-                b.className = (m===mode) ? "px-2 py-1 text-xs rounded text-white bg-indigo-600" : "px-2 py-1 text-xs rounded text-gray-400 hover:text-white";
+                b.className = (m===mode) ? "px-2 py-1 text-xs rounded bg-indigo-600 text-white shadow-sm transition" : "px-2 py-1 text-xs rounded text-gray-400 hover:text-white hover:bg-white/5 transition";
             });
 
-            // Show/Hide Controls
             f.classList.add('hidden'); ys.classList.add('hidden'); ms.classList.add('hidden'); cs.classList.add('hidden');
             if(mode !== 'global') f.classList.remove('hidden');
 
-            let start=null, end=null, label="Global";
+            let start=null, end=null, label="Données Globales";
             const allKeys = Object.keys(APP.db.computedDays).sort();
 
             if(mode==='year') {
@@ -370,10 +501,9 @@
                 document.getElementById('synth-start').value = APP.ui.synthFilter.start;
                 document.getElementById('synth-end').value = APP.ui.synthFilter.end;
                 start=new Date(APP.ui.synthFilter.start); end=new Date(APP.ui.synthFilter.end);
-                label=`Du ${start.toLocaleDateString()} au ${end.toLocaleDateString()}`;
+                label=`Période personnalisée`;
             }
 
-            // Calc Sums
             let tk=0, tc=0, tm=0;
             allKeys.forEach(k => {
                 const d = new Date(k);
@@ -383,14 +513,10 @@
                 tk+=v.kwh; tc+=v.cost; tm+=v.m3;
             });
 
-            // HT approx
-            const P = { kwh: 0.0777, abo: 16.72 }; // Just for display ratio
-            const tHT = (tk*P.kwh) + (P.abo * (tk>0?1:0)); // Rough calc
-
             document.getElementById('disp-m3').innerText = tm.toLocaleString('fr-FR',{maximumFractionDigits:1})+' m³';
             document.getElementById('disp-kwh').innerText = Math.round(tk).toLocaleString()+' kWh';
             document.getElementById('disp-cost').innerText = tc.toLocaleString('fr-FR',{style:'currency',currency:'EUR'});
-            document.getElementById('disp-cost-ht').innerText = 'HT (Approx): ' + (tc/1.2).toLocaleString('fr-FR',{style:'currency',currency:'EUR'});
+            document.getElementById('disp-cost-ht').innerText = 'HT: ' + (tc/1.2).toLocaleString('fr-FR',{style:'currency',currency:'EUR'});
             lLabel.innerText = label;
         }
 
@@ -408,11 +534,10 @@
             const c = document.getElementById('chart-container'); c.innerHTML='';
             const isDay = APP.ui.chartMode === 'day';
             
-            // Buttons update
-            document.getElementById('btn-chart-day').className = isDay ? "px-3 py-1 rounded bg-indigo-600 text-white" : "px-3 py-1 rounded bg-gray-700 text-gray-300 hover:text-white";
-            document.getElementById('btn-chart-month').className = !isDay ? "px-3 py-1 rounded bg-indigo-600 text-white" : "px-3 py-1 rounded bg-gray-700 text-gray-300 hover:text-white";
-            document.getElementById('btn-view-cost').className = APP.ui.view==='cost' ? "px-3 py-1 rounded bg-emerald-600 text-white" : "px-3 py-1 rounded bg-gray-700 text-gray-300 hover:text-white";
-            document.getElementById('btn-view-kwh').className = APP.ui.view==='kwh' ? "px-3 py-1 rounded bg-indigo-600 text-white" : "px-3 py-1 rounded bg-gray-700 text-gray-300 hover:text-white";
+            document.getElementById('btn-chart-day').className = isDay ? "px-3 py-1.5 rounded-md bg-indigo-600 text-white shadow-sm transition" : "px-3 py-1.5 rounded-md text-gray-400 hover:text-white hover:bg-white/5 transition";
+            document.getElementById('btn-chart-month').className = !isDay ? "px-3 py-1.5 rounded-md bg-indigo-600 text-white shadow-sm transition" : "px-3 py-1.5 rounded-md text-gray-400 hover:text-white hover:bg-white/5 transition";
+            document.getElementById('btn-view-cost').className = APP.ui.view==='cost' ? "px-3 py-1.5 rounded-md bg-emerald-600 text-white shadow-sm transition" : "px-3 py-1.5 rounded-md text-gray-400 hover:text-white hover:bg-white/5 transition";
+            document.getElementById('btn-view-kwh').className = APP.ui.view==='kwh' ? "px-3 py-1.5 rounded-md text-gray-400 hover:text-white hover:bg-white/5 transition" : "px-3 py-1.5 rounded-md text-gray-400 hover:text-white hover:bg-white/5 transition";
 
             let data={}, max=0, keys=[];
             
@@ -437,18 +562,18 @@
                     data[k] = { label: `${mm}/${yy.slice(2)}`, val: APP.ui.view==='kwh'?v.kwh:v.cost, type: 'mixed' };
                 });
             }
-            
+
             if(keys.length===0 || max===0) { document.getElementById('chart-empty').classList.remove('hidden'); return; }
             document.getElementById('chart-empty').classList.add('hidden');
 
             keys.forEach(k => {
                 const item = data[k];
                 const pct = (item.val/max)*100;
-                const div = document.createElement('div');
-                div.className = `bar-wrapper ${item.type||'estimated'} ${keys.length>20?'dense':''}`;
-                div.setAttribute('data-tooltip', `${item.label}: ${item.val.toFixed(1)}`);
-                div.innerHTML = `<div class="bar" style="height:${Math.max(2, pct)}%"></div><div class="bar-label">${item.label}</div>`;
-                c.appendChild(div);
+                const el = document.createElement('div');
+                el.className = `bar-wrapper ${item.type||'estimated'} ${keys.length>20?'dense':''}`;
+                el.setAttribute('data-tooltip', `${item.label}: ${item.val.toFixed(1)}`);
+                el.innerHTML = `<div class="bar" style="height:${Math.max(2, pct)}%"></div><div class="bar-label">${item.label}</div>`;
+                c.appendChild(el);
             });
         }
 
@@ -489,45 +614,32 @@
             const b = document.getElementById('hist-body'); b.innerHTML='';
             [...APP.db.indexes].reverse().forEach(r => {
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-gray-800 border-b border-gray-700";
-                // Calcul différence pour info
-                let diffInfo = '-';
-                const idx = APP.db.indexes.indexOf(r);
-                if(idx > 0) {
-                    const prev = APP.db.indexes[idx-1];
-                    const d = r.index - prev.index;
-                    // Estimer coût TTC de la période
-                    const P = getParams();
-                    const cost = (d * P.coef * P.kwh * (1+P.tva1)).toFixed(0);
-                    diffInfo = `<span class="text-emerald-400 font-bold">${d.toFixed(0)} m³</span> <span class="text-xs text-gray-500">~${cost}€</span>`;
-                }
-                
-                tr.innerHTML = `<td class="px-4 py-2 text-gray-300">${new Date(r.date).toLocaleDateString()}</td>
-                    <td class="px-4 py-2 text-right text-white font-mono">${r.index}</td>
-                    <td class="px-4 py-2 text-right text-xs">${diffInfo}</td>
-                    <td class="px-4 py-2 text-center"><button onclick="delIndex(${r.id})" class="text-red-400 hover:text-white">×</button></td>`;
+                tr.className = "hover:bg-gray-700/50 transition";
+                const d = new Date(r.date).toLocaleDateString('fr-FR');
+                const cost = r.costPeriod ? `<span class="text-emerald-400 font-bold">${r.costPeriod.toFixed(2)} €</span>` : '-';
+                tr.innerHTML = `<td class="px-5 py-3 text-gray-300">${d}</td><td class="px-5 py-3 text-right font-mono text-white">${r.index}</td><td class="px-5 py-3 text-right">${cost}</td><td class="px-5 py-3 text-center"><button onclick="delIndex(${r.id})" class="text-red-400 hover:text-red-300">×</button></td>`;
                 b.appendChild(tr);
             });
         }
 
+        // Actions
         function addManualIndex(e, m) {
             e.preventDefault(); const s = m==='mobile'?'-mobile':'-desktop';
             const d = document.getElementById('date'+s).value;
             const v = parseFloat(document.getElementById('index'+s).value);
             if(!d || isNaN(v)) return;
-            if(APP.db.indexes.some(x=>x.date===d)) { alert('Date existe'); return; }
+            if(APP.db.indexes.some(x=>x.date===d)) return alert("Date existe");
             APP.db.indexes.push({ id: Date.now(), date: d, index: v });
             saveDB(); recalc();
-            document.getElementById('index'+s).value = '';
+            document.getElementById('index'+s).value='';
             if(m==='mobile') document.getElementById('mob-modal').classList.add('hidden');
         }
-
         function delIndex(id) { if(confirm("Supprimer ?")) { APP.db.indexes = APP.db.indexes.filter(x=>x.id!==id); saveDB(); recalc(); } }
-        function resetAll() { if(confirm("TOUT SUPPRIMER ?")) { localStorage.removeItem('gaz_db_v5'); APP.db.indexes=[]; APP.db.realDays={}; recalc(); } }
-        function openMob() { initInputs(); document.getElementById('mob-modal').classList.remove('hidden'); }
+        function resetAll() { if(confirm("TOUT SUPPRIMER ?")) { localStorage.removeItem('gaz_db_final_v3'); APP.db.indexes=[]; APP.db.realDays={}; recalc(); } }
         function moveCal(d) { APP.ui.calDate.setMonth(APP.ui.calDate.getMonth()+d); renderCal(); if(APP.ui.chartMode==='day') renderChart(); }
         function setView(v) { APP.ui.view=v; renderChart(); renderCal(); }
         function setChart(m) { APP.ui.chartMode=m; renderChart(); }
+        function openMob() { initInputs(); document.getElementById('mob-modal').classList.remove('hidden'); }
         function getParams() { return { kwh: parseFloat(document.getElementById('p-kwh').value)||0.0777, abo: parseFloat(document.getElementById('p-abo').value)||16.72, coef: parseFloat(document.getElementById('p-coef').value)||11.36, tva1: (parseFloat(document.getElementById('p-tva1').value)||20)/100, tva2: (parseFloat(document.getElementById('p-tva2').value)||5.5)/100 }; }
     </script>
 </body>
