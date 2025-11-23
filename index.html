@@ -3,820 +3,645 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suivi de Consommation Gaz (Hybride)</title>
-    <!-- Chargement de Tailwind CSS -->
+    <title>Suivi Gaz (Hybride)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Police Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* --- Styles de Base (Mode Sombre) --- */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #111827; /* gray-900 */
-            color: #f3f4f6; /* gray-100 */
-        }
+        body { font-family: 'Inter', system-ui, sans-serif; background-color: #111827; color: #f3f4f6; }
+        .card { background-color: #1f2937; border: 1px solid #374151; border-radius: 0.75rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         
-        /* --- Composants --- */
-        .card {
-            background-color: #1f2937; /* gray-800 */
-            border: 1px solid #374151; /* gray-700 */
-            border-radius: 0.75rem; /* rounded-xl */
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-        
-        /* --- Graphique Barres --- */
-        .bar-container {
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            height: 180px;
-            gap: 2px;
-            padding-top: 20px;
-        }
-        .bar-wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-end;
-            height: 100%;
-            position: relative;
-        }
-        .bar {
-            width: 100%;
-            border-top-left-radius: 3px;
-            border-top-right-radius: 3px;
-            transition: height 0.3s ease-out, background-color 0.3s;
-            min-height: 2px;
-        }
+        /* Graphique */
+        .bar-container { display: flex; align-items: flex-end; justify-content: space-between; height: 200px; gap: 1px; padding-top: 20px; }
+        .bar-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; position: relative; min-width: 4px;}
+        .bar { width: 100%; border-radius: 2px 2px 0 0; transition: height 0.3s; min-height: 2px; }
+        .bar-wrapper:hover .bar { filter: brightness(1.2); }
+        /* Tooltip CSS pur */
         .bar-wrapper:hover::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #111827;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            white-space: nowrap;
-            z-index: 20;
-            border: 1px solid #4b5563;
-            pointer-events: none;
-            margin-bottom: 4px;
+            content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+            background: #111827; color: white; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;
+            white-space: pre; z-index: 50; border: 1px solid #4b5563; pointer-events: none; margin-bottom: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
-        
-        /* Couleurs spécifiques pour Real vs Estimated */
-        .bar-wrapper.real .bar {
-            background-color: #10b981; /* emerald-500 */
-        }
-        .bar-wrapper.estimated .bar {
-            background-color: #6366f1; /* indigo-500 */
-            opacity: 0.7;
-        }
-        
-        .bar-label {
-            font-size: 0.6rem;
-            color: #9ca3af;
-            margin-top: 4px;
-            text-align: center;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            width: 100%;
-        }
-        .bar-wrapper.dense:nth-child(odd) .bar-label {
-            display: none; 
-        }
-        @media (min-width: 768px) {
-            .bar-wrapper.dense:nth-child(odd) .bar-label { display: block; }
-        }
+        /* Couleurs Sources */
+        .bar-wrapper.real .bar { background-color: #10b981; } /* Vert (GRDF Quotidien) */
+        .bar-wrapper.estimated .bar { background-color: #8b5cf6; } /* Violet (Calculé via Index) */
+        .bar-wrapper.projected .bar { background-color: #f59e0b; opacity: 0.7; } /* Orange (Projection future) */
 
-        /* --- Calendrier --- */
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
-        }
-        .day-cell {
-            aspect-ratio: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border-radius: 0.375rem;
-            background-color: #374151;
-            font-size: 0.75rem;
-            position: relative;
-            transition: all 0.2s;
-        }
-        @media (min-width: 768px) {
-            .day-cell { font-size: 0.875rem; }
-        }
-        .day-cell.has-data:hover {
-            transform: scale(1.1);
-            z-index: 10;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.5);
-            border: 1px solid white;
-        }
+        /* Calendrier */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+        .day-cell { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border-radius: 0.375rem; background-color: #374151; font-size: 0.75rem; position: relative; border: 1px solid transparent; }
+        .day-cell.has-data { cursor: pointer; }
+        .day-cell.has-data:hover { transform: scale(1.1); z-index: 10; border-color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .day-val { font-weight: 700; margin-top: 2px; font-size: 0.7rem; }
+        .intensity-bar { width: 80%; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 2px; overflow: hidden; }
+        .intensity-fill { height: 100%; }
         
-        .intensity-bar {
-            width: 80%;
-            height: 3px;
-            background-color: rgba(255,255,255,0.2);
-            border-radius: 2px;
-            margin-top: 2px;
-            overflow: hidden;
-        }
-        
-        /* Indicateur de source réelle */
-        .real-data-marker {
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            width: 4px;
-            height: 4px;
-            background-color: #10b981; /* emerald-500 */
-            border-radius: 50%;
-        }
+        /* Marqueurs */
+        .marker { position: absolute; top: 2px; right: 2px; width: 5px; height: 5px; border-radius: 50%; }
+        .marker.real { background-color: #10b981; box-shadow: 0 0 4px #10b981; }
+        .marker.est { background-color: #8b5cf6; }
 
-        @media print {
-            .print-hidden { display: none !important; }
-            body { background-color: white !important; color: black !important; }
-            .card { 
-                background-color: white !important; 
-                border: 1px solid #ddd !important; 
-                box-shadow: none !important; 
-                break-inside: avoid;
-            }
-            .day-cell { -webkit-print-color-adjust: exact; print-color-adjust: exact; border: 1px solid #eee; }
-            .day-cell:not(.has-data) { background-color: #f9fafb !important; color: #ddd !important; }
-            .bar { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-        }
-
-        .fab {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            width: 3.5rem;
-            height: 3.5rem;
-            border-radius: 9999px;
-            background-color: #4f46e5;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-            z-index: 40;
-            transition: transform 0.2s;
-        }
-        .fab:active { transform: scale(0.95); }
-        @media (min-width: 1024px) {
-            .fab { display: none; }
-        }
+        /* UI Utils */
+        @media print { .print-hidden { display: none !important; } body { background: white !important; color: black !important; } .card { border: 1px solid #ccc !important; box-shadow: none !important; } }
+        .fab { position: fixed; bottom: 1.5rem; right: 1.5rem; width: 3.5rem; height: 3.5rem; border-radius: 9999px; background: #4f46e5; color: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 15px rgba(0,0,0,0.3); z-index: 40; }
+        @media (min-width: 1024px) { .fab { display: none; } }
+        .hidden { display: none; }
     </style>
 </head>
-<body class="p-3 md:p-8 min-h-screen pb-24 lg:pb-8">
+<body class="p-4 md:p-8 min-h-screen pb-24">
 
-    <div class="max-w-6xl mx-auto space-y-6">
+    <div class="max-w-7xl mx-auto space-y-6">
         
-        <!-- EN-TÊTE -->
+        <!-- HEADER -->
         <header class="flex flex-col md:flex-row justify-between items-center pb-4 border-b border-gray-700 print-hidden gap-4">
             <div>
-                <h1 class="text-2xl md:text-3xl font-bold text-white">Suivi Conso Gaz (Hybride)</h1>
-                <p class="text-gray-400 text-sm mt-1">Fusion intelligente : Import GRDF (Réel) + Saisie Manuelle (Estimé)</p>
+                <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Suivi Conso Gaz</h1>
+                <div class="flex items-center gap-2 mt-1 text-sm text-gray-400">
+                    <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-emerald-500 mr-1"></span> Réel (GRDF)</span>
+                    <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-violet-500 mr-1"></span> Estimé (Index)</span>
+                </div>
             </div>
             <div class="flex gap-2">
-                 <!-- Bouton Import unique qui gère tous les fichiers -->
-                <button onclick="triggerImport()" class="flex items-center space-x-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition shadow-lg transform hover:scale-105">
+                <button onclick="document.getElementById('import-file').click()" class="flex items-center space-x-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition shadow-lg">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                    <span>Importer CSV GRDF</span>
+                    <span>Importer (CSV/JSON)</span>
                 </button>
                 <input type="file" id="import-file" class="hidden" accept=".csv,.json,.txt" onchange="handleImport(this)">
-
-                <button onclick="window.print()" class="flex items-center space-x-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                    <span>Imprimer</span>
-                </button>
+                
+                <button onclick="exportData()" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition">Sauvegarder</button>
+                <button onclick="window.print()" class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium rounded-lg transition">Imprimer</button>
             </div>
         </header>
 
-        <!-- GRILLE PRINCIPALE -->
+        <!-- CONTENU -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-            <!-- COLONNE GAUCHE (INPUTS & STATS) -->
+            
+            <!-- COLONNE GAUCHE -->
             <div class="lg:col-span-4 space-y-6">
                 
-                <!-- 1. AJOUTER UN RELEVÉ (Visibilité corrigée) -->
+                <!-- FORMULAIRE SAISIE -->
                 <section class="card p-5 print-hidden lg:block">
                     <h2 class="text-lg font-semibold text-white mb-4 flex items-center">
-                        <svg class="w-5 h-5 mr-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                        Nouveau Relevé (Manuel)
+                        <svg class="w-5 h-5 mr-2 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                        Saisie Manuelle (Index)
                     </h2>
-                    <form id="add-form-desktop" onsubmit="handleAdd(event, 'desktop')" class="space-y-4">
+                    <form onsubmit="addIndex(event, 'desktop')" class="space-y-4">
                         <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1">Date & Heure</label>
-                            <input type="datetime-local" id="input-date-desktop" required class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5">
+                            <label class="block text-xs text-gray-400 mb-1">Date</label>
+                            <input type="datetime-local" id="date-desktop" required class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5 focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1">Index Compteur (m³)</label>
-                            <input type="number" id="input-index-desktop" step="0.001" placeholder="Ex: 5350.123" required class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5">
+                            <label class="block text-xs text-gray-400 mb-1">Nouvel Index (m³)</label>
+                            <input type="number" id="index-desktop" step="0.001" required placeholder="Ex: 5488" class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5 focus:ring-indigo-500 focus:border-indigo-500">
                         </div>
-                        <button type="submit" class="w-full text-white bg-indigo-600 hover:bg-indigo-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition">Enregistrer</button>
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg text-sm px-5 py-2.5 transition">Ajouter</button>
                     </form>
-                    <p class="text-xs text-gray-500 mt-2 italic">Ajoutez ici les index pour les jours récents non encore disponibles dans votre fichier GRDF.</p>
+                    <p class="text-xs text-gray-500 mt-2">Utilisé pour combler les jours sans données GRDF.</p>
                 </section>
 
-                <!-- 2. PARAMÈTRES (Escamotables) -->
-                <section class="card print-hidden">
-                    <button onclick="toggleParams()" class="w-full p-5 flex justify-between items-center text-left focus:outline-none hover:bg-gray-700/50 rounded-xl transition">
-                        <span class="text-lg font-semibold text-white flex items-center">
-                            <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.942 3.313.823 2.308 2.368a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.942 1.543-.823 3.313-2.368 2.308a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.942-3.313-.823-2.308-2.368a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.942-1.543.823-3.313 2.368-2.308a1.724 1.724 0 002.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                            Paramètres
-                        </span>
-                        <svg id="chevron-icon" class="w-5 h-5 text-gray-400 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                    <!-- Contenu masqué par défaut (hidden) -->
-                    <div id="params-content" class="hidden px-5 pb-5 space-y-3 border-t border-gray-700 pt-4">
-                        <div class="grid grid-cols-2 gap-3">
-                            <div><label class="block text-xs text-gray-400 mb-1">Coef. Gaz</label><input type="number" id="p-coef" value="11.361" step="0.001" onchange="updateApp()" class="w-full bg-gray-700 border border-gray-600 text-white text-xs rounded p-2"></div>
-                            <div><label class="block text-xs text-gray-400 mb-1">Prix kWh HT</label><input type="number" id="p-prix-kwh" value="0.0777" step="0.0001" onchange="updateApp()" class="w-full bg-gray-700 border border-gray-600 text-white text-xs rounded p-2"></div>
-                            <div><label class="block text-xs text-gray-400 mb-1">Abo/Mois HT</label><input type="number" id="p-abo" value="16.72" step="0.01" onchange="updateApp()" class="w-full bg-gray-700 border border-gray-600 text-white text-xs rounded p-2"></div>
-                            <div><label class="block text-xs text-gray-400 mb-1">TVA Conso %</label><input type="number" id="p-tva-conso" value="20" step="0.1" onchange="updateApp()" class="w-full bg-gray-700 border border-gray-600 text-white text-xs rounded p-2"></div>
-                            <div><label class="block text-xs text-gray-400 mb-1">TVA Abo %</label><input type="number" id="p-tva-abo" value="5.5" step="0.1" onchange="updateApp()" class="w-full bg-gray-700 border border-gray-600 text-white text-xs rounded p-2"></div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- 3. SYNTHÈSE DYNAMIQUE -->
+                <!-- SYNTHÈSE DYNAMIQUE -->
                 <section class="card p-5">
                     <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
                         <h2 class="text-lg font-semibold text-white">Synthèse</h2>
-                        <!-- Filtres Période -->
-                        <div class="flex bg-gray-700 rounded-lg p-1 text-[0.65rem] md:text-xs">
-                            <button onclick="setSynthMode('global')" id="synth-mode-global" class="px-2 py-1 rounded transition text-gray-300 hover:text-white">Global</button>
-                            <button onclick="setSynthMode('year')" id="synth-mode-year" class="px-2 py-1 rounded transition text-gray-300 hover:text-white">Année</button>
-                            <button onclick="setSynthMode('month')" id="synth-mode-month" class="px-2 py-1 rounded transition text-gray-300 hover:text-white">Mois</button>
-                            <button onclick="setSynthMode('custom')" id="synth-mode-custom" class="px-2 py-1 rounded transition text-gray-300 hover:text-white">Période</button>
+                        <div class="flex bg-gray-700 rounded-lg p-1 text-[0.65rem]">
+                            <button onclick="setSynth('global')" id="btn-synth-global" class="px-2 py-1 rounded text-white bg-indigo-600">Global</button>
+                            <button onclick="setSynth('year')" id="btn-synth-year" class="px-2 py-1 rounded text-gray-300 hover:text-white">An</button>
+                            <button onclick="setSynth('month')" id="btn-synth-month" class="px-2 py-1 rounded text-gray-300 hover:text-white">Mois</button>
                         </div>
+                    </div>
+                    
+                    <!-- Filtres dynamiques -->
+                    <div id="synth-controls" class="mb-4 hidden">
+                        <select id="synth-year-select" onchange="updateSynth()" class="w-full bg-gray-700 text-white text-xs rounded p-2 mb-2 hidden"></select>
+                        <input type="month" id="synth-month-select" onchange="updateSynth()" class="w-full bg-gray-700 text-white text-xs rounded p-2 hidden">
                     </div>
 
-                    <!-- Inputs Dynamiques (Date/Select) -->
-                    <div id="synth-filters" class="mb-4 text-sm text-gray-400 flex flex-wrap gap-3 items-center hidden">
-                        <!-- Injecté par JS -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-gray-700/30 p-3 rounded-lg border border-gray-600/50">
+                            <div class="text-xs text-gray-400 uppercase font-bold">Volume</div>
+                            <div class="text-xl font-bold text-blue-400 mt-1" id="disp-m3">0 m³</div>
+                            <div class="text-xs text-blue-300/70 mt-1" id="disp-kwh">0 kWh</div>
+                        </div>
+                        <div class="bg-gray-700/30 p-3 rounded-lg border border-gray-600/50">
+                            <div class="text-xs text-gray-400 uppercase font-bold">Coût TTC</div>
+                            <div class="text-xl font-bold text-emerald-400 mt-1" id="disp-cost">0 €</div>
+                            <div class="text-xs text-emerald-300/70 mt-1" id="disp-cost-ht">HT: 0 €</div>
+                        </div>
                     </div>
+                </section>
 
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-gray-700/50 p-3 rounded-lg relative">
-                            <div class="text-xs text-gray-400">Consommation</div>
-                            <div class="text-xl font-bold text-blue-400" id="total-kwh">0 kWh</div>
-                            <div class="text-xs text-gray-500" id="total-m3">0 m³</div>
+                <!-- PARAMÈTRES -->
+                <section class="card print-hidden">
+                    <button onclick="document.getElementById('params').classList.toggle('hidden')" class="w-full p-4 flex justify-between items-center text-sm font-semibold text-gray-300 hover:text-white">
+                        <span>Paramètres de Facturation</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div id="params" class="hidden px-4 pb-4 space-y-3 border-t border-gray-700 pt-3">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div><label class="text-[0.65rem] text-gray-500 uppercase">Prix kWh HT</label><input id="p-kwh" type="number" step="0.0001" value="0.0777" onchange="recalc()" class="w-full bg-gray-800 text-white text-xs rounded p-1 border border-gray-600"></div>
+                            <div><label class="text-[0.65rem] text-gray-500 uppercase">Abo/Mois HT</label><input id="p-abo" type="number" step="0.01" value="16.72" onchange="recalc()" class="w-full bg-gray-800 text-white text-xs rounded p-1 border border-gray-600"></div>
+                            <div><label class="text-[0.65rem] text-gray-500 uppercase">TVA Conso %</label><input id="p-tva1" type="number" step="0.1" value="20" onchange="recalc()" class="w-full bg-gray-800 text-white text-xs rounded p-1 border border-gray-600"></div>
+                            <div><label class="text-[0.65rem] text-gray-500 uppercase">TVA Abo %</label><input id="p-tva2" type="number" step="0.1" value="5.5" onchange="recalc()" class="w-full bg-gray-800 text-white text-xs rounded p-1 border border-gray-600"></div>
+                            <div class="col-span-2"><label class="text-[0.65rem] text-gray-500 uppercase">Coef. Conv.</label><input id="p-coef" type="number" step="0.01" value="11.36" onchange="recalc()" class="w-full bg-gray-800 text-white text-xs rounded p-1 border border-gray-600"></div>
                         </div>
-                        <div class="bg-gray-700/50 p-3 rounded-lg relative">
-                            <div class="text-xs text-gray-400">Coût TTC</div>
-                            <div class="text-xl font-bold text-emerald-400" id="total-cost">0.00 €</div>
-                            <div class="text-xs text-gray-500" id="total-cost-ht">HT: 0.00 €</div>
-                        </div>
-                        <div class="col-span-2 text-[0.65rem] text-center text-gray-500 italic" id="synth-period-label">
-                            Données globales
-                        </div>
-                    </div>
-                    <div class="mt-4 text-xs text-gray-500 flex items-center gap-2 justify-center">
-                         <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Réel (GRDF)
-                         <span class="w-2 h-2 rounded-full bg-indigo-500"></span> Estimé (Saisie)
                     </div>
                 </section>
             </div>
 
             <!-- COLONNE DROITE -->
             <div class="lg:col-span-8 space-y-6">
-
-                <!-- 4. GRAPHIQUE -->
-                <section class="card p-5">
-                    <div class="flex flex-wrap gap-3 justify-between items-center mb-4">
-                        <h2 class="text-lg font-semibold text-white" id="chart-title">Évolution</h2>
-                        <div class="flex gap-2">
-                            <div class="bg-gray-700 p-1 rounded-lg flex text-xs font-medium">
-                                <button onclick="setChartMode('month')" id="btn-mode-month" class="px-3 py-1.5 rounded-md transition-colors">Par Mois</button>
-                                <button onclick="setChartMode('day')" id="btn-mode-day" class="px-3 py-1.5 rounded-md transition-colors">Par Jour</button>
-                            </div>
-                            <div class="bg-gray-700 p-1 rounded-lg flex text-xs font-medium">
-                                <button onclick="setView('kwh')" id="btn-view-kwh" class="px-3 py-1.5 rounded-md transition-colors">kWh</button>
-                                <button onclick="setView('cost')" id="btn-view-cost" class="px-3 py-1.5 rounded-md transition-colors">Coût €</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="monthly-chart" class="bar-container border-b border-gray-600">
-                        <div class="text-gray-500 text-sm w-full text-center py-10">Chargement...</div>
-                    </div>
-                </section>
-
-                <!-- 5. CALENDRIER -->
+                
+                <!-- GRAPHIQUE -->
                 <section class="card p-5">
                     <div class="flex justify-between items-center mb-4">
-                        <button onclick="changeMonth(-1)" class="p-2 hover:bg-gray-700 rounded-full"><svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"></path></svg></button>
-                        <h2 class="text-lg font-bold text-white capitalize" id="calendar-month-label">--</h2>
-                        <button onclick="changeMonth(1)" class="p-2 hover:bg-gray-700 rounded-full"><svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg></button>
+                        <h2 class="text-lg font-bold text-white">Évolution</h2>
+                        <div class="flex gap-2 text-xs">
+                            <button onclick="setChart('day')" id="btn-chart-day" class="px-3 py-1 rounded bg-indigo-600 text-white">Jour</button>
+                            <button onclick="setChart('month')" id="btn-chart-month" class="px-3 py-1 rounded bg-gray-700 text-gray-300 hover:text-white">Mois</button>
+                        </div>
                     </div>
-                    <div class="calendar-grid mb-2 text-center text-[0.65rem] md:text-xs text-gray-500 font-medium uppercase tracking-wide">
+                    <div id="chart-container" class="bar-container border-b border-gray-600"></div>
+                </section>
+
+                <!-- CALENDRIER -->
+                <section class="card p-5">
+                    <div class="flex justify-between items-center mb-4">
+                        <button onclick="moveCal(-1)" class="p-1 hover:bg-gray-600 rounded"><svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg></button>
+                        <h2 class="text-lg font-bold text-white capitalize" id="cal-title">--</h2>
+                        <button onclick="moveCal(1)" class="p-1 hover:bg-gray-600 rounded"><svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+                    </div>
+                    <div class="calendar-grid mb-2 text-center text-[0.65rem] text-gray-500 font-bold uppercase">
                         <div>Lun</div><div>Mar</div><div>Mer</div><div>Jeu</div><div>Ven</div><div>Sam</div><div>Dim</div>
                     </div>
-                    <div id="calendar-grid" class="calendar-grid gap-1 md:gap-2"></div>
-                    <div class="mt-4 flex justify-between items-end">
-                        <div class="flex items-center text-xs text-gray-400 gap-2">
-                            <span>Faible</span>
-                            <div class="flex gap-1">
-                                <div class="w-2 h-2 md:w-3 md:h-3 rounded bg-emerald-900"></div>
-                                <div class="w-2 h-2 md:w-3 md:h-3 rounded bg-yellow-900"></div>
-                                <div class="w-2 h-2 md:w-3 md:h-3 rounded bg-orange-900"></div>
-                                <div class="w-2 h-2 md:w-3 md:h-3 rounded bg-red-900"></div>
-                            </div>
-                            <span>Élevé</span>
-                        </div>
-                    </div>
+                    <div id="cal-grid" class="calendar-grid gap-1"></div>
                 </section>
 
-                <!-- 6. HISTORIQUE (MODIFIÉ : Repliable) -->
+                <!-- HISTORIQUE REPLIABLE -->
                 <section class="card overflow-hidden">
-                    <button onclick="toggleHistory()" class="w-full p-4 border-b border-gray-700 flex justify-between items-center text-left focus:outline-none hover:bg-gray-700/50 transition">
-                        <h2 class="text-lg font-semibold text-white">Historique Détaillé (Index)</h2>
-                        <!-- Flèche initiale : rotated 180 (Up) car ouvert par défaut -->
-                        <svg id="history-chevron" style="transform: rotate(180deg)" class="w-5 h-5 text-gray-400 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    <button onclick="document.getElementById('hist-table').classList.toggle('hidden')" class="w-full p-4 flex justify-between items-center hover:bg-gray-800 transition">
+                        <h2 class="text-lg font-semibold text-white">Historique des Index</h2>
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
-                    
-                    <div id="history-content"> <!-- Pas de class hidden ici car ouvert par défaut -->
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left text-sm text-gray-400">
-                                <thead class="bg-gray-700/50 text-gray-200 uppercase text-xs">
-                                    <tr>
-                                        <th class="px-4 py-3">Date</th>
-                                        <th class="px-4 py-3 text-right">Index</th>
-                                        <th class="px-4 py-3 text-right">Conso Estimée</th>
-                                        <th class="px-4 py-3 text-center print-hidden">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="history-body" class="divide-y divide-gray-700"></tbody>
-                            </table>
-                        </div>
-                        <div id="empty-msg" class="p-8 text-center text-gray-500 hidden">Aucune donnée.</div>
+                    <div id="hist-table" class="overflow-x-auto max-h-64 overflow-y-auto">
+                        <table class="w-full text-left text-xs text-gray-400">
+                            <thead class="bg-gray-700 text-gray-200 sticky top-0">
+                                <tr>
+                                    <th class="px-4 py-2">Date</th>
+                                    <th class="px-4 py-2 text-right">Index</th>
+                                    <th class="px-4 py-2 text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="hist-body" class="divide-y divide-gray-700"></tbody>
+                        </table>
                     </div>
                 </section>
+                
+                <div class="flex justify-end print-hidden">
+                    <button onclick="resetAll()" class="text-xs text-red-400 hover:underline">Réinitialiser toutes les données</button>
+                </div>
 
-                <!-- 7. IMPORT/EXPORT -->
-                <section class="card p-4 mt-6 print-hidden">
-                    <h2 class="text-lg font-semibold text-white mb-4">Données & Sauvegarde</h2>
-                    <div class="flex flex-wrap gap-3 justify-between items-center">
-                        <div class="flex flex-wrap gap-3">
-                             <button onclick="exportData()" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition">Exporter JSON</button>
-                            <button onclick="triggerImport()" class="px-3 py-2 bg-gray-600 hover:bg-gray-500 text-white text-xs font-medium rounded-lg transition">Importer (JSON/CSV)</button>
-                            <input type="file" id="import-file" class="hidden" accept=".json,.csv,.txt" onchange="handleImport(this)">
-                        </div>
-                        <button onclick="resetAll()" class="text-xs text-red-400 hover:text-red-300 underline transition">Réinitialiser tout</button>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-2">Accepte JSON (Backup) et CSV GRDF (Date;Type;Index;Coeff).</p>
-                </section>
             </div>
         </div>
     </div>
 
-    <!-- BOUTON FLOTTANT MOBILE -->
-    <button onclick="openModal()" class="fab print-hidden">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-    </button>
-
-    <!-- MODALE MOBILE -->
-    <div id="mobile-modal" class="fixed inset-0 bg-black bg-opacity-80 z-50 hidden flex items-end sm:items-center justify-center print-hidden" onclick="if(event.target===this) this.classList.add('hidden')">
-        <div class="bg-gray-800 w-full max-w-md p-6 rounded-t-2xl sm:rounded-xl shadow-2xl transform transition-all">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold text-white">Nouveau Relevé</h2>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-            </div>
-            <form id="add-form-mobile" onsubmit="handleAdd(event, 'mobile')" class="space-y-4">
-                <div><label class="block text-xs font-medium text-gray-400 mb-1">Date</label><input type="datetime-local" id="input-date-mobile" required class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-3"></div>
-                <div><label class="block text-xs font-medium text-gray-400 mb-1">Index (m³)</label><input type="number" id="input-index-mobile" step="0.001" required class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-3"></div>
-                <button type="submit" class="w-full bg-indigo-600 text-white font-bold rounded-lg text-lg px-5 py-3 text-center">Enregistrer</button>
+    <!-- MOBILE MODAL -->
+    <div id="mob-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center print-hidden" onclick="if(e.target===this)this.classList.add('hidden')">
+        <div class="bg-gray-800 w-11/12 max-w-md p-6 rounded-xl shadow-2xl">
+            <h2 class="text-xl font-bold text-white mb-4">Ajouter Index</h2>
+            <form onsubmit="addIndex(event, 'mobile')" class="space-y-4">
+                <input type="datetime-local" id="date-mobile" required class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600">
+                <input type="number" id="index-mobile" step="0.001" required placeholder="Index" class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600">
+                <button class="w-full bg-indigo-600 text-white font-bold p-3 rounded-lg">Sauvegarder</button>
             </form>
+            <button onclick="document.getElementById('mob-modal').classList.add('hidden')" class="mt-4 w-full text-gray-400 text-sm">Annuler</button>
         </div>
     </div>
+    <button onclick="openMob()" class="fab print-hidden"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg></button>
 
-    <!-- LOGIC JS -->
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            initInputs();
-            loadData();
-            // Initialisation de l'état par défaut (Coût / Par Jour)
-            STATE.view = 'cost';
-            STATE.chartMode = 'day';
-            STATE.synthMode = 'global'; // Force la sélection initiale
-            updateApp();
-        });
-
-        const STATE = {
-            indexHistory: [], // Relevés manuels ou import "mes-index"
-            realDailyData: {}, // Données importées de "ma-conso-quotidienne"
-            dailyData: {}, // Données finales (fusionnées)
-            monthlyData: {}, // Agrégation mensuelle
-            currentDate: new Date(),
-            view: 'cost', chartMode: 'day', synthMode: 'global',
-            synthParams: {},
-            maxVal: 1, maxMonthVal: 1
+        // --- DATA STORE ---
+        const DB = {
+            indexes: [],      // Liste des relevés manuels ou importés {date, index}
+            realDays: {},     // Map des consos réelles GRDF {YYYY-MM-DD: {kwh, m3, cost}}
+            computedDays: {}, // Map finale (Réel + Estimé)
+            monthly: {},      // Agrégats mensuels
+            calDate: new Date(),
+            chartMode: 'day',
+            synthMode: 'global'
         };
 
-        function initInputs() {
-            const now = new Date();
+        // --- INIT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initDates();
+            loadDB();
+            recalc();
+        });
+
+        function initDates() {
+            const now = new Date(); 
             now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
             const iso = now.toISOString().slice(0, 16);
-            
-            // Initialisation des champs de date
-            if (document.getElementById('input-date-desktop')) document.getElementById('input-date-desktop').value = iso;
-            if (document.getElementById('input-date-mobile')) document.getElementById('input-date-mobile').value = iso;
-
-            // Initialisation des paramètres de synthèse pour les filtres dynamiques
-            STATE.synthParams = {
-                year: now.getFullYear(),
-                month: now.toISOString().slice(0,7),
-                start: new Date(now.getFullYear(), 0, 1).toISOString().slice(0,10),
-                end: now.toISOString().slice(0,10)
-            };
-
-            // Mise à jour des styles des boutons au chargement initial
-            updateBtnStyles();
+            if(document.getElementById('date-desktop')) document.getElementById('date-desktop').value = iso;
+            if(document.getElementById('date-mobile')) document.getElementById('date-mobile').value = iso;
         }
 
-        // --- PERSISTENCE (LOCAL STORAGE pour 2 types de données) ---
-        function loadData() { 
-            try { 
-                const s=localStorage.getItem('gaz_data_v2'); 
+        // --- PERSISTENCE ---
+        function loadDB() {
+            try {
+                const s = localStorage.getItem('gaz_full_db');
                 if(s) {
-                    const parsed = JSON.parse(s);
-                    // Support rétrocompatible
-                    if (Array.isArray(parsed)) { STATE.indexHistory = parsed; STATE.realDailyData = {}; }
-                    else {
-                        STATE.indexHistory = parsed.indexHistory || [];
-                        STATE.realDailyData = parsed.realDailyData || {};
-                    }
-                } 
-            } catch(e){ STATE.indexHistory=[]; STATE.realDailyData={}; }
-            updateApp();
+                    const d = JSON.parse(s);
+                    DB.indexes = d.indexes || [];
+                    DB.realDays = d.realDays || {};
+                }
+            } catch(e) { console.error(e); }
         }
-        function saveData() { 
-            localStorage.setItem('gaz_data_v2', JSON.stringify({
-                indexHistory: STATE.indexHistory,
-                realDailyData: STATE.realDailyData
-            })); 
+        function saveDB() {
+            localStorage.setItem('gaz_full_db', JSON.stringify({ indexes: DB.indexes, realDays: DB.realDays }));
         }
-        function resetAll() { if(confirm("Attention, cette action effacera TOUT l'historique ! Êtes-vous sûr ?")) { STATE.indexHistory=[]; STATE.realDailyData={}; saveData(); updateApp(); } }
-        
-        function openModal() { initInputs(); document.getElementById('mobile-modal').classList.remove('hidden'); }
-        function closeModal() { document.getElementById('mobile-modal').classList.add('hidden'); }
-        
-        function handleAdd(e, m) {
-            e.preventDefault(); const s = m==='mobile'?'-mobile':'-desktop';
-            const d = document.getElementById('input-date'+s).value;
-            const i = parseFloat(document.getElementById('input-index'+s).value);
-            if(!d || isNaN(i)) return alert("Date ou Index invalide.");
+
+        // --- CORE LOGIC (THE HYBRID ENGINE) ---
+        function recalc() {
+            const P = getParams();
+            DB.computedDays = {}; DB.monthly = {};
+            let maxD = 0, maxM = 0;
+
+            // 1. INJECT REAL DATA (PRIORITY)
+            for (const [k, v] of Object.entries(DB.realDays)) {
+                const costHT = v.kwh * P.kwh; // GRDF donne kWh direct souvent, sinon m3*coef
+                const costTTC = (costHT * (1 + P.tva1)) + ((P.abo*12/365) * (1 + P.tva2)); // Abo lissé jour
+                DB.computedDays[k] = { ...v, cost: costTTC, type: 'real' };
+            }
+
+            // 2. FILL GAPS WITH INDEXES
+            DB.indexes.sort((a,b) => new Date(a.date) - new Date(b.date));
             
-            // Ajout aux index manuels
-            if(STATE.indexHistory.some(h=>h.date===d)) return alert("Date existe déjà.");
-            STATE.indexHistory.push({id:Date.now(), date:d, index:i});
-            saveData(); document.getElementById('input-index'+s).value=''; if(m==='mobile') closeModal(); updateApp();
+            for(let i=1; i<DB.indexes.length; i++) {
+                const prev = DB.indexes[i-1];
+                const curr = DB.indexes[i];
+                const d1 = new Date(prev.date); 
+                const d2 = new Date(curr.date);
+                
+                // Durée en jours
+                const daysDiff = Math.ceil((d2 - d1) / (86400000)); 
+                if (daysDiff <= 0) continue;
+
+                // Conso totale période (Index)
+                const totM3 = curr.index - prev.index;
+                const totKwh = totM3 * P.coef;
+                
+                // Check ce qu'on a déjà en Réel sur cette période
+                let realKwhSum = 0;
+                let missingDays = [];
+
+                for(let j=0; j<daysDiff; j++) {
+                    const d = new Date(d1); d.setDate(d.getDate() + j);
+                    const k = d.toISOString().slice(0,10);
+                    if(DB.computedDays[k] && DB.computedDays[k].type === 'real') {
+                        realKwhSum += DB.computedDays[k].kwh;
+                    } else {
+                        missingDays.push(k);
+                    }
+                }
+
+                // Reste à distribuer
+                const remainingKwh = Math.max(0, totKwh - realKwhSum);
+                
+                if (missingDays.length > 0) {
+                    const dailyEst = remainingKwh / missingDays.length;
+                    const dailyM3 = (totM3 - (realKwhSum/P.coef)) / missingDays.length; // Approx m3
+                    const costDay = (dailyEst * P.kwh * (1+P.tva1)) + ((P.abo*12/365)*(1+P.tva2));
+
+                    missingDays.forEach(dayKey => {
+                        if(!DB.computedDays[dayKey]) { // Sécurité
+                            DB.computedDays[dayKey] = { 
+                                kwh: dailyEst, 
+                                m3: Math.max(0, dailyM3),
+                                cost: costDay, 
+                                type: 'estimated' 
+                            };
+                        }
+                    });
+                }
+            }
+
+            // 3. AGGREGATE MONTHLY
+            for(const [k, v] of Object.entries(DB.computedDays)) {
+                const m = k.slice(0,7);
+                if(!DB.monthly[m]) DB.monthly[m] = { kwh: 0, cost: 0, m3: 0 };
+                DB.monthly[m].kwh += v.kwh;
+                DB.monthly[m].cost += v.cost;
+                DB.monthly[m].m3 += v.m3;
+            }
+
+            updateUI();
+        }
+
+        // --- UI UPDATES ---
+        function updateUI() {
+            renderSynth();
+            renderChart();
+            renderCal();
+            renderHist();
+        }
+
+        function renderSynth() {
+            // Filter logic
+            const filters = document.getElementById('synth-controls');
+            const ySel = document.getElementById('synth-year-select');
+            const mSel = document.getElementById('synth-month-select');
+            
+            let start=null, end=null;
+            const allKeys = Object.keys(DB.computedDays).sort();
+            
+            if (STATE_UI.synth === 'year') {
+                filters.classList.remove('hidden'); ySel.classList.remove('hidden'); mSel.classList.add('hidden');
+                // Populate years
+                const years = [...new Set(allKeys.map(k=>k.slice(0,4)))].sort().reverse();
+                if(ySel.options.length !== years.length) {
+                    ySel.innerHTML = ''; 
+                    years.forEach(y => ySel.add(new Option(y, y)));
+                }
+                const yr = ySel.value || new Date().getFullYear();
+                start = new Date(yr,0,1); end = new Date(yr,11,31);
+            } else if (STATE_UI.synth === 'month') {
+                filters.classList.remove('hidden'); mSel.classList.remove('hidden'); ySel.classList.add('hidden');
+                if(!mSel.value) mSel.value = new Date().toISOString().slice(0,7);
+                const [y,m] = mSel.value.split('-');
+                start = new Date(y, m-1, 1); end = new Date(y, m, 0);
+            } else {
+                filters.classList.add('hidden');
+            }
+
+            let sK=0, sC=0, sM=0;
+            let htK=0, htA=0;
+            const P = getParams();
+
+            allKeys.forEach(k => {
+                const d = new Date(k);
+                if (start && d < start) return;
+                if (end && d > end) return;
+                const v = DB.computedDays[k];
+                sK += v.kwh; sC += v.cost; sM += v.m3;
+                // Recalcul simple du HT pour affichage
+                htK += (v.kwh * P.kwh);
+                htA += (P.abo * 12 / 365);
+            });
+
+            document.getElementById('disp-m3').innerText = sM.toLocaleString('fr-FR', {maximumFractionDigits:1}) + ' m³';
+            document.getElementById('disp-kwh').innerText = Math.round(sK).toLocaleString() + ' kWh';
+            document.getElementById('disp-cost').innerText = sC.toLocaleString('fr-FR', {style:'currency', currency:'EUR'});
+            document.getElementById('disp-cost-ht').innerText = 'HT: ' + (htK+htA).toLocaleString('fr-FR', {style:'currency', currency:'EUR'});
+            
+            // Update Boutons
+            ['global','year','month'].forEach(m => {
+                const b = document.getElementById('btn-synth-'+m);
+                b.className = (STATE_UI.synth === m) ? "px-2 py-1 rounded text-white bg-indigo-600 transition" : "px-2 py-1 rounded text-gray-300 hover:text-white transition";
+            });
+        }
+
+        function renderChart() {
+            const c = document.getElementById('chart-container'); c.innerHTML='';
+            let dataMap = {}, max = 0;
+            
+            if (STATE_UI.chart === 'day') {
+                // Data du mois affiché dans le calendrier
+                const y = DB.calDate.getFullYear(), m = DB.calDate.getMonth();
+                const days = new Date(y, m+1, 0).getDate();
+                for(let d=1; d<=days; d++) {
+                    const k = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                    const val = DB.computedDays[k] ? DB.computedDays[k].cost : 0;
+                    if(val>max) max=val;
+                    dataMap[d] = { val, type: DB.computedDays[k]?.type };
+                }
+            } else {
+                dataMap = DB.monthly;
+                for(let k in dataMap) if(dataMap[k].cost > max) max = dataMap[k].cost;
+            }
+
+            const keys = Object.keys(dataMap).sort();
+            if(keys.length === 0) { c.innerHTML='<div class="w-full text-center text-gray-500 text-sm mt-10">Pas de données</div>'; return; }
+
+            keys.forEach(k => {
+                const item = dataMap[k];
+                const val = STATE_UI.chart === 'day' ? item.val : item.cost;
+                const pct = max > 0 ? (val/max*100) : 0;
+                
+                const div = document.createElement('div');
+                div.className = `bar-wrapper ${item.type || 'estimated'}`;
+                if (STATE_UI.chart === 'month') div.classList.add('dense'); // Reuse styles
+                
+                // Tooltip
+                const label = STATE_UI.chart === 'day' ? `${k}: ${val.toFixed(2)}€` : `${k}: ${val.toFixed(0)}€`;
+                div.setAttribute('data-tooltip', label);
+
+                div.innerHTML = `<div class="bar" style="height:${Math.max(2, pct)}%"></div><div class="bar-label">${k.split('-').pop()}</div>`;
+                c.appendChild(div);
+            });
+            
+            // Boutons style
+            document.getElementById('btn-chart-day').className = STATE_UI.chart==='day' ? "px-3 py-1 rounded bg-indigo-600 text-white" : "px-3 py-1 rounded bg-gray-700 text-gray-300";
+            document.getElementById('btn-chart-month').className = STATE_UI.chart==='month' ? "px-3 py-1 rounded bg-indigo-600 text-white" : "px-3 py-1 rounded bg-gray-700 text-gray-300";
+        }
+
+        function renderCal() {
+            const g = document.getElementById('cal-grid'); g.innerHTML='';
+            const y = DB.calDate.getFullYear(), m = DB.calDate.getMonth();
+            document.getElementById('cal-title').innerText = new Date(y,m,1).toLocaleDateString('fr-FR', {month:'long', year:'numeric'});
+            
+            const fd = new Date(y,m,1).getDay() || 7;
+            const dim = new Date(y,m+1,0).getDate();
+
+            // Max for month
+            let lMax = 0;
+            for(let d=1; d<=dim; d++) {
+                const k = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                if(DB.computedDays[k] && DB.computedDays[k].cost > lMax) lMax = DB.computedDays[k].cost;
+            }
+
+            for(let i=1; i<fd; i++) g.appendChild(document.createElement('div'));
+
+            for(let d=1; d<=dim; d++) {
+                const k = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                const c = document.createElement('div'); c.className = "day-cell border border-gray-700/50";
+                
+                if(DB.computedDays[k]) {
+                    const data = DB.computedDays[k];
+                    c.classList.add('has-data');
+                    // Color scale
+                    const r = lMax>0 ? data.cost/lMax : 0;
+                    let col = '#374151';
+                    if(data.cost > 0) {
+                        if(r<0.25) col = '#064e3b'; else if(r<0.5) col = '#713f12'; else if(r<0.75) col='#7c2d12'; else col='#7f1d1d';
+                    }
+                    c.style.backgroundColor = col;
+
+                    // Marker
+                    if(data.type === 'real') {
+                        const m = document.createElement('div'); m.className='marker real'; c.appendChild(m);
+                    } else {
+                        const m = document.createElement('div'); m.className='marker est'; c.appendChild(m);
+                    }
+                    
+                    // Content
+                    c.innerHTML += `<span class="font-bold text-white z-10">${d}</span><div class="z-10 day-val text-gray-200">${Math.round(data.kwh)}k</div>`;
+                    
+                    // Bar
+                    const b = document.createElement('div'); b.className="intensity-bar";
+                    const f = document.createElement('div'); f.className="intensity-fill"; f.style.width=`${r*100}%`; f.style.background = r>0.5?'#fcd34d':'#34d399';
+                    b.appendChild(f); c.appendChild(b);
+
+                    c.title = `${k}\n${data.type==='real'?'GRDF':'Estimé'}\n${data.cost.toFixed(2)}€\n${data.kwh.toFixed(1)} kWh`;
+                } else {
+                    c.innerHTML = `<span class="text-gray-600">${d}</span>`;
+                }
+                g.appendChild(c);
+            }
+        }
+
+        function renderHist() {
+            const b = document.getElementById('hist-body'); b.innerHTML='';
+            [...DB.indexes].reverse().forEach(row => {
+                const tr = document.createElement('tr'); tr.className="hover:bg-gray-700/50 border-b border-gray-700 transition";
+                const d = new Date(row.date).toLocaleDateString('fr-FR');
+                tr.innerHTML = `
+                    <td class="px-4 py-3 text-white">${d}</td>
+                    <td class="px-4 py-3 text-right font-mono text-gray-300">${row.index}</td>
+                    <td class="px-4 py-3 text-center"><button onclick="delIndex(${row.id})" class="text-red-400 hover:text-white">×</button></td>
+                `;
+                b.appendChild(tr);
+            });
+        }
+
+        // --- ACTIONS UTILISATEUR ---
+        function addIndex(e, m) {
+            e.preventDefault(); const suf = m==='mobile'?'-mobile':'-desktop';
+            const d = document.getElementById('date'+suf).value;
+            const v = parseFloat(document.getElementById('index'+suf).value);
+            if(!d || isNaN(v)) return;
+            
+            // Pas de doublon date
+            if(DB.indexes.some(x => x.date === d)) { alert('Date existe déjà'); return; }
+            
+            DB.indexes.push({ id: Date.now(), date: d, index: v });
+            saveDB(); recalc();
+            document.getElementById('index'+suf).value = '';
+            if(m==='mobile') document.getElementById('mob-modal').classList.add('hidden');
+        }
+
+        function delIndex(id) {
+            if(confirm("Supprimer ?")) {
+                DB.indexes = DB.indexes.filter(x => x.id !== id);
+                saveDB(); recalc();
+            }
+        }
+
+        function resetAll() {
+            if(confirm("TOUT EFFACER ?")) {
+                localStorage.removeItem('gaz_full_db');
+                DB.indexes = []; DB.realDays = {};
+                recalc();
+            }
         }
         
-        function deleteEntry(id) { if(confirm("Supprimer ce relevé ?")) { STATE.indexHistory=STATE.indexHistory.filter(h=>h.id!==id); saveData(); updateApp(); } }
-
-        // --- IMPORT INTELLIGENT (GRDF CSV) ---
-        function triggerImport() { document.getElementById('import-file').click(); }
-        function exportData() {
-            const exportObj = { indexHistory: STATE.indexHistory, realDailyData: STATE.realDailyData };
-            const b = new Blob([JSON.stringify(exportObj, null, 2)], {type:"application/json"});
-            const a = document.createElement('a'); a.href=URL.createObjectURL(b); a.download=`gaz_backup_${new Date().toISOString().slice(0,10)}.json`;
-            document.body.appendChild(a); a.click(); document.body.removeChild(a);
-        }
+        // --- IMPORT/EXPORT ---
         function handleImport(input) {
-            const file = input.files[0]; if(!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const content = e.target.result;
-                let count = 0;
-                
+            const f = input.files[0]; if(!f) return;
+            const r = new FileReader();
+            r.onload = (e) => {
+                const c = e.target.result;
                 try {
-                    // JSON (Backup complet)
-                    if(file.name.toLowerCase().endsWith('.json') || content.trim().startsWith('{') || content.trim().startsWith('[')) {
-                        const json = JSON.parse(content);
-                        if (Array.isArray(json)) { STATE.indexHistory = json; } // Vieux format
-                        else { 
-                            if(json.indexHistory) STATE.indexHistory = json.indexHistory;
-                            if(json.realDailyData) STATE.realDailyData = json.realDailyData;
-                        }
-                        count = (STATE.indexHistory.length + Object.keys(STATE.realDailyData).length);
+                    // 1. JSON BACKUP
+                    if(f.name.endsWith('.json') || c.trim().startsWith('{')) {
+                        const j = JSON.parse(c);
+                        if(j.indexes) DB.indexes = j.indexes;
+                        if(j.realDays) DB.realDays = j.realDays;
+                        alert("Sauvegarde restaurée !");
                     } 
-                    // CSV (GRDF)
+                    // 2. CSV GRDF
                     else {
-                        const lines = content.split(/\r?\n/);
+                        let countReal = 0, countIndex = 0;
+                        const lines = c.split(/\r?\n/);
                         
-                        // Analyse du type de fichier (Index ou Quotidien)
-                        let fileType = 'unknown';
-                        // On regarde les 5 premières lignes pour trouver des mots clés
-                        const headerSample = lines.slice(0, 5).join(' ').toLowerCase();
-                        if (headerSample.includes('consommation') && headerSample.includes('date')) fileType = 'daily';
-                        else if (headerSample.includes('index') && (headerSample.includes('relevé') || headerSample.includes('distributeur'))) fileType = 'index';
+                        // Détection type simple
+                        const isDaily = c.includes("Consommation") && c.includes("Date");
 
-                        lines.forEach(line => {
-                            const clean = line.trim().replace(/"/g,''); if(!clean) return;
-                            let parts = clean.split(';'); if(parts.length < 2) parts = clean.split(','); if(parts.length < 2) return;
-
-                            // Date Parsing
-                            const dateRaw = parts[0].trim();
-                            let dateKey = null; // YYYY-MM-DD
-                            if(dateRaw.includes('/')) { // FR
-                                const [dd, mm, yyyy] = dateRaw.split('/');
-                                if(yyyy && mm && dd) dateKey = `${yyyy}-${mm}-${dd}`;
-                            } else if(dateRaw.includes('-')) { // ISO
-                                dateKey = dateRaw.split(' ')[0];
+                        lines.forEach(l => {
+                            const clean = l.replace(/"/g, '').trim();
+                            if(!clean || isNaN(clean.charAt(0))) return;
+                            
+                            let p = clean.split(';'); if(p.length<2) p=clean.split(',');
+                            
+                            // Date Parsing (FR)
+                            let dateStr = null;
+                            const dRaw = p[0].trim();
+                            if(dRaw.includes('/')) {
+                                const [d,m,y] = dRaw.split('/');
+                                if(y) dateStr = `${y}-${m}-${d}`; // YYYY-MM-DD
                             }
-
-                            if(!dateKey) return;
-
-                            if (fileType === 'daily') {
-                                // Format: Date; Conso(m3); Coeff...
-                                // Parfois la conso est en col 2 (indice 1) ou 3 (indice 2) selon export
-                                let consoStr = parts[1];
-                                if (isNaN(parseFloat(consoStr.replace(',','.'))) && parts.length > 2) consoStr = parts[2]; // Si col 1 est texte
-                                
-                                const valM3 = parseFloat(consoStr.replace(',','.'));
-                                if (!isNaN(valM3)) {
-                                    STATE.realDailyData[dateKey] = { m3: valM3, source: 'real' };
-                                    count++;
-                                }
-                            } else {
-                                // Format Index: Date; Type; Index...
-                                let indexStr = parts[1];
-                                if (isNaN(parseFloat(indexStr.replace(',','.'))) && parts.length > 2) indexStr = parts[2];
-
-                                const valIndex = parseFloat(indexStr.replace(',','.'));
-                                if (!isNaN(valIndex) && valIndex > 100) { // Filtre basique
-                                    if(!STATE.indexHistory.some(h=>h.date.startsWith(dateKey))) {
-                                        STATE.indexHistory.push({id:Date.now()+Math.random(), date:dateKey+"T12:00", index:valIndex});
-                                        count++;
+                            
+                            if(dateStr) {
+                                if(isDaily) {
+                                    // Format: Date; Conso; ...
+                                    // Parfois col 1 ou 2
+                                    let val = parseFloat(p[1].replace(',','.'));
+                                    if(isNaN(val) && p[2]) val = parseFloat(p[2].replace(',','.'));
+                                    
+                                    if(!isNaN(val)) {
+                                        // GRDF donne m3, on convertit approx kwh pour stockage ou on garde m3
+                                        // On stocke brut m3 + kwh calculé par défaut 11.2 si coeff absent
+                                        let coef = 11.2;
+                                        if(p[2] && !isNaN(parseFloat(p[2].replace(',','.')))) coef = parseFloat(p[2].replace(',','.'));
+                                        
+                                        DB.realDays[dateStr] = { m3: val, kwh: val*coef };
+                                        countReal++;
+                                    }
+                                } else {
+                                    // Format: Date; Type; Index
+                                    let idx = parseFloat(p[1].replace(',','.'));
+                                    if(isNaN(idx) && p[2]) idx = parseFloat(p[2].replace(',','.'));
+                                    
+                                    if(!isNaN(idx) && idx > 100) {
+                                        // Check doublon
+                                        if(!DB.indexes.some(x => x.date.startsWith(dateStr))) {
+                                            DB.indexes.push({ id: Date.now()+Math.random(), date: dateStr+"T12:00", index: idx });
+                                            countIndex++;
+                                        }
                                     }
                                 }
                             }
                         });
+                        alert(`Importé : ${countReal} jours réels, ${countIndex} index.`);
                     }
-                    if(count>0) { saveData(); updateApp(); alert(`${count} points de données traités !`); }
-                    else alert("Aucune donnée reconnue.");
+                    saveDB(); recalc();
                 } catch(err) { alert("Erreur import: "+err.message); }
-                input.value='';
+                input.value = '';
             };
-            reader.readAsText(file);
+            r.readAsText(f);
         }
 
-        // --- CALCUL HYBRIDE ---
-        function updateApp() {
-            const getVal=(id,d)=>{const el=document.getElementById(id); return el?(parseFloat(el.value)||d):d;};
-            const coef=getVal('p-coef',11.361), pKwh=getVal('p-prix-kwh',0.0777), pAbo=getVal('p-abo',16.72), tvaC=getVal('p-tva-conso',20)/100, tvaA=getVal('p-tva-abo',5.5)/100;
-
-            STATE.dailyData = {};
-            STATE.monthlyData = {};
-            STATE.maxVal = 0; STATE.maxMonthVal = 0;
-
-            // 1. D'abord, on remplit avec les données RÉELLES (prioritaires)
-            Object.entries(STATE.realDailyData).forEach(([dateKey, data]) => {
-                const costTTC = data.kwh * pKwh * (1 + tvaC);
-                STATE.dailyData[dateKey] = {
-                    kwh: data.kwh,
-                    cost: costTTC,
-                    isReal: true,
-                    m3: data.m3
-                };
-            });
-
-            // 2. Ensuite, on comble les trous avec les INDEX (estimations)
-            STATE.indexHistory.sort((a,b) => new Date(a.date) - new Date(b.date));
-            
-            // Projection jusqu'à hier pour le dernier relevé
-            let loopHistory = [...STATE.indexHistory];
-            if(loopHistory.length > 0) {
-                const last = loopHistory[loopHistory.length-1];
-                const today = new Date(); today.setHours(0,0,0,0);
-                const lastDate = new Date(last.date);
-                // Si le dernier relevé date d'avant hier, on ajoute un point "virtuel" aujourd'hui pour projeter la conso
-                if(lastDate < today) {
-                     // On ne crée pas de fausse donnée ici, la logique de projection se fera dans la boucle
-                }
-            }
-
-            for(let i=1; i<STATE.indexHistory.length; i++) {
-                const prev = STATE.indexHistory[i-1];
-                const curr = STATE.indexHistory[i];
-                
-                const dStart = new Date(prev.date);
-                const dEnd = new Date(curr.date);
-                
-                // Nb jours
-                const diffTime = Math.abs(dEnd - dStart);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-                
-                if(diffDays <= 0) continue;
-
-                const deltaIndex = curr.index - prev.index;
-                if(deltaIndex < 0) continue; // Erreur index
-
-                const dailyM3 = deltaIndex / diffDays;
-                const dailyKwh = dailyM3 * coef;
-                const dailyCost = dailyKwh * pKwh * (1 + tvaC);
-
-                // Remplissage des jours SI pas de donnée réelle
-                for(let j=0; j<diffDays; j++) {
-                    const d = new Date(dStart);
-                    d.setDate(d.getDate() + j);
-                    const key = d.toISOString().slice(0,10);
-
-                    if(!STATE.dailyData[key]) {
-                        STATE.dailyData[key] = {
-                            kwh: dailyKwh,
-                            cost: dailyCost,
-                            m3: dailyM3,
-                            isReal: false
-                        };
-                    }
-                }
-            }
-
-            // 3. Agrégations & Max
-            let totKwh = 0, totCost = 0;
-
-            Object.entries(STATE.dailyData).forEach(([key, val]) => {
-                const m = key.slice(0,7); // YYYY-MM
-                
-                if(!STATE.monthlyData[m]) STATE.monthlyData[m] = {kwh:0, cost:0};
-                STATE.monthlyData[m].kwh += val.kwh;
-                STATE.monthlyData[m].cost += val.cost;
-
-                totKwh += val.kwh;
-                totCost += val.cost;
-
-                const v = STATE.view === 'kwh' ? val.kwh : val.cost;
-                if(v > STATE.maxVal) STATE.maxVal = v;
-            });
-
-            Object.values(STATE.monthlyData).forEach(d => {
-                const v = STATE.view === 'kwh' ? d.kwh : d.cost;
-                if(v > STATE.maxMonthVal) STATE.maxMonthVal = v;
-            });
-
-            // UI Updates
-            document.getElementById('total-kwh').innerText = Math.round(totKwh).toLocaleString() + ' kWh';
-            document.getElementById('total-cost').innerText = totCost.toLocaleString('fr-FR', {style:'currency', currency:'EUR'});
-
-            renderCalendar();
-            renderChart();
-            renderSynthesis();
-            renderHistory();
+        function exportData() {
+            const b = new Blob([JSON.stringify({indexes: DB.indexes, realDays: DB.realDays})], {type:'application/json'});
+            const a = document.createElement('a'); a.href = URL.createObjectURL(b);
+            a.download = `backup_gaz_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
         }
 
-        // --- RENDER CALENDRIER ---
-        function renderCalendar() {
-            const grid = document.getElementById('calendar-grid');
-            grid.innerHTML = '';
-            
-            const y = STATE.currentDate.getFullYear();
-            const m = STATE.currentDate.getMonth();
-            
-            document.getElementById('calendar-month-label').innerText = new Date(y, m, 1).toLocaleDateString('fr-FR', {month:'long', year:'numeric'});
-
-            const firstDay = new Date(y, m, 1).getDay() || 7; 
-            const daysInMonth = new Date(y, m+1, 0).getDate();
-
-            for(let i=1; i<firstDay; i++) grid.appendChild(document.createElement('div'));
-
-            for(let d=1; d<=daysInMonth; d++) {
-                const dateStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                const data = STATE.dailyData[dateStr];
-                const cell = document.createElement('div');
-                cell.className = "day-cell border border-gray-700/50";
-
-                if(data) {
-                    const val = STATE.view === 'kwh' ? data.kwh : data.cost;
-                    const ratio = STATE.maxVal > 0 ? val / STATE.maxVal : 0;
-                    
-                    cell.classList.add('has-data');
-                    
-                    // Couleur de fond
-                    let bg = '#374151';
-                    if(val > 0) {
-                        if(ratio < 0.25) bg = '#064e3b';
-                        else if(ratio < 0.5) bg = '#713f12'; 
-                        else if(ratio < 0.75) bg = '#7c2d12'; 
-                        else bg = '#7f1d1d';
-                    }
-                    cell.style.backgroundColor = bg;
-
-                    // Indicateur de donnée réelle (point vert)
-                    if(data.isReal) {
-                        const marker = document.createElement('div');
-                        marker.className = 'real-data-marker';
-                        marker.title = "Donnée réelle GRDF";
-                        cell.appendChild(marker);
-                    } else {
-                        // Donnée estimée (marqueur bleu optionnel)
-                    }
-
-                    const dispVal = STATE.view === 'kwh' ? Math.round(val) : val.toFixed(1);
-                    cell.innerHTML += `<span class="font-bold text-white z-10">${d}</span><div class="z-10 text-[0.65rem] text-gray-200 mt-1">${dispVal}</div>`;
-                    
-                    // Barre d'intensité
-                    const bar = document.createElement('div'); bar.className="intensity-bar";
-                    const fill = document.createElement('div'); fill.className="intensity-fill";
-                    fill.style.width = `${Math.min(100, ratio*100)}%`;
-                    fill.style.backgroundColor = ratio > 0.5 ? '#fcd34d' : '#34d399';
-                    bar.appendChild(fill); cell.appendChild(bar);
-                    
-                    cell.title = `${dateStr}\n${data.isReal ? "Réel" : "Estimé"}: ${val.toFixed(2)} ${STATE.view==='kwh'?'kWh':'€'}`;
-                } else {
-                    cell.innerHTML = `<span class="text-gray-600">${d}</span>`;
-                }
-                grid.appendChild(cell);
-            }
-        }
-
-        // --- RENDER CHART ---
-        function renderChart() {
-            const container = document.getElementById('monthly-chart');
-            container.innerHTML = '';
-            const isDayMode = STATE.chartMode === 'day';
-            
-            if(isDayMode) {
-                const y = STATE.currentDate.getFullYear();
-                const m = STATE.currentDate.getMonth();
-                const daysInMonth = new Date(y, m+1, 0).getDate();
-                
-                // Max local pour le mois
-                let localMax = 0;
-                for(let d=1; d<=daysInMonth; d++) {
-                     const k = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                     if(STATE.dailyData[k]) {
-                         const v = STATE.view === 'kwh' ? STATE.dailyData[k].kwh : STATE.dailyData[k].cost;
-                         if(v > localMax) localMax = v;
-                     }
-                }
-
-                for(let d=1; d<=daysInMonth; d++) {
-                    const k = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                    let val = 0, isReal = false;
-                    if(STATE.dailyData[k]) {
-                        val = STATE.view === 'kwh' ? STATE.dailyData[k].kwh : STATE.dailyData[k].cost;
-                        isReal = STATE.dailyData[k].isReal;
-                    }
-                    
-                    const p = localMax > 0 ? (val / localMax * 100) : 0;
-                    
-                    const div = document.createElement('div');
-                    div.className = `bar-wrapper dense ${isReal ? 'real' : 'estimated'}`;
-                    div.setAttribute('data-tooltip', `${d}: ${val.toFixed(1)}`);
-                    
-                    div.innerHTML = `<div class="bar" style="height: ${Math.max(1, p)}%"></div><div class="bar-label">${d}</div>`;
-                    container.appendChild(div);
-                }
-            } else {
-                // Mode Mois
-                const keys = Object.keys(STATE.monthlyData).sort();
-                keys.forEach(k => {
-                    const d = STATE.monthlyData[k];
-                    const val = STATE.view === 'kwh' ? d.kwh : d.cost;
-                    const p = STATE.maxMonthVal > 0 ? (val / STATE.maxMonthVal * 100) : 0;
-                    const [y, m] = k.split('-');
-                    const lbl = new Date(y, m-1, 1).toLocaleDateString('fr-FR', {month:'short', year:'2-digit'});
-                    
-                    const div = document.createElement('div');
-                    div.className = 'bar-wrapper estimated'; // Couleur par défaut (mixte)
-                    div.setAttribute('data-tooltip', `${lbl}: ${Math.round(val)}`);
-                    div.innerHTML = `<div class="bar" style="height: ${Math.max(2, p)}%"></div><div class="bar-label">${lbl}</div>`;
-                    container.appendChild(div);
-                });
-            }
-        }
-
-        function changeMonth(d) { STATE.currentDate.setMonth(STATE.currentDate.getMonth() + d); renderCalendar(); if(STATE.chartMode==='day') renderChart(); }
-        function setView(v) { STATE.view = v; updateApp(); updateBtnStyles(); }
-        function setChartMode(m) { STATE.chartMode = m; renderChart(); updateBtnStyles(); }
-        function updateBtnStyles() {
-            const act="bg-indigo-600 text-white", ina="text-gray-400 hover:text-white";
-            document.getElementById('btn-view-kwh').className=`px-3 py-1.5 rounded-md transition-colors ${STATE.view==='kwh'?act:ina}`;
-            document.getElementById('btn-view-cost').className=`px-3 py-1.5 rounded-md transition-colors ${STATE.view==='cost'?act:ina}`;
-            document.getElementById('btn-mode-month').className=`px-3 py-1.5 rounded-md transition-colors ${STATE.chartMode==='month'?act:ina}`;
-            document.getElementById('btn-mode-day').className=`px-3 py-1.5 rounded-md transition-colors ${STATE.chartMode==='day'?act:ina}`;
-        }
-        function toggleParams() {
-            const c=document.getElementById('params-content'), i=document.getElementById('chevron-icon');
-            if(c.classList.contains('hidden')) {c.classList.remove('hidden'); i.style.transform='rotate(180deg)';}
-            else {c.classList.add('hidden'); i.style.transform='rotate(0deg)';}
-        }
-        function toggleHistory() {
-            const c=document.getElementById('history-content'), i=document.getElementById('history-chevron');
-            if(c.classList.contains('hidden')) {c.classList.remove('hidden'); i.style.transform='rotate(180deg)';}
-            else {c.classList.add('hidden'); i.style.transform='rotate(0deg)';}
+        // --- UTILS UI ---
+        const STATE_UI = { synth: 'global', chart: 'day' };
+        function setSynth(m) { STATE_UI.synth = m; updateUI(); }
+        function updateSynth() { updateUI(); }
+        function setChart(m) { STATE_UI.chart = m; renderChart(); }
+        function moveCal(d) { DB.calDate.setMonth(DB.calDate.getMonth()+d); renderCal(); }
+        function openMob() { initDates(); document.getElementById('mob-modal').classList.remove('hidden'); }
+        function getParams() {
+            return {
+                kwh: parseFloat(document.getElementById('p-kwh').value)||0.0777,
+                abo: parseFloat(document.getElementById('p-abo').value)||16.72,
+                coef: parseFloat(document.getElementById('p-coef').value)||11.36,
+                tva1: (parseFloat(document.getElementById('p-tva1').value)||20)/100,
+                tva2: (parseFloat(document.getElementById('p-tva2').value)||5.5)/100
+            };
         }
     </script>
 </body>
