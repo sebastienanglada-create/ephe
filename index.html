@@ -106,7 +106,8 @@
         }
         @keyframes grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 
-        input[type="date"]::-webkit-calendar-picker-indicator {
+        input[type="date"]::-webkit-calendar-picker-indicator,
+        input[type="time"]::-webkit-calendar-picker-indicator {
             filter: invert(1) sepia(100%) saturate(1000%) hue-rotate(180deg) brightness(1.2);
             opacity: 0.8;
             cursor: pointer;
@@ -207,7 +208,6 @@
         </header>
 
         <!-- Dashboard Content -->
-        <!-- Added huge padding-bottom (pb-40) to ensure user can scroll past the FAB -->
         <div class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 pb-40 md:pb-12 scroll-smooth">
             
             <!-- KPIs -->
@@ -330,8 +330,13 @@
                     <!-- Date Input -->
                     <div class="space-y-2">
                         <label class="text-[10px] text-cyan-500 uppercase tracking-wider font-bold block">Date du Relevé</label>
-                        <div class="relative">
-                            <input type="date" id="hudDate" class="hud-input w-full px-4 py-3 rounded text-lg text-center" onfocus="setActiveInput('none')">
+                        <div class="flex gap-2">
+                            <div class="relative flex-1">
+                                <input type="date" id="hudDate" class="hud-input w-full px-4 py-3 rounded text-lg text-center" onfocus="setActiveInput('none')">
+                            </div>
+                            <div class="relative w-28">
+                                <input type="time" id="hudTime" class="hud-input w-full px-2 py-3 rounded text-lg text-center" onfocus="setActiveInput('none')">
+                            </div>
                         </div>
                     </div>
 
@@ -418,17 +423,17 @@
         // --- LOGIC ---
         const DEFAULT_SETTINGS = { kwhPrice: 0.1045, subscription: 245.50, tva: 0.20, conversionCoef: 11.2 };
         const DEMO_DATA = [
-            { date: "2023-01-01", value: 12000 }, { date: "2023-02-01", value: 12350 },
-            { date: "2023-03-01", value: 12600 }, { date: "2023-04-01", value: 12750 },
-            { date: "2023-06-01", value: 12850 }, { date: "2023-09-01", value: 12900 },
-            { date: "2023-10-15", value: 12980 }, { date: "2023-11-01", value: 13050 },
-            { date: "2023-12-01", value: 13300 }
+            { date: "2023-01-01", value: 12000, time: "00:00" }, { date: "2023-02-01", value: 12350, time: "00:00" },
+            { date: "2023-03-01", value: 12600, time: "00:00" }, { date: "2023-04-01", value: 12750, time: "00:00" },
+            { date: "2023-06-01", value: 12850, time: "00:00" }, { date: "2023-09-01", value: 12900, time: "00:00" },
+            { date: "2023-10-15", value: 12980, time: "00:00" }, { date: "2023-11-01", value: 13050, time: "00:00" },
+            { date: "2023-12-01", value: 13300, time: "00:00" }
         ];
 
         let state = {
             settings: { ...DEFAULT_SETTINGS },
-            readings: [],
-            importedData: {},
+            readings: [], // { date: "YYYY-MM-DD", time: "HH:mm", value: 12345 }
+            importedData: {}, // YYYY-MM-DD -> value
             computedDaily: [],
             ui: { periodFilter: 'global', currentDate: new Date(), chartMode: 'kwh' }
         };
@@ -476,26 +481,27 @@
             const overlay = document.getElementById('hudOverlay');
             const content = document.getElementById('hudContent');
             overlay.classList.remove('hidden');
-            // Animation frame
             setTimeout(() => {
                 overlay.classList.remove('opacity-0');
                 content.classList.remove('scale-95');
                 content.classList.add('scale-100');
             }, 10);
             
-            // Set defaults
-            document.getElementById('hudDate').valueAsDate = new Date();
+            // Set defaults (Now + Time)
+            const now = new Date();
+            document.getElementById('hudDate').valueAsDate = now;
+            document.getElementById('hudTime').value = now.toTimeString().substring(0, 5);
             document.getElementById('hudIndex').value = '';
             
             // Show last index hint
             if(state.readings.length > 0) {
-                const last = state.readings[state.readings.length-1];
+                const last = [...state.readings].sort((a,b) => (new Date(a.date + 'T' + (a.time||'00:00')) - new Date(b.date + 'T' + (b.time||'00:00')))).pop();
                 document.getElementById('lastIndexDisplay').innerText = `${last.value.toLocaleString()} m³ (${new Date(last.date).toLocaleDateString()})`;
             } else {
                 document.getElementById('lastIndexDisplay').innerText = "Aucun historique";
             }
 
-            activeInput = 'hudIndex'; // Reset keypad focus
+            activeInput = 'hudIndex'; 
         }
 
         function closeModule() {
@@ -518,7 +524,6 @@
             if (key === 'DEL') {
                 input.value = input.value.slice(0, -1);
             } else {
-                // Prevent multiple dots
                 if (key === '.' && input.value.includes('.')) return;
                 input.value += key;
             }
@@ -526,6 +531,7 @@
 
         function submitHudForm() {
             const date = document.getElementById('hudDate').value;
+            const time = document.getElementById('hudTime').value || "00:00";
             const val = parseFloat(document.getElementById('hudIndex').value);
 
             if (!date || isNaN(val)) {
@@ -533,12 +539,13 @@
                 return;
             }
 
-            const exists = state.readings.find(r => r.date === date);
+            // Check using date AND time
+            const exists = state.readings.find(r => r.date === date && (r.time || "00:00") === time);
             if (exists) {
-                if(!confirm("Un relevé existe déjà à cette date. Écraser ?")) return;
+                if(!confirm("Un relevé existe déjà pour cette date et heure. Écraser ?")) return;
                 exists.value = val;
             } else {
-                state.readings.push({ date, value: val });
+                state.readings.push({ date, time, value: val });
             }
             
             saveData();
@@ -565,7 +572,6 @@
         }
 
         // --- IMPORT / EXPORT / SETTINGS ---
-        
         document.getElementById('fileImport').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -573,85 +579,55 @@
             reader.onload = function(e) {
                 const text = e.target.result;
                 try {
-                    // Try parsing JSON first
                     const json = JSON.parse(text);
-                    
-                    // CASE 1: Current App Export Format
                     if(json.readings && json.settings) {
                         state.readings = json.readings;
                         state.settings = json.settings;
                         if(json.importedData) state.importedData = json.importedData;
                         alert("Sauvegarde (Format Natif) importée !");
                     } 
-                    // CASE 2: The specific backup format provided by user (indexes + daily keys)
                     else if (json.indexes && Array.isArray(json.indexes)) {
                         let countReadings = 0;
                         let countDaily = 0;
-
-                        // 1. Import Indexes
                         json.indexes.forEach(idx => {
                             if(idx.date && idx.index !== undefined) {
-                                // date "2024-04-04T12:00" -> "2024-04-04"
-                                const dateStr = idx.date.split('T')[0]; 
-                                const exists = state.readings.find(r => r.date === dateStr);
+                                const parts = idx.date.split('T');
+                                const dateStr = parts[0]; 
+                                const timeStr = parts[1] ? parts[1].substring(0,5) : "00:00";
+                                const exists = state.readings.find(r => r.date === dateStr && (r.time || "00:00") === timeStr);
                                 if(!exists) {
-                                    state.readings.push({ date: dateStr, value: idx.index });
+                                    state.readings.push({ date: dateStr, time: timeStr, value: idx.index });
                                     countReadings++;
                                 }
                             }
                         });
-
-                        // 2. Import Daily Data (Root keys)
-                        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
                         Object.keys(json).forEach(key => {
-                            if(dateRegex.test(key) && json[key].m3 !== undefined) {
+                            if(/^\d{4}-\d{2}-\d{2}$/.test(key) && json[key].m3 !== undefined) {
                                 state.importedData[key] = json[key].m3;
                                 countDaily++;
                             }
                         });
-
                         alert(`Sauvegarde importée : ${countReadings} relevés et ${countDaily} jours de consommation.`);
                     }
-                    else {
-                         throw new Error("Format JSON inconnu");
-                    }
-
+                    else { throw new Error("Format JSON inconnu"); }
                 } catch(err) {
-                    // Fallback: CSV Parsing logic specific to GRDF files
                     const lines = text.split('\n').filter(l => l.trim() !== '');
                     let count = 0;
                     let type = 'unknown';
+                    if (lines.some(l => l.includes('Date de consommation'))) type = 'daily';
+                    else if (lines.some(l => l.includes('Date de relevé'))) type = 'index';
 
-                    // Detect file type based on header
-                    if (lines.some(l => l.includes('Date de consommation') && l.includes('Consommation (m3)'))) {
-                        type = 'daily';
-                    } else if (lines.some(l => l.includes('Date de relevé') && l.includes('Index (m3)'))) {
-                        type = 'index';
-                    }
-
-                    if (type === 'unknown') {
-                        alert("Format non reconnu. Veuillez utiliser un JSON valide ou un export CSV GRDF.");
-                        return;
-                    }
+                    if (type === 'unknown') { alert("Format inconnu."); return; }
 
                     lines.forEach(line => {
                         const parts = line.split(';');
                         if (parts.length < 2) return;
-
-                        // Parse Date (DD/MM/YYYY -> YYYY-MM-DD)
                         const rawDate = parts[0].trim();
                         if (!rawDate.match(/^\d{2}\/\d{2}\/\d{4}$/)) return;
-                        
                         const [day, month, year] = rawDate.split('/');
                         const isoDate = `${year}-${month}-${day}`;
-
-                        // Parse Value (Handle french comma decimal)
-                        let valStr = '';
-                        if (type === 'daily') valStr = parts[1];
-                        if (type === 'index') valStr = parts[2];
-                        
+                        let valStr = (type === 'daily') ? parts[1] : parts[2];
                         if(!valStr) return;
-                        
                         const val = parseFloat(valStr.replace(',', '.').replace(/\s/g, ''));
 
                         if (!isNaN(val)) {
@@ -660,21 +636,15 @@
                             } else {
                                 const exists = state.readings.find(r => r.date === isoDate);
                                 if (exists) { exists.value = val; } 
-                                else { state.readings.push({ date: isoDate, value: val }); }
+                                else { state.readings.push({ date: isoDate, time: "00:00", value: val }); }
                             }
                             count++;
                         }
                     });
-                    
-                    if (count > 0) {
-                        alert(`${count} données importées (${type === 'daily' ? 'Consommations' : 'Index'}).`);
-                    } else {
-                         alert("Aucune donnée valide trouvée.");
-                    }
+                    if (count > 0) alert(`${count} données importées.`);
                 }
                 saveData();
                 recalcEngine();
-                // Reset file input
                 e.target.value = '';
             };
             reader.readAsText(file);
@@ -692,9 +662,7 @@
             anchor.remove();
         }
 
-        function toggleSettings() {
-            document.getElementById('settingsOverlay').classList.remove('hidden');
-        }
+        function toggleSettings() { document.getElementById('settingsOverlay').classList.remove('hidden'); }
         function saveSettings() {
             state.settings.kwhPrice = parseFloat(document.getElementById('setPrice').value);
             state.settings.subscription = parseFloat(document.getElementById('setSub').value);
@@ -703,52 +671,89 @@
             recalcEngine();
             document.getElementById('settingsOverlay').classList.add('hidden');
         }
-        function resetData() {
-            if(confirm("Tout effacer ?")) { localStorage.clear(); location.reload(); }
-        }
+        function resetData() { if(confirm("Tout effacer ?")) { localStorage.clear(); location.reload(); } }
 
-        // --- CORE ENGINE & UI RENDERING ---
-
+        // --- CORE ENGINE REWRITTEN FOR INTRA-DAY ---
         function recalcEngine() {
-            state.readings.sort((a, b) => new Date(a.date) - new Date(b.date));
-            state.computedDaily = [];
+            // Sort by Date THEN Time
+            state.readings.sort((a, b) => {
+                const da = new Date(a.date + 'T' + (a.time || '00:00'));
+                const db = new Date(b.date + 'T' + (b.time || '00:00'));
+                return da - db;
+            });
             
-            if (state.readings.length < 2) { updateUI(); return; }
+            const dailyMap = new Map(); // Use map to accumulate daily values (handling intra-day)
+
+            if (state.readings.length < 2) { 
+                state.computedDaily = []; 
+                updateUI(); 
+                return; 
+            }
 
             for (let i = 0; i < state.readings.length - 1; i++) {
                 const start = state.readings[i];
                 const end = state.readings[i+1];
-                const startDate = new Date(start.date);
-                const endDate = new Date(end.date);
+                
+                const dStart = new Date(start.date);
+                const dEnd = new Date(end.date);
                 const totalDelta = end.value - start.value;
                 
+                // If same day, just accumulate directly
+                if (start.date === end.date) {
+                    const k = start.date;
+                    if(!dailyMap.has(k)) dailyMap.set(k, { m3: 0, kwh: 0, type: 'real' });
+                    const entry = dailyMap.get(k);
+                    entry.m3 += totalDelta;
+                    entry.kwh += totalDelta * state.settings.conversionCoef;
+                    continue;
+                }
+
+                // If spanning multiple days
                 const days = [];
-                let current = new Date(startDate);
-                while (current < endDate) {
+                let current = new Date(dStart);
+                while (current < dEnd) {
                     days.push(current.toISOString().split('T')[0]);
                     current.setDate(current.getDate() + 1);
                 }
+                
                 if (days.length === 0) continue;
 
-                let realVol = 0;
-                let realCount = 0;
+                // Subtract known real imports
+                let knownVol = 0;
+                let knownCount = 0;
                 days.forEach(d => {
-                    if (state.importedData[d] !== undefined) { realVol += state.importedData[d]; realCount++; }
+                    if (state.importedData[d] !== undefined) { knownVol += state.importedData[d]; knownCount++; }
                 });
 
-                const remainingVol = totalDelta - realVol;
-                const remainingDays = days.length - realCount;
+                const remainingVol = totalDelta - knownVol;
+                const remainingDays = days.length - knownCount;
                 const avg = remainingDays > 0 ? remainingVol / remainingDays : 0;
 
                 days.forEach(d => {
-                    let val = (state.importedData[d] !== undefined) ? state.importedData[d] : avg;
+                    let val = 0;
+                    let type = 'estimated';
+                    if (state.importedData[d] !== undefined) {
+                        val = state.importedData[d];
+                        type = 'real';
+                    } else {
+                        val = avg;
+                    }
                     if (val < 0) val = 0;
-                    state.computedDaily.push({
-                        date: d, m3: val, kwh: val * state.settings.conversionCoef,
-                        type: state.importedData[d] !== undefined ? 'real' : 'estimated'
-                    });
+
+                    if(!dailyMap.has(d)) dailyMap.set(d, { m3: 0, kwh: 0, type: type });
+                    const entry = dailyMap.get(d);
+                    entry.m3 += val; // Accumulate if overlap (though sorting usually prevents overlap logic here)
+                    entry.kwh += val * state.settings.conversionCoef;
+                    // If any part is real, keep it real, otherwise est
+                    if(type === 'real') entry.type = 'real'; 
                 });
             }
+
+            // Convert Map to Array
+            state.computedDaily = Array.from(dailyMap.entries()).map(([date, data]) => ({
+                date, m3: data.m3, kwh: data.kwh, type: data.type
+            })).sort((a,b) => new Date(a.date) - new Date(b.date));
+
             updateUI();
         }
 
@@ -799,8 +804,6 @@
 
             // Chart
             renderChart(data);
-            
-            // Heatmap
             renderHeatmap(data);
 
             // History
@@ -808,32 +811,37 @@
             histContainer.innerHTML = '';
             
             // Sort Descending for display
-            const sorted = [...state.readings].sort((a,b)=>new Date(b.date)-new Date(a.date));
+            const sorted = [...state.readings].sort((a,b) => {
+                return new Date(b.date + 'T' + (b.time||'00:00')) - new Date(a.date + 'T' + (a.time||'00:00'));
+            });
             
             sorted.forEach((r, i) => {
-                // Calculate diff with previous reading (chronologically, which is next in this array)
                 let diffM3 = 0;
-                let periodCost = 0;
                 let daysDiff = 0;
                 let detailsHtml = '';
 
                 if (i < sorted.length - 1) {
                     const prev = sorted[i+1];
                     diffM3 = r.value - prev.value;
-                    const d1 = new Date(r.date);
-                    const d2 = new Date(prev.date);
-                    daysDiff = Math.round((d1 - d2) / (1000 * 60 * 60 * 24));
+                    const d1 = new Date(r.date + 'T' + (r.time||'00:00'));
+                    const d2 = new Date(prev.date + 'T' + (prev.time||'00:00'));
+                    const diffTime = Math.abs(d1 - d2);
+                    daysDiff = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
                     
-                    // Simple Cost Estimate for Period: M3 * Coef * Price
-                    // Note: This ignores daily precision from imported data but gives a good "reading-to-reading" estimate
                     const periodKwh = diffM3 * state.settings.conversionCoef;
                     const rawCost = periodKwh * state.settings.kwhPrice;
-                    const subCost = (state.settings.subscription / 365) * daysDiff;
+                    const subCost = (state.settings.subscription / 365) * (diffTime / (1000 * 60 * 60 * 24)); // Precise prorata
                     const totalPeriodCost = (rawCost + subCost) * (1 + state.settings.tva);
                     
-                    if (daysDiff > 0) {
+                    let timeLabel = daysDiff + 'j';
+                    if (daysDiff < 1) {
+                        const hours = Math.round(diffTime / (1000*60*60));
+                        timeLabel = hours + 'h';
+                    }
+
+                    if (diffM3 >= 0) {
                         detailsHtml = `<div class="text-[10px] text-gray-500 mt-1 flex justify-between">
-                            <span>+${diffM3.toFixed(1)} m³ en ${daysDiff}j</span>
+                            <span>+${diffM3.toFixed(1)} m³ en ${timeLabel}</span>
                             <span class="text-emerald-400 font-bold">${totalPeriodCost.toFixed(2)} €</span>
                         </div>`;
                     }
@@ -843,10 +851,13 @@
                 div.className = "bg-gray-900/50 p-3 rounded border border-gray-800 hover:border-gray-700 transition-colors";
                 div.innerHTML = `
                     <div class="flex justify-between items-center mb-1">
-                        <span class="text-xs text-gray-400 font-mono">${new Date(r.date).toLocaleDateString()}</span>
+                        <span class="text-xs text-gray-400 font-mono flex flex-col">
+                            <span>${new Date(r.date).toLocaleDateString()}</span>
+                            <span class="text-[9px] text-gray-600">${r.time || '00:00'}</span>
+                        </span>
                         <div class="flex items-center gap-2">
                             <span class="text-sm font-bold text-cyan-400 font-mono">${r.value.toLocaleString()} <span class="text-[10px] text-gray-600">m³</span></span>
-                            <button onclick="delReading('${r.date}')" class="text-red-900 hover:text-red-500"><i data-lucide="trash" class="w-3 h-3"></i></button>
+                            <button onclick="delReading('${r.date}', '${r.time||''}')" class="text-red-900 hover:text-red-500"><i data-lucide="trash" class="w-3 h-3"></i></button>
                         </div>
                     </div>
                     ${detailsHtml}
@@ -862,7 +873,6 @@
             
             if (data.length === 0) { container.innerHTML = '<div class="absolute inset-0 flex items-center justify-center text-gray-700 text-xs">Pas de données</div>'; return; }
 
-            // Aggregate if needed
             let items = data;
             const tooMany = data.length > 35;
             if(tooMany) {
@@ -888,11 +898,9 @@
                 el.className = `flex-1 mx-[1px] rounded-t-sm ${color} bar-grow opacity-80 hover:opacity-100 hover:scale-x-110 transition-all relative group`;
                 el.style.height = `${h}%`;
                 el.style.animationDelay = `${i*20}ms`;
-                // Tooltip
                 el.innerHTML = `<div class="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-black text-[10px] p-1 rounded border border-gray-700 whitespace-nowrap z-20">${item.val.toFixed(1)}</div>`;
                 container.appendChild(el);
             });
-            // Simple labels
             if(!tooMany) {
                 const l1 = document.createElement('div'); l1.innerText = new Date(items[0].date).toLocaleDateString(undefined, {day:'numeric'});
                 const l2 = document.createElement('div'); l2.innerText = new Date(items[items.length-1].date).toLocaleDateString(undefined, {day:'numeric'});
@@ -906,15 +914,13 @@
         function renderHeatmap(data) {
              const grid = document.getElementById("heatmapGrid");
             grid.innerHTML = '';
-            
-            // Just show current view's month or last month
             let target = state.ui.currentDate;
-            if(state.ui.periodFilter === 'global') target = new Date(); // Show current month if global
+            if(state.ui.periodFilter === 'global') target = new Date(); 
             
             const year = target.getFullYear();
             const month = target.getMonth();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const startDay = new Date(year, month, 1).getDay(); // 0=Sun
+            const startDay = new Date(year, month, 1).getDay(); 
             const offset = startDay === 0 ? 6 : startDay - 1;
 
             for(let i=0; i<offset; i++) grid.innerHTML += '<div></div>';
@@ -936,8 +942,7 @@
                     el.style.color = '#fff';
                     el.style.boxShadow = `0 0 ${found.m3}px ${col}`;
                     
-                    // Daily Cost Calc
-                    const costDay = found.kwh * state.settings.kwhPrice * (1 + state.settings.tva); // Simplest est.
+                    const costDay = found.kwh * state.settings.kwhPrice * (1 + state.settings.tva); 
                     
                     el.innerHTML += `
                         <div class="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-30 bg-black p-2 rounded border border-gray-700 whitespace-nowrap shadow-xl">
@@ -960,9 +965,7 @@
                 if(b.dataset.period===p) { b.classList.add('text-white', 'bg-cyan-500/20'); b.classList.remove('text-gray-400'); }
             });
         }
-        function applyCustomFilter() {
-            if(state.ui.periodFilter === 'custom') updateUI();
-        }
+        function applyCustomFilter() { if(state.ui.periodFilter === 'custom') updateUI(); }
         function setChartMode(m) { state.ui.chartMode = m; updateUI(); 
              document.querySelectorAll('.chart-mode-btn').forEach(b => {
                 b.classList.remove('text-white', 'bg-cyan-500/20'); b.classList.add('text-gray-400');
@@ -976,8 +979,11 @@
             state.ui.currentDate = new Date(dt);
             updateUI();
         }
-        function delReading(d) {
-            if(confirm('Supprimer ?')) { state.readings = state.readings.filter(r=>r.date !== d); saveData(); recalcEngine(); }
+        function delReading(d, t) {
+            if(confirm('Supprimer ?')) { 
+                state.readings = state.readings.filter(r => !(r.date === d && (r.time || '00:00') === (t || '00:00')));
+                saveData(); recalcEngine(); 
+            }
         }
 
         init();
