@@ -326,7 +326,8 @@
                     </div>
                     <div class="space-y-2">
                         <label class="text-[10px] text-cyan-500 uppercase tracking-wider font-bold block">Index Compteur (m³)</label>
-                        <div class="relative"><input type="number" id="hudIndex" step="0.001" placeholder="00000.0" class="hud-input w-full px-4 py-4 rounded-lg text-2xl font-mono text-cyan-400 tracking-widest text-center" onfocus="setActiveInput('index')" readonly><div class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 text-xs">m³</div></div>
+                        <!-- FIX: Use 'hudIndex' in onfocus -->
+                        <div class="relative"><input type="number" id="hudIndex" step="0.001" placeholder="00000.0" class="hud-input w-full px-4 py-4 rounded-lg text-2xl font-mono text-cyan-400 tracking-widest text-center" onfocus="setActiveInput('hudIndex')" readonly><div class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 text-xs">m³</div></div>
                     </div>
                     <div class="p-3 rounded bg-cyan-900/10 border border-cyan-900/30 text-center">
                         <span class="text-[10px] text-gray-500 uppercase">Dernier Index Connu</span>
