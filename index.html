@@ -185,9 +185,9 @@
             <div class="flex flex-wrap items-center gap-2 ml-auto">
                 <!-- Period Filter -->
                 <div class="flex bg-cyber-card rounded-lg p-1 border border-cyber-border">
-                    <button onclick="setFilter('global')" class="filter-btn px-3 py-1 text-xs rounded transition-all active-filter" data-period="global">Global</button>
+                    <button onclick="setFilter('global')" class="filter-btn px-3 py-1 text-xs rounded transition-all text-gray-400 hover:text-white" data-period="global">Global</button>
                     <button onclick="setFilter('year')" class="filter-btn px-3 py-1 text-xs rounded text-gray-400 hover:text-white transition-all" data-period="year">Année</button>
-                    <button onclick="setFilter('month')" class="filter-btn px-3 py-1 text-xs rounded text-gray-400 hover:text-white transition-all" data-period="month">Mois</button>
+                    <button onclick="setFilter('month')" class="filter-btn px-3 py-1 text-xs rounded transition-all text-white bg-cyan-500/20 active-filter" data-period="month">Mois</button>
                     <button onclick="setFilter('custom')" class="filter-btn px-3 py-1 text-xs rounded text-gray-400 hover:text-white transition-all" data-period="custom">Perso</button>
                 </div>
                 
@@ -459,7 +459,7 @@
             readings: [], // { date: "YYYY-MM-DD", time: "HH:mm", value: 12345 }
             importedData: {}, // YYYY-MM-DD -> value
             computedDaily: [],
-            ui: { periodFilter: 'global', currentDate: new Date(), chartMode: 'kwh' }
+            ui: { periodFilter: 'month', currentDate: new Date(), chartMode: 'kwh' }
         };
 
         // --- INIT ---
@@ -1071,3 +1071,5 @@
     </script>
 </body>
 </html>
+
+
