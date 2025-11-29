@@ -46,7 +46,6 @@
             background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #05070a 70%);
             color: #e2e8f0;
             overflow-x: hidden;
-            /* Fix for mobile viewports */
             height: 100dvh;
             max-height: 100dvh;
         }
@@ -137,7 +136,6 @@
         </div>
 
         <nav class="flex-1 py-6 space-y-2 px-2">
-            <!-- Main Trigger -->
             <button onclick="openModule()" class="nav-btn w-full flex items-center justify-start p-3 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20 hover:shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all group whitespace-nowrap">
                 <i data-lucide="plus-square" class="w-6 h-6 shrink-0"></i>
                 <span class="ml-3 font-semibold sidebar-text">Saisie / Import</span>
@@ -160,7 +158,6 @@
             </div>
         </nav>
 
-        <!-- Collapse Toggle -->
         <button onclick="toggleSidebar()" class="absolute bottom-4 right-[-12px] md:static md:w-full md:p-4 flex justify-end md:justify-center text-gray-500 hover:text-cyan-400 transition-colors focus:outline-none">
             <i id="collapseIcon" data-lucide="chevrons-left" class="w-5 h-5"></i>
         </button>
@@ -172,8 +169,6 @@
 
     <!-- MAIN CONTENT -->
     <main class="flex-1 flex flex-col h-full overflow-hidden relative">
-        
-        <!-- Header -->
         <header class="h-auto md:h-16 py-2 border-b border-cyber-border bg-cyber-bg/80 backdrop-blur flex flex-wrap items-center justify-between px-4 md:px-8 z-10 gap-2 shrink-0">
             <div class="md:hidden flex items-center gap-2">
                  <div class="w-8 h-8 rounded bg-cyan-500/10 border border-cyan-500/50 flex items-center justify-center">
@@ -183,7 +178,6 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-2 ml-auto">
-                <!-- Period Filter -->
                 <div class="flex bg-cyber-card rounded-lg p-1 border border-cyber-border">
                     <button onclick="setFilter('global')" class="filter-btn px-3 py-1 text-xs rounded transition-all text-gray-400 hover:text-white" data-period="global">Global</button>
                     <button onclick="setFilter('year')" class="filter-btn px-3 py-1 text-xs rounded text-gray-400 hover:text-white transition-all" data-period="year">Année</button>
@@ -191,14 +185,12 @@
                     <button onclick="setFilter('custom')" class="filter-btn px-3 py-1 text-xs rounded text-gray-400 hover:text-white transition-all" data-period="custom">Perso</button>
                 </div>
                 
-                <!-- Date Nav (Prev/Next) -->
                 <div id="dateNavigator" class="hidden flex items-center gap-1 border border-cyber-border rounded-lg p-1 bg-cyber-card">
                      <button onclick="changePeriod(-1)" class="p-1 hover:text-cyan-400 transition-colors"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
                      <span id="currentPeriodLabel" class="text-xs font-mono text-cyan-400 min-w-[80px] text-center">...</span>
                      <button onclick="changePeriod(1)" class="p-1 hover:text-cyan-400 transition-colors"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
                 </div>
 
-                <!-- Custom Range Selector (Hidden by default) -->
                 <div id="customRangeSelector" class="hidden flex items-center gap-2">
                     <input type="date" id="customStart" onchange="applyCustomFilter()" class="bg-cyber-card border border-cyber-border rounded px-2 py-1 text-xs text-gray-300 focus:outline-none focus:border-cyan-500 w-28">
                     <span class="text-gray-500 text-xs">-</span>
@@ -296,52 +288,33 @@
                 </div>
             </div>
             
-            <!-- Extra spacer for mobile scrolling comfort -->
             <div class="h-10 md:hidden"></div>
         </div>
     </main>
 
-    <!-- FLOATING ACTION BUTTON (Mobile) -->
     <button onclick="openModule()" class="md:hidden fixed bottom-6 right-6 w-14 h-14 bg-cyan-600 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(8,145,178,0.6)] z-40 hover:scale-110 transition-transform border border-cyan-400">
         <i data-lucide="plus" class="w-6 h-6 text-white"></i>
     </button>
 
-    <!-- NEW MODULE MODAL (THE HUD - RESPONSIVE) -->
+    <!-- HUD Overlay -->
     <div id="hudOverlay" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 transition-opacity duration-300 opacity-0">
         <div id="hudContent" class="hud-border bg-[#0a0c10] w-[95%] max-w-2xl max-h-[90dvh] flex flex-col rounded-xl shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300 relative">
-            
-            <!-- Close Button -->
-            <button onclick="closeModule()" class="absolute top-4 right-4 text-cyan-600 hover:text-cyan-400 z-10">
-                <i data-lucide="x" class="w-6 h-6"></i>
-            </button>
-
-            <!-- Header (Fixed) -->
+            <button onclick="closeModule()" class="absolute top-4 right-4 text-cyan-600 hover:text-cyan-400 z-10"><i data-lucide="x" class="w-6 h-6"></i></button>
             <div class="p-4 md:p-6 border-b border-gray-800 text-center relative overflow-hidden shrink-0">
                 <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-50"></div>
                 <h2 class="text-lg md:text-xl font-bold text-white tracking-[0.2em] uppercase neon-text-cyan">Entrée Données</h2>
                 <p class="text-[10px] text-cyan-700 uppercase mt-1">Terminal de Saisie</p>
             </div>
-
-            <!-- Body Grid (Scrollable) -->
             <div class="overflow-y-auto flex-1">
                 <div class="grid grid-cols-1 md:grid-cols-2 h-full">
-                    
-                    <!-- Left: Inputs -->
                     <div class="p-4 md:p-6 space-y-4 border-b md:border-b-0 md:border-r border-gray-800 relative">
-                        <!-- Date Input -->
                         <div class="space-y-1">
                             <label class="text-[10px] text-cyan-500 uppercase tracking-wider font-bold block">Date du Relevé</label>
                             <div class="flex gap-2">
-                                <div class="relative flex-1">
-                                    <input type="date" id="hudDate" class="hud-input w-full px-3 py-2 rounded text-base text-center" onfocus="setActiveInput('none')">
-                                </div>
-                                <div class="relative w-24">
-                                    <input type="time" id="hudTime" class="hud-input w-full px-1 py-2 rounded text-base text-center" onfocus="setActiveInput('none')">
-                                </div>
+                                <div class="relative flex-1"><input type="date" id="hudDate" class="hud-input w-full px-3 py-2 rounded text-base text-center" onfocus="setActiveInput('none')"></div>
+                                <div class="relative w-24"><input type="time" id="hudTime" class="hud-input w-full px-1 py-2 rounded text-base text-center" onfocus="setActiveInput('none')"></div>
                             </div>
                         </div>
-
-                        <!-- Index Input (Target for Keypad) -->
                         <div class="space-y-1">
                             <label class="text-[10px] text-cyan-500 uppercase tracking-wider font-bold block">Index Compteur (m³)</label>
                             <div class="relative">
@@ -349,15 +322,11 @@
                                 <div class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 text-xs">m³</div>
                             </div>
                         </div>
-
-                        <!-- Calculated Delta Display (Visual Feedback) -->
                         <div class="p-2 rounded bg-cyan-900/10 border border-cyan-900/30 text-center">
                             <span class="text-[10px] text-gray-500 uppercase">Dernier Index</span>
                             <div class="text-xs text-gray-300 font-mono" id="lastIndexDisplay">--</div>
                         </div>
                     </div>
-
-                    <!-- Right: Numpad -->
                     <div class="p-4 bg-[#050608] min-h-[250px]">
                         <div class="grid grid-cols-3 gap-2 h-full">
                             <button onclick="numpadPress('1')" class="numpad-btn rounded py-3">1</button>
@@ -376,110 +345,49 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Footer: Actions (Fixed) -->
             <div class="p-4 bg-[#0f1219] border-t border-gray-800 flex flex-col md:flex-row items-center justify-between gap-3 shrink-0">
-                
-                <!-- Data Tools -->
                 <div class="flex gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
-                    <button onclick="document.getElementById('fileImport').click()" class="flex-1 md:flex-none px-3 py-2 rounded border border-gray-700 hover:border-emerald-500 text-[10px] md:text-xs text-gray-400 hover:text-emerald-400 transition-colors flex items-center justify-center gap-1 whitespace-nowrap">
-                        <i data-lucide="upload" class="w-3 h-3"></i> Import
-                    </button>
-                    <button onclick="exportData()" class="flex-1 md:flex-none px-3 py-2 rounded border border-gray-700 hover:border-violet-500 text-[10px] md:text-xs text-gray-400 hover:text-violet-400 transition-colors flex items-center justify-center gap-1 whitespace-nowrap">
-                        <i data-lucide="save" class="w-3 h-3"></i> Sauve
-                    </button>
-                    <button onclick="toggleSettings()" class="px-3 py-2 rounded border border-gray-700 hover:border-gray-500 text-gray-400 transition-colors">
-                        <i data-lucide="settings" class="w-4 h-4"></i>
-                    </button>
+                    <button onclick="document.getElementById('fileImport').click()" class="flex-1 md:flex-none px-3 py-2 rounded border border-gray-700 hover:border-emerald-500 text-[10px] md:text-xs text-gray-400 hover:text-emerald-400 transition-colors flex items-center justify-center gap-1 whitespace-nowrap"><i data-lucide="upload" class="w-3 h-3"></i> Import</button>
+                    <button onclick="exportData()" class="flex-1 md:flex-none px-3 py-2 rounded border border-gray-700 hover:border-violet-500 text-[10px] md:text-xs text-gray-400 hover:text-violet-400 transition-colors flex items-center justify-center gap-1 whitespace-nowrap"><i data-lucide="save" class="w-3 h-3"></i> Sauve</button>
+                    <button onclick="toggleSettings()" class="px-3 py-2 rounded border border-gray-700 hover:border-gray-500 text-gray-400 transition-colors"><i data-lucide="settings" class="w-4 h-4"></i></button>
                 </div>
-
-                <!-- Submit Button -->
-                <button onclick="submitHudForm()" class="w-full md:w-auto px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold tracking-wider rounded shadow-[0_0_20px_rgba(8,145,178,0.4)] transition-all transform active:scale-95 text-sm">
-                    VALIDER
-                </button>
+                <button onclick="submitHudForm()" class="w-full md:w-auto px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold tracking-wider rounded shadow-[0_0_20px_rgba(8,145,178,0.4)] transition-all transform active:scale-95 text-sm">VALIDER</button>
             </div>
-            
-            <!-- Hidden inputs for logic -->
             <input type="file" id="fileImport" class="hidden" accept=".json,.csv">
         </div>
     </div>
     
-    <!-- Settings Modal (Redesigned) -->
+    <!-- Settings Modal -->
     <div id="settingsOverlay" class="fixed inset-0 bg-black/90 z-[60] hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="glass-panel p-6 rounded-xl w-full max-w-sm border border-gray-800 bg-[#0a0c10] shadow-2xl relative">
-             <!-- Header -->
              <div class="flex justify-between items-center mb-6">
-                <h3 class="text-white font-bold uppercase tracking-wider text-sm flex items-center gap-2">
-                    <i data-lucide="settings" class="w-4 h-4 text-cyan-400"></i>
-                    Configuration
-                </h3>
-                <button onclick="document.getElementById('settingsOverlay').classList.add('hidden')" class="text-gray-500 hover:text-white transition-colors">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
+                <h3 class="text-white font-bold uppercase tracking-wider text-sm flex items-center gap-2"><i data-lucide="settings" class="w-4 h-4 text-cyan-400"></i>Configuration</h3>
+                <button onclick="document.getElementById('settingsOverlay').classList.add('hidden')" class="text-gray-500 hover:text-white transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
              </div>
-
-             <!-- Inputs -->
              <div class="space-y-4">
-                <div>
-                    <label class="text-[10px] text-cyan-600 uppercase tracking-wider font-bold mb-1 block">Prix kWh HT (€)</label>
-                    <input type="number" id="setPrice" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white focus:border-cyan-500 focus:outline-none transition-colors">
-                </div>
-                <div>
-                    <label class="text-[10px] text-cyan-600 uppercase tracking-wider font-bold mb-1 block">Abonnement Annuel HT (€)</label>
-                    <input type="number" id="setSub" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white focus:border-cyan-500 focus:outline-none transition-colors">
-                </div>
-                <div>
-                    <label class="text-[10px] text-cyan-600 uppercase tracking-wider font-bold mb-1 block">Coef. Conversion (m³ -> kWh)</label>
-                    <input type="number" id="setCoef" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white focus:border-cyan-500 focus:outline-none transition-colors">
-                </div>
-                
-                <!-- Action Buttons -->
-                <button onclick="saveSettings()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 rounded shadow-[0_0_15px_rgba(8,145,178,0.4)] mt-2 transition-all tracking-wider text-sm">
-                    ENREGISTRER
-                </button>
-
-                <!-- Danger Zone -->
+                <div><label class="text-[10px] text-cyan-600 uppercase tracking-wider font-bold mb-1 block">Prix kWh HT (€)</label><input type="number" id="setPrice" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white focus:border-cyan-500 focus:outline-none transition-colors"></div>
+                <div><label class="text-[10px] text-cyan-600 uppercase tracking-wider font-bold mb-1 block">Abonnement Annuel HT (€)</label><input type="number" id="setSub" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white focus:border-cyan-500 focus:outline-none transition-colors"></div>
+                <div><label class="text-[10px] text-cyan-600 uppercase tracking-wider font-bold mb-1 block">Coef. Conversion (m³ -> kWh)</label><input type="number" id="setCoef" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white focus:border-cyan-500 focus:outline-none transition-colors"></div>
+                <button onclick="saveSettings()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 rounded shadow-[0_0_15px_rgba(8,145,178,0.4)] mt-2 transition-all tracking-wider text-sm">ENREGISTRER</button>
                 <div class="pt-4 mt-4 border-t border-gray-800">
-                    <button onclick="resetData()" class="w-full py-3 rounded border border-red-900/50 text-red-500 hover:bg-red-900/20 hover:border-red-500 flex items-center justify-center gap-2 transition-all group">
-                        <i data-lucide="trash-2" class="w-4 h-4 group-hover:animate-bounce"></i>
-                        <span class="font-bold text-xs uppercase tracking-widest">EFFACER TOUTES LES DONNÉES</span>
-                    </button>
-                    <p class="text-[9px] text-gray-600 text-center mt-2">Action irréversible. Supprime tout l'historique local.</p>
+                    <button onclick="resetData()" class="w-full py-3 rounded border border-red-900/50 text-red-500 hover:bg-red-900/20 hover:border-red-500 flex items-center justify-center gap-2 transition-all group"><i data-lucide="trash-2" class="w-4 h-4 group-hover:animate-bounce"></i><span class="font-bold text-xs uppercase tracking-widest">EFFACER TOUTES LES DONNÉES</span></button>
+                    <p class="text-[9px] text-gray-600 text-center mt-2">Action irréversible.</p>
                 </div>
              </div>
         </div>
     </div>
 
     <script>
-        // --- LOGIC ---
         const DEFAULT_SETTINGS = { kwhPrice: 0.1045, subscription: 245.50, tva: 0.20, conversionCoef: 11.2 };
-        // Empty demo data to prioritize real file import
-        const DEMO_DATA = [];
+        let state = { settings: { ...DEFAULT_SETTINGS }, readings: [], importedData: {}, computedDaily: [], ui: { periodFilter: 'month', currentDate: new Date(), chartMode: 'kwh' } };
 
-        let state = {
-            settings: { ...DEFAULT_SETTINGS },
-            readings: [], // { date: "YYYY-MM-DD", time: "HH:mm", value: 12345 }
-            importedData: {}, // YYYY-MM-DD -> value
-            computedDaily: [],
-            ui: { periodFilter: 'month', currentDate: new Date(), chartMode: 'kwh' }
-        };
-
-        // --- INIT ---
         function init() {
             if (window.lucide) lucide.createIcons();
             loadData();
-            if (state.readings.length === 0 && Object.keys(state.importedData).length === 0) {
-                // Keep empty on first load if no demo needed, or add basic demo if preferred
-                // state.readings = [...DEMO_DATA]; 
-                // saveData();
-            }
             recalcEngine();
-            // Init settings inputs
             document.getElementById('setPrice').value = state.settings.kwhPrice;
             document.getElementById('setSub').value = state.settings.subscription;
             document.getElementById('setCoef').value = state.settings.conversionCoef;
-
-            // Init Custom Dates
             const today = new Date();
             const lastMonth = new Date();
             lastMonth.setDate(today.getDate() - 30);
@@ -488,9 +396,7 @@
         }
 
         function loadData() {
-            const s = localStorage.getItem('gt_settings');
-            const r = localStorage.getItem('gt_readings');
-            const i = localStorage.getItem('gt_imports');
+            const s = localStorage.getItem('gt_settings'), r = localStorage.getItem('gt_readings'), i = localStorage.getItem('gt_imports');
             if (s) state.settings = JSON.parse(s);
             if (r) state.readings = JSON.parse(r);
             if (i) state.importedData = JSON.parse(i);
@@ -501,557 +407,346 @@
             localStorage.setItem('gt_imports', JSON.stringify(state.importedData));
         }
 
-        // --- MODULE HUD LOGIC ---
-        let activeInput = 'hudIndex'; // Default focus on Index for keypad
-
+        // HUD & Keypad
+        let activeInput = 'hudIndex';
         function openModule() {
-            const overlay = document.getElementById('hudOverlay');
-            const content = document.getElementById('hudContent');
-            overlay.classList.remove('hidden');
-            setTimeout(() => {
-                overlay.classList.remove('opacity-0');
-                content.classList.remove('scale-95');
-                content.classList.add('scale-100');
-            }, 10);
-            
-            // Set defaults (Now + Time)
+            const o = document.getElementById('hudOverlay'), c = document.getElementById('hudContent');
+            o.classList.remove('hidden');
+            setTimeout(() => { o.classList.remove('opacity-0'); c.classList.remove('scale-95'); c.classList.add('scale-100'); }, 10);
             const now = new Date();
             document.getElementById('hudDate').valueAsDate = now;
             document.getElementById('hudTime').value = now.toTimeString().substring(0, 5);
             document.getElementById('hudIndex').value = '';
-            
-            // Show last index hint
             if(state.readings.length > 0) {
                 const last = [...state.readings].sort((a,b) => (new Date(a.date + 'T' + (a.time||'00:00')) - new Date(b.date + 'T' + (b.time||'00:00')))).pop();
                 document.getElementById('lastIndexDisplay').innerText = `${last.value.toLocaleString()} m³ (${new Date(last.date).toLocaleDateString()})`;
-            } else {
-                document.getElementById('lastIndexDisplay').innerText = "Aucun historique";
-            }
-
-            activeInput = 'hudIndex'; 
+            } else document.getElementById('lastIndexDisplay').innerText = "Aucun historique";
+            activeInput = 'hudIndex';
         }
-
         function closeModule() {
-            const overlay = document.getElementById('hudOverlay');
-            const content = document.getElementById('hudContent');
-            overlay.classList.add('opacity-0');
-            content.classList.remove('scale-100');
-            content.classList.add('scale-95');
-            setTimeout(() => overlay.classList.add('hidden'), 300);
+            const o = document.getElementById('hudOverlay'), c = document.getElementById('hudContent');
+            o.classList.add('opacity-0'); c.classList.remove('scale-100'); c.classList.add('scale-95');
+            setTimeout(() => o.classList.add('hidden'), 300);
         }
-
-        function setActiveInput(id) {
-            if(id !== 'none') activeInput = id;
+        function setActiveInput(id) { if(id !== 'none') activeInput = id; }
+        function numpadPress(k) {
+            const i = document.getElementById(activeInput);
+            if (!i) return;
+            if (k === 'DEL') i.value = i.value.slice(0, -1);
+            else { if (k === '.' && i.value.includes('.')) return; i.value += k; }
         }
-
-        function numpadPress(key) {
-            const input = document.getElementById(activeInput);
-            if (!input) return;
-            
-            if (key === 'DEL') {
-                input.value = input.value.slice(0, -1);
-            } else {
-                if (key === '.' && input.value.includes('.')) return;
-                input.value += key;
-            }
-        }
-
         function submitHudForm() {
-            const date = document.getElementById('hudDate').value;
-            const time = document.getElementById('hudTime').value || "00:00";
-            const val = parseFloat(document.getElementById('hudIndex').value);
-
-            if (!date || isNaN(val)) {
-                alert("Veuillez entrer une date et un index valide.");
-                return;
-            }
-
-            // Check using date AND time
-            const exists = state.readings.find(r => r.date === date && (r.time || "00:00") === time);
-            if (exists) {
-                if(!confirm("Un relevé existe déjà pour cette date et heure. Écraser ?")) return;
-                exists.value = val;
-            } else {
-                state.readings.push({ date, time, value: val });
-            }
-            
-            saveData();
-            recalcEngine();
-            closeModule();
+            const d = document.getElementById('hudDate').value, t = document.getElementById('hudTime').value || "00:00", v = parseFloat(document.getElementById('hudIndex').value);
+            if (!d || isNaN(v)) { alert("Erreur de saisie"); return; }
+            const ex = state.readings.find(r => r.date === d && (r.time || "00:00") === t);
+            if (ex) { if(!confirm("Écraser ?")) return; ex.value = v; } else state.readings.push({ date: d, time: t, value: v });
+            saveData(); recalcEngine(); closeModule();
         }
 
-        // --- SIDEBAR TOGGLE ---
         function toggleSidebar() {
-            const sidebar = document.getElementById('mainSidebar');
-            const icon = document.getElementById('collapseIcon');
-            const isCollapsed = sidebar.classList.contains('w-20');
-            
-            if(isCollapsed) {
-                sidebar.classList.remove('w-20', 'sidebar-collapsed');
-                sidebar.classList.add('w-64');
-                icon.setAttribute('data-lucide', 'chevrons-left');
-            } else {
-                sidebar.classList.remove('w-64');
-                sidebar.classList.add('w-20', 'sidebar-collapsed');
-                icon.setAttribute('data-lucide', 'chevrons-right');
-            }
+            const s = document.getElementById('mainSidebar'), i = document.getElementById('collapseIcon');
+            if(s.classList.contains('w-20')) { s.classList.remove('w-20','sidebar-collapsed'); s.classList.add('w-64'); i.setAttribute('data-lucide', 'chevrons-left'); }
+            else { s.classList.remove('w-64'); s.classList.add('w-20','sidebar-collapsed'); i.setAttribute('data-lucide', 'chevrons-right'); }
             if(window.lucide) lucide.createIcons();
         }
 
-        // --- IMPORT / EXPORT / SETTINGS ---
+        // CSV/JSON Import Logic (FIXED & ROBUST)
         document.getElementById('fileImport').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
+            const f = e.target.files[0]; if (!f) return;
             const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                const text = e.target.result;
-                let processed = false;
-
-                // 1. Try JSON (Backup)
+            reader.onload = function(evt) {
+                const txt = evt.target.result;
+                let done = false;
+                
+                // 1. JSON
                 try {
-                    const json = JSON.parse(text);
-                    if (json.readings || json.indexes) {
-                        // ... JSON parsing logic (kept same as valid)
-                        if(json.readings) {
-                            state.readings = json.readings;
-                            state.settings = json.settings || state.settings;
-                            state.importedData = json.importedData || state.importedData;
-                        } else if(json.indexes) {
-                             // Legacy backup logic
-                             json.indexes.forEach(idx => {
-                                if(idx.date && idx.index !== undefined) {
-                                    const parts = idx.date.split('T');
-                                    const dateStr = parts[0]; 
-                                    const timeStr = parts[1] ? parts[1].substring(0,5) : "00:00";
-                                    // Dedupe
-                                    if(!state.readings.some(r=>r.date===dateStr && (r.time||"00:00")===timeStr)) {
-                                        state.readings.push({ date: dateStr, time: timeStr, value: idx.index });
-                                    }
+                    const j = JSON.parse(txt);
+                    if (j.readings || j.indexes) {
+                        if(j.readings) { state.readings = j.readings; state.settings = j.settings||state.settings; state.importedData = j.importedData||state.importedData; }
+                        else if(j.indexes) {
+                            j.indexes.forEach(x => {
+                                if(x.date && x.index!==undefined) {
+                                    const ps = x.date.split('T'), d = ps[0], t = ps[1]?ps[1].substring(0,5):"00:00";
+                                    if(!state.readings.some(r=>r.date===d&&(r.time||"00:00")===t)) state.readings.push({date:d, time:t, value:x.index});
                                 }
                             });
-                            // Daily keys
-                            Object.keys(json).forEach(key => {
-                                if(/^\d{4}-\d{2}-\d{2}$/.test(key) && json[key].m3 !== undefined) {
-                                    state.importedData[key] = json[key].m3;
-                                }
-                            });
+                            Object.keys(j).forEach(k => { if(/^\d{4}-\d{2}-\d{2}$/.test(k) && j[k].m3!==undefined) state.importedData[k]=j[k].m3; });
                         }
-                        processed = true;
-                        alert("Sauvegarde JSON importée.");
+                        done = true; alert("Backup JSON importé.");
                     }
-                } catch(e) { /* Not JSON */ }
+                } catch(e) {}
 
-                // 2. Try CSV (Robust GRDF Parsing)
-                if (!processed) {
-                    const lines = text.split(/\r\n|\n/).filter(l => l.trim() !== '');
+                // 2. CSV Robust (Accent Insensitive)
+                if (!done) {
+                    const lines = txt.split(/\r\n|\n/).filter(l => l.trim() !== '');
                     let type = 'unknown';
                     
-                    // Detect content type by scanning first 1000 characters
-                    const fullText = text.slice(0, 1000);
-                    if(fullText.includes("Date de relevé") || fullText.includes("Type d'index")) type = 'index';
-                    else if(fullText.includes("Date de consommation")) type = 'daily';
-                    else if(fullText.includes("Période de consommation")) type = 'monthly';
+                    // Fuzzy detection (ignores encoding/accents)
+                    const scan = lines.slice(0, 50).join('\n').toLowerCase();
+                    if(scan.includes("date de relev") || scan.includes("type d'index") || scan.includes("index (m3)")) type = 'index';
+                    else if(scan.includes("date de conso")) type = 'daily';
+                    else if(scan.includes("riode de conso")) type = 'monthly';
 
-                    if (type === 'unknown') {
-                        alert("Format non reconnu. Utilisez un fichier GRDF (Index, Conso jour ou mois) ou une sauvegarde JSON.");
-                        e.target.value = '';
-                        return;
-                    }
+                    if (type === 'unknown') { alert("Format CSV non reconnu."); return; }
 
                     let count = 0;
-                    
-                    lines.forEach(line => {
-                        // Skip empty or summary lines (starts with 'Année')
-                        if(line.startsWith('Année')) return;
-                        
-                        const parts = line.split(';');
-                        if (parts.length < 2) return;
+                    let latestDate = null;
 
-                        // Clean quotes around values
-                        const cleanParts = parts.map(p => p.replace(/"/g, '').trim());
+                    lines.forEach(l => {
+                        const lowL = l.toLowerCase();
+                        if(lowL.startsWith('ann') || lowL.includes('date de') || lowL.includes('riode de')) return;
+                        
+                        const parts = l.split(';').map(p => p.replace(/"/g, '').trim());
+                        if(parts.length < 2) return;
 
                         if (type === 'monthly') {
-                            // Monthly: MM/YYYY;Conso;...
-                            const period = cleanParts[0];
-                            if (!period.match(/^\d{2}\/\d{4}$/)) return;
-                            const [m, y] = period.split('/');
-                            const val = parseFloat(cleanParts[1].replace(',', '.').replace(/\s/g, ''));
-                            
-                            if (!isNaN(val)) {
-                                const daysInMonth = new Date(parseInt(y), parseInt(m), 0).getDate();
-                                const dailyM3 = val / daysInMonth;
-                                for(let d=1; d<=daysInMonth; d++) {
-                                    const isoDate = `${y}-${m}-${String(d).padStart(2,'0')}`;
-                                    if(state.importedData[isoDate] === undefined) {
-                                        state.importedData[isoDate] = dailyM3;
+                            // MM/YYYY
+                            const mMatch = parts[0].match(/(\d{2})\/(\d{4})/);
+                            if(mMatch) {
+                                const [_, m, y] = mMatch;
+                                const val = parseFloat(parts[1].replace(',', '.').replace(/\s/g, ''));
+                                if(!isNaN(val)) {
+                                    const days = new Date(y, m, 0).getDate();
+                                    const daily = val / days;
+                                    for(let d=1; d<=days; d++) {
+                                        const iso = `${y}-${m}-${String(d).padStart(2,'0')}`;
+                                        if(state.importedData[iso] === undefined) state.importedData[iso] = daily;
+                                        if(!latestDate || iso > latestDate) latestDate = iso;
                                     }
+                                    count++;
                                 }
-                                count++; // Count months
                             }
                         } else {
-                            // Daily or Index: DD/MM/YYYY;...
-                            const dateStr = cleanParts[0];
-                            if (!dateStr.match(/^\d{2}\/\d{2}\/\d{4}$/)) return;
-                            const [day, month, year] = dateStr.split('/');
-                            const isoDate = `${year}-${month}-${day}`;
-                            
-                            // Daily: Col 1 is Value. Index: Col 2 is Value.
-                            let valStr = (type === 'daily') ? cleanParts[1] : cleanParts[2];
-                            if(!valStr) return;
-                            const val = parseFloat(valStr.replace(',', '.').replace(/\s/g, ''));
-
-                            if (!isNaN(val)) {
-                                if (type === 'daily') {
-                                    state.importedData[isoDate] = val;
-                                } else if (type === 'index') {
-                                    // Check duplicate
-                                    const exists = state.readings.find(r => r.date === isoDate);
-                                    if (exists) exists.value = val;
-                                    else state.readings.push({ date: isoDate, time: "00:00", value: val });
+                            // DD/MM/YYYY
+                            const dMatch = parts[0].match(/(\d{2})\/(\d{2})\/(\d{4})/);
+                            if(dMatch) {
+                                const [_, d, m, y] = dMatch;
+                                const iso = `${y}-${m}-${d}`;
+                                let vStr = (type === 'daily') ? parts[1] : parts[2];
+                                if(vStr) {
+                                    const val = parseFloat(vStr.replace(',', '.').replace(/\s/g, ''));
+                                    if(!isNaN(val)) {
+                                        if(type === 'daily') state.importedData[iso] = val;
+                                        else {
+                                            const ex = state.readings.find(r => r.date === iso);
+                                            if(ex) ex.value = val;
+                                            else state.readings.push({ date: iso, time: "00:00", value: val });
+                                        }
+                                        if(!latestDate || iso > latestDate) latestDate = iso;
+                                        count++;
+                                    }
                                 }
-                                count++;
                             }
                         }
                     });
                     
-                    if (count > 0) alert(`${count} entrées importées.`);
-                    else alert("Aucune donnée valide trouvée dans le fichier.");
+                    if(latestDate) state.ui.currentDate = new Date(latestDate);
+                    alert(`${count} entrées importées.`);
                 }
-
-                saveData();
-                recalcEngine();
-                e.target.value = '';
+                saveData(); recalcEngine(); e.target.value = '';
             };
-            reader.readAsText(file);
+            reader.readAsText(f); // Default encoding is usually UTF-8, if files are ANSI/Latin1, accents break but fuzzy match handles it.
         });
 
         function exportData() {
-            const now = new Date();
-            const dateStr = now.toISOString().split('T')[0];
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
-            const anchor = document.createElement('a');
-            anchor.setAttribute("href", dataStr);
-            anchor.setAttribute("download", `gaz_backup_${dateStr}.json`);
-            document.body.appendChild(anchor);
-            anchor.click();
-            anchor.remove();
+            const d = new Date().toISOString().split('T')[0];
+            const uri = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
+            const a = document.createElement('a'); a.href = uri; a.download = `gaz_backup_${d}.json`; document.body.appendChild(a); a.click(); a.remove();
         }
-
         function toggleSettings() { document.getElementById('settingsOverlay').classList.remove('hidden'); }
         function saveSettings() {
             state.settings.kwhPrice = parseFloat(document.getElementById('setPrice').value);
             state.settings.subscription = parseFloat(document.getElementById('setSub').value);
             state.settings.conversionCoef = parseFloat(document.getElementById('setCoef').value);
-            saveData();
-            recalcEngine();
-            document.getElementById('settingsOverlay').classList.add('hidden');
+            saveData(); recalcEngine(); document.getElementById('settingsOverlay').classList.add('hidden');
         }
-        function resetData() { 
-            if(confirm("ATTENTION : Vous êtes sur le point d'effacer INTÉGRALEMENT l'historique et les réglages.\n\nCette action est irréversible.\n\nConfirmer l'effacement ?")) { 
-                localStorage.clear(); 
-                location.reload(); 
-            } 
-        }
+        function resetData() { if(confirm("Effacer TOUT ?")) { localStorage.clear(); location.reload(); } }
 
-        // --- CORE ENGINE REWRITTEN FOR INTRA-DAY ---
         function recalcEngine() {
-            // Sort by Date THEN Time
-            state.readings.sort((a, b) => {
-                const da = new Date(a.date + 'T' + (a.time || '00:00'));
-                const db = new Date(b.date + 'T' + (b.time || '00:00'));
-                return da - db;
-            });
-            
-            const dailyMap = new Map(); // Use map to accumulate daily values (handling intra-day)
+            state.readings.sort((a,b) => (new Date(a.date+'T'+(a.time||'00:00')) - new Date(b.date+'T'+(b.time||'00:00'))));
+            const dailyMap = new Map();
+            if (state.readings.length < 2) { state.computedDaily=[]; updateUI(); return; }
 
-            if (state.readings.length < 2) { 
-                state.computedDaily = []; 
-                updateUI(); 
-                return; 
-            }
-
-            for (let i = 0; i < state.readings.length - 1; i++) {
-                const start = state.readings[i];
-                const end = state.readings[i+1];
-                
-                const dStart = new Date(start.date);
-                const dEnd = new Date(end.date);
-                const totalDelta = end.value - start.value;
-                
-                // If same day, just accumulate directly
-                if (start.date === end.date) {
-                    const k = start.date;
-                    if(!dailyMap.has(k)) dailyMap.set(k, { m3: 0, kwh: 0, type: 'real' });
-                    const entry = dailyMap.get(k);
-                    entry.m3 += totalDelta;
-                    entry.kwh += totalDelta * state.settings.conversionCoef;
+            for(let i=0; i<state.readings.length-1; i++) {
+                const s = state.readings[i], e = state.readings[i+1];
+                if (s.date === e.date) {
+                    const d = s.date;
+                    const delta = e.value - s.value;
+                    if(!dailyMap.has(d)) dailyMap.set(d, {m3:0, kwh:0, type:'real'});
+                    const entry = dailyMap.get(d);
+                    entry.m3 += delta; entry.kwh += delta*state.settings.conversionCoef;
                     continue;
                 }
-
-                // If spanning multiple days
-                const days = [];
-                let current = new Date(dStart);
-                while (current < dEnd) {
-                    days.push(current.toISOString().split('T')[0]);
-                    current.setDate(current.getDate() + 1);
+                const rangeDays = [];
+                let curr = new Date(s.date);
+                const endD = new Date(e.date);
+                while(curr < endD) {
+                    rangeDays.push(curr.toISOString().split('T')[0]);
+                    curr.setDate(curr.getDate()+1);
                 }
+                if(rangeDays.length===0) continue;
+
+                let realVol = 0, realCount = 0;
+                rangeDays.forEach(d => { if(state.importedData[d]!==undefined) { realVol+=state.importedData[d]; realCount++; } });
                 
-                if (days.length === 0) continue;
+                const diffVal = (e.value - s.value);
+                const remVol = diffVal - realVol;
+                const remDays = rangeDays.length - realCount;
+                const avg = remDays > 0 ? remVol / remDays : 0;
 
-                // Subtract known real imports
-                let knownVol = 0;
-                let knownCount = 0;
-                days.forEach(d => {
-                    if (state.importedData[d] !== undefined) { knownVol += state.importedData[d]; knownCount++; }
-                });
-
-                const remainingVol = totalDelta - knownVol;
-                const remainingDays = days.length - knownCount;
-                const avg = remainingDays > 0 ? remainingVol / remainingDays : 0;
-
-                days.forEach(d => {
-                    let val = 0;
-                    let type = 'estimated';
-                    if (state.importedData[d] !== undefined) {
-                        val = state.importedData[d];
-                        type = 'real';
-                    } else {
-                        val = avg;
-                    }
-                    if (val < 0) val = 0;
-
-                    if(!dailyMap.has(d)) dailyMap.set(d, { m3: 0, kwh: 0, type: type });
-                    const entry = dailyMap.get(d);
-                    entry.m3 += val; // Accumulate if overlap (though sorting usually prevents overlap logic here)
-                    entry.kwh += val * state.settings.conversionCoef;
-                    // If any part is real, keep it real, otherwise est
-                    if(type === 'real') entry.type = 'real'; 
+                rangeDays.forEach(d => {
+                    let v = 0, t = 'estimated';
+                    if(state.importedData[d]!==undefined) { v=state.importedData[d]; t='real'; }
+                    else v = avg;
+                    if(v<0) v=0;
+                    
+                    if(!dailyMap.has(d)) dailyMap.set(d, {m3:0, kwh:0, type:t});
+                    const ent = dailyMap.get(d);
+                    ent.m3 += v; ent.kwh += v*state.settings.conversionCoef;
+                    if(t==='real') ent.type='real';
                 });
             }
-
-            // Convert Map to Array
-            state.computedDaily = Array.from(dailyMap.entries()).map(([date, data]) => ({
-                date, m3: data.m3, kwh: data.kwh, type: data.type
-            })).sort((a,b) => new Date(a.date) - new Date(b.date));
-
+            state.computedDaily = Array.from(dailyMap.entries()).map(([d,v])=>({date:d, ...v})).sort((a,b)=>new Date(a.date)-new Date(b.date));
             updateUI();
         }
 
         function updateUI() {
-            // Filter Logic
             let data = state.computedDaily;
             const target = state.ui.currentDate;
-            const nav = document.getElementById('dateNavigator');
-            const customNav = document.getElementById('customRangeSelector');
-            const periodLabel = document.getElementById('currentPeriodLabel');
+            const nav = document.getElementById('dateNavigator'), cust = document.getElementById('customRangeSelector'), lbl = document.getElementById('currentPeriodLabel');
+            nav.classList.add('hidden'); cust.classList.add('hidden');
 
-            nav.classList.add('hidden');
-            customNav.classList.add('hidden');
-
-            if (state.ui.periodFilter === 'year') {
+            if(state.ui.periodFilter === 'year') {
                 data = data.filter(d => new Date(d.date).getFullYear() === target.getFullYear());
-                periodLabel.innerText = target.getFullYear();
-                nav.classList.remove('hidden');
-            } else if (state.ui.periodFilter === 'month') {
-                const m = target.getMonth(), y = target.getFullYear();
-                data = data.filter(d => { const x = new Date(d.date); return x.getMonth() === m && x.getFullYear() === y; });
-                periodLabel.innerText = target.toLocaleDateString('fr-FR', {month:'short', year:'numeric'});
-                nav.classList.remove('hidden');
-            } else if (state.ui.periodFilter === 'custom') {
-                customNav.classList.remove('hidden');
-                const s = new Date(document.getElementById('customStart').value);
-                const e = new Date(document.getElementById('customEnd').value);
-                if(s && e) {
-                    data = data.filter(d => { const x = new Date(d.date); return x >= s && x <= e; });
-                }
+                lbl.innerText = target.getFullYear(); nav.classList.remove('hidden');
+            } else if(state.ui.periodFilter === 'month') {
+                data = data.filter(d => { const x=new Date(d.date); return x.getMonth()===target.getMonth() && x.getFullYear()===target.getFullYear(); });
+                lbl.innerText = target.toLocaleDateString('fr-FR', {month:'short', year:'numeric'}); nav.classList.remove('hidden');
+            } else if(state.ui.periodFilter === 'custom') {
+                cust.classList.remove('hidden');
+                const s = new Date(document.getElementById('customStart').value), e = new Date(document.getElementById('customEnd').value);
+                if(s&&e) data = data.filter(d => { const x=new Date(d.date); return x>=s && x<=e; });
             }
 
-            // KPIs
-            const tkwh = data.reduce((a, b) => a + b.kwh, 0);
-            const tm3 = data.reduce((a, b) => a + b.m3, 0);
-            const days = data.length;
-            const cost = (tkwh * state.settings.kwhPrice) + (state.settings.subscription * (days/365));
-            const ttc = cost * (1 + state.settings.tva);
-            const avg = days > 0 ? tkwh / days : 0;
-            const realCount = data.filter(d => d.type === 'real').length;
-            const reliability = days > 0 ? (realCount / days) * 100 : 0;
+            const kwh = data.reduce((a,b)=>a+b.kwh,0), days = data.length;
+            const cost = (kwh * state.settings.kwhPrice) + (state.settings.subscription * (days/365));
+            const ttc = cost * (1+state.settings.tva);
+            const realC = data.filter(d=>d.type==='real').length;
 
-            document.getElementById('kpiKwh').innerText = Math.round(tkwh).toLocaleString();
+            document.getElementById('kpiKwh').innerText = Math.round(kwh).toLocaleString();
             document.getElementById('kpiCost').innerHTML = ttc.toFixed(2) + ' <span class="text-sm">€</span>';
-            document.getElementById('kpiAvg').innerText = avg.toFixed(1);
-            document.getElementById('kpiReliability').innerText = Math.round(reliability) + '%';
-            document.getElementById('reliablityBar').style.width = reliability + '%';
+            document.getElementById('kpiAvg').innerText = (days>0?kwh/days:0).toFixed(1);
+            const rel = days>0?(realC/days)*100:0;
+            document.getElementById('kpiReliability').innerText = Math.round(rel) + '%';
+            document.getElementById('reliablityBar').style.width = rel + '%';
 
-            // Chart
             renderChart(data);
             renderHeatmap(data);
-
-            // History
-            const histContainer = document.getElementById('historyList');
-            histContainer.innerHTML = '';
-            
-            // Sort Descending for display
-            const sorted = [...state.readings].sort((a,b) => {
-                return new Date(b.date + 'T' + (b.time||'00:00')) - new Date(a.date + 'T' + (a.time||'00:00'));
-            });
-            
-            sorted.forEach((r, i) => {
-                let diffM3 = 0;
-                let daysDiff = 0;
-                let detailsHtml = '';
-
-                if (i < sorted.length - 1) {
-                    const prev = sorted[i+1];
-                    diffM3 = r.value - prev.value;
-                    const d1 = new Date(r.date + 'T' + (r.time||'00:00'));
-                    const d2 = new Date(prev.date + 'T' + (prev.time||'00:00'));
-                    const diffTime = Math.abs(d1 - d2);
-                    daysDiff = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-                    
-                    const periodKwh = diffM3 * state.settings.conversionCoef;
-                    const rawCost = periodKwh * state.settings.kwhPrice;
-                    const subCost = (state.settings.subscription / 365) * (diffTime / (1000 * 60 * 60 * 24)); // Precise prorata
-                    const totalPeriodCost = (rawCost + subCost) * (1 + state.settings.tva);
-                    
-                    let timeLabel = daysDiff + 'j';
-                    if (daysDiff < 1) {
-                        const hours = Math.round(diffTime / (1000*60*60));
-                        timeLabel = hours + 'h';
-                    }
-
-                    if (diffM3 >= 0) {
-                        detailsHtml = `<div class="text-[10px] text-gray-500 mt-1 flex justify-between">
-                            <span>+${diffM3.toFixed(1)} m³ en ${timeLabel}</span>
-                            <span class="text-emerald-400 font-bold">${totalPeriodCost.toFixed(2)} €</span>
-                        </div>`;
-                    }
-                }
-
-                const div = document.createElement('div');
-                div.className = "bg-gray-900/50 p-3 rounded border border-gray-800 hover:border-gray-700 transition-colors";
-                div.innerHTML = `
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="text-xs text-gray-400 font-mono flex flex-col">
-                            <span>${new Date(r.date).toLocaleDateString()}</span>
-                            <span class="text-[9px] text-gray-600">${r.time || '00:00'}</span>
-                        </span>
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm font-bold text-cyan-400 font-mono">${r.value.toLocaleString()} <span class="text-[10px] text-gray-600">m³</span></span>
-                            <button onclick="delReading('${r.date}', '${r.time||''}')" class="text-red-900 hover:text-red-500"><i data-lucide="trash" class="w-3 h-3"></i></button>
-                        </div>
-                    </div>
-                    ${detailsHtml}
-                `;
-                histContainer.appendChild(div);
-            });
+            renderHistory();
         }
 
         function renderChart(data) {
-            const container = document.getElementById('chartContainer');
-            const labels = document.getElementById('chartLabels');
-            container.innerHTML = ''; labels.innerHTML = '';
+            const c = document.getElementById('chartContainer'), l = document.getElementById('chartLabels');
+            c.innerHTML=''; l.innerHTML='';
+            if(data.length===0) { c.innerHTML='<div class="absolute inset-0 flex items-center justify-center text-gray-700 text-xs">Pas de données</div>'; return; }
             
-            if (data.length === 0) { container.innerHTML = '<div class="absolute inset-0 flex items-center justify-center text-gray-700 text-xs">Pas de données</div>'; return; }
-
             let items = data;
-            const tooMany = data.length > 35;
-            if(tooMany) {
-                const grouped = {};
+            if(data.length > 35) {
+                const g = {};
                 data.forEach(d => {
-                    const k = d.date.substring(0, 7); // Monthly
-                    if(!grouped[k]) grouped[k] = {val:0, date:d.date, type:d.type};
-                    grouped[k].val += (state.ui.chartMode === 'kwh' ? d.kwh : (d.kwh * state.settings.kwhPrice));
+                    const k = d.date.substring(0,7);
+                    if(!g[k]) g[k]={val:0, date:d.date, type:d.type};
+                    g[k].val += (state.ui.chartMode==='kwh'?d.kwh:(d.kwh*state.settings.kwhPrice));
                 });
-                items = Object.values(grouped);
+                items = Object.values(g);
             } else {
-                items = data.map(d => ({
-                    val: state.ui.chartMode === 'kwh' ? d.kwh : (d.kwh * state.settings.kwhPrice),
-                    date: d.date, type: d.type
-                }));
+                items = data.map(d => ({val: state.ui.chartMode==='kwh'?d.kwh:(d.kwh*state.settings.kwhPrice), date:d.date, type:d.type}));
             }
-
             const max = Math.max(...items.map(i=>i.val)) || 1;
-            items.forEach((item, i) => {
-                const h = (item.val / max) * 100;
-                const color = item.type === 'real' ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.5)]';
+            items.forEach((i, idx) => {
+                const h = (i.val/max)*100;
+                const col = i.type==='real'?'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]':'bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.5)]';
                 const el = document.createElement('div');
-                el.className = `flex-1 mx-[1px] rounded-t-sm ${color} bar-grow opacity-80 hover:opacity-100 hover:scale-x-110 transition-all relative group`;
-                el.style.height = `${h}%`;
-                el.style.animationDelay = `${i*20}ms`;
-                el.innerHTML = `<div class="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-black text-[10px] p-1 rounded border border-gray-700 whitespace-nowrap z-20">${item.val.toFixed(1)}</div>`;
-                container.appendChild(el);
+                el.className = `flex-1 mx-[1px] rounded-t-sm ${col} bar-grow opacity-80 hover:opacity-100 relative group`;
+                el.style.height = `${h}%`; el.style.animationDelay = `${idx*20}ms`;
+                el.innerHTML = `<div class="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-black text-[10px] p-1 rounded border border-gray-700 whitespace-nowrap z-20">${i.val.toFixed(1)}</div>`;
+                c.appendChild(el);
             });
-            if(!tooMany) {
-                const l1 = document.createElement('div'); l1.innerText = new Date(items[0].date).toLocaleDateString(undefined, {day:'numeric'});
-                const l2 = document.createElement('div'); l2.innerText = new Date(items[items.length-1].date).toLocaleDateString(undefined, {day:'numeric'});
-                labels.appendChild(l1); labels.appendChild(l2);
+            if(data.length<=35) {
+                l.innerHTML = `<div class="w-full flex justify-between text-[10px] text-gray-500"><span>${new Date(items[0].date).toLocaleDateString()}</span><span>${new Date(items[items.length-1].date).toLocaleDateString()}</span></div>`;
             } else {
-                 const l1 = document.createElement('div'); l1.innerText = new Date(items[0].date).getFullYear();
-                 labels.appendChild(l1);
+                l.innerHTML = `<div class="w-full flex justify-between text-[10px] text-gray-500"><span>${new Date(items[0].date).getFullYear()}</span><span>${new Date(items[items.length-1].date).getFullYear()}</span></div>`;
             }
         }
 
         function renderHeatmap(data) {
-             const grid = document.getElementById("heatmapGrid");
-            grid.innerHTML = '';
+            const g = document.getElementById("heatmapGrid"); g.innerHTML = '';
             let target = state.ui.currentDate;
-            if(state.ui.periodFilter === 'global') target = new Date(); 
+            if(state.ui.periodFilter==='global') target = new Date();
+            const y = target.getFullYear(), m = target.getMonth();
+            const dim = new Date(y, m+1, 0).getDate();
+            const off = new Date(y, m, 1).getDay();
+            const start = off===0?6:off-1;
             
-            const year = target.getFullYear();
-            const month = target.getMonth();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const startDay = new Date(year, month, 1).getDay(); 
-            const offset = startDay === 0 ? 6 : startDay - 1;
-
-            for(let i=0; i<offset; i++) grid.innerHTML += '<div></div>';
+            for(let i=0; i<start; i++) g.innerHTML+='<div></div>';
             
-            const relevant = state.computedDaily.filter(d => new Date(d.date).getMonth() === month && new Date(d.date).getFullYear() === year);
-            const max = Math.max(...relevant.map(d=>d.m3), 1);
+            const rel = state.computedDaily.filter(d => { const x=new Date(d.date); return x.getMonth()===m && x.getFullYear()===y; });
+            const max = Math.max(...rel.map(d=>d.m3), 1);
 
-            for(let d=1; d<=daysInMonth; d++) {
-                const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                const found = relevant.find(x => x.date === dateStr);
+            for(let d=1; d<=dim; d++) {
+                const iso = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                const f = rel.find(x=>x.date===iso);
                 const el = document.createElement('div');
                 el.className = "aspect-square rounded flex items-center justify-center text-[9px] text-gray-500 relative group cursor-default";
                 el.innerText = d;
-                
-                if(found) {
-                    const alpha = 0.2 + (found.m3/max)*0.8;
-                    const col = found.type === 'real' ? `rgba(16,185,129,${alpha})` : `rgba(6,182,212,${alpha})`;
-                    el.style.backgroundColor = col;
-                    el.style.color = '#fff';
-                    el.style.boxShadow = `0 0 ${found.m3}px ${col}`;
-                    
-                    const costDay = found.kwh * state.settings.kwhPrice * (1 + state.settings.tva); 
-                    
-                    el.innerHTML += `
-                        <div class="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-30 bg-black p-2 rounded border border-gray-700 whitespace-nowrap shadow-xl">
-                            <div class="font-bold text-white text-xs mb-1">${new Date(found.date).toLocaleDateString()}</div>
-                            <div class="flex justify-between gap-3 text-[10px]">
-                                <span class="text-cyan-400">${found.m3.toFixed(1)} m³</span>
-                                <span class="text-emerald-400 font-bold">${costDay.toFixed(2)} €</span>
-                            </div>
-                        </div>`;
-                } else {
-                    el.style.backgroundColor = 'rgba(255,255,255,0.05)';
-                }
-                grid.appendChild(el);
+                if(f) {
+                    const a = 0.2 + (f.m3/max)*0.8;
+                    const c = f.type==='real' ? `rgba(16,185,129,${a})` : `rgba(6,182,212,${a})`;
+                    el.style.backgroundColor = c; el.style.color = '#fff';
+                    const cost = f.kwh * state.settings.kwhPrice * (1+state.settings.tva);
+                    el.innerHTML += `<div class="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-30 bg-black p-2 rounded border border-gray-700 whitespace-nowrap shadow-xl">
+                        <div class="font-bold text-white text-xs mb-1">${new Date(f.date).toLocaleDateString()}</div>
+                        <div class="flex justify-between gap-3 text-[10px]"><span class="text-cyan-400">${f.m3.toFixed(1)} m³</span><span class="text-emerald-400 font-bold">${cost.toFixed(2)} €</span></div></div>`;
+                } else el.style.backgroundColor = 'rgba(255,255,255,0.05)';
+                g.appendChild(el);
             }
         }
 
-        function setFilter(p) { state.ui.periodFilter = p; updateUI(); 
+        function renderHistory() {
+            const h = document.getElementById('historyList'); h.innerHTML = '';
+            const s = [...state.readings].sort((a,b) => (new Date(b.date+'T'+(b.time||'00:00')) - new Date(a.date+'T'+(a.time||'00:00'))));
+            s.forEach((r, i) => {
+                let det = '';
+                if(i < s.length-1) {
+                    const prev = s[i+1];
+                    const diff = r.value - prev.value;
+                    const days = Math.ceil(Math.abs(new Date(r.date)-new Date(prev.date))/(1000*60*60*24));
+                    if(diff>=0) {
+                        const cost = (diff*state.settings.conversionCoef*state.settings.kwhPrice + (state.settings.subscription/365)*days)*(1+state.settings.tva);
+                        det = `<div class="text-[10px] text-gray-500 mt-1 flex justify-between"><span>+${diff.toFixed(1)} m³ / ${days}j</span><span class="text-emerald-400 font-bold">${cost.toFixed(2)} €</span></div>`;
+                    }
+                }
+                const div = document.createElement('div');
+                div.className = "bg-gray-900/50 p-3 rounded border border-gray-800 hover:border-gray-700 transition-colors";
+                div.innerHTML = `<div class="flex justify-between items-center mb-1"><span class="text-xs text-gray-400 font-mono flex flex-col"><span>${new Date(r.date).toLocaleDateString()}</span><span class="text-[9px] text-gray-600">${r.time||'00:00'}</span></span><div class="flex items-center gap-2"><span class="text-sm font-bold text-cyan-400 font-mono">${r.value.toLocaleString()} <span class="text-[10px] text-gray-600">m³</span></span><button onclick="delReading('${r.date}', '${r.time||''}')" class="text-red-900 hover:text-red-500"><i data-lucide="trash" class="w-3 h-3"></i></button></div></div>${det}`;
+                h.appendChild(div);
+            });
+        }
+
+        function setFilter(p) { state.ui.periodFilter = p; 
             document.querySelectorAll('.filter-btn').forEach(b => {
                 b.classList.remove('text-white', 'bg-cyan-500/20'); b.classList.add('text-gray-400');
                 if(b.dataset.period===p) { b.classList.add('text-white', 'bg-cyan-500/20'); b.classList.remove('text-gray-400'); }
             });
+            updateUI();
         }
         function applyCustomFilter() { if(state.ui.periodFilter === 'custom') updateUI(); }
-        function setChartMode(m) { state.ui.chartMode = m; updateUI(); 
+        function setChartMode(m) { state.ui.chartMode = m; 
              document.querySelectorAll('.chart-mode-btn').forEach(b => {
                 b.classList.remove('text-white', 'bg-cyan-500/20'); b.classList.add('text-gray-400');
                 if(b.dataset.mode===m) { b.classList.add('text-white', 'bg-cyan-500/20'); b.classList.remove('text-gray-400'); }
             });
+            updateUI();
         }
         function changePeriod(d) {
             const dt = state.ui.currentDate;
@@ -1071,5 +766,3 @@
     </script>
 </body>
 </html>
-
-
