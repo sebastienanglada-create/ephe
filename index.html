@@ -46,18 +46,15 @@
             background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #05070a 70%);
             color: #e2e8f0;
             overflow-x: hidden;
-            /* Fix for mobile viewports */
             height: 100dvh;
             max-height: 100dvh;
         }
         
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #05070a; }
         ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
 
-        /* Glassmorphism & Neon */
         .glass-panel {
             background: rgba(15, 18, 25, 0.85);
             backdrop-filter: blur(12px);
@@ -99,7 +96,6 @@
             box-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
         }
 
-        /* Chart Animations */
         .bar-grow {
             transform-origin: bottom;
             animation: grow 0.8s ease-out forwards;
@@ -113,7 +109,6 @@
             cursor: pointer;
         }
         
-        /* Sidebar Transitions */
         #mainSidebar { transition: width 0.3s ease; }
         .sidebar-text { transition: opacity 0.2s ease; opacity: 1; }
         .sidebar-collapsed .sidebar-text { opacity: 0; display: none; }
@@ -125,7 +120,7 @@
 </head>
 <body class="flex h-[100dvh] overflow-hidden selection:bg-cyan-500 selection:text-black font-sans">
 
-    <!-- SIDEBAR (Collapsible) -->
+    <!-- SIDEBAR -->
     <aside id="mainSidebar" class="hidden md:flex w-64 flex-col border-r border-cyber-border bg-cyber-bg/95 backdrop-blur z-20 relative">
         <div class="h-16 flex items-center justify-start px-6 border-b border-cyber-border logo-container transition-all">
             <div class="w-8 h-8 rounded bg-cyan-500/10 border border-cyan-500/50 flex items-center justify-center shadow-[0_0_10px_rgba(6,182,212,0.5)] shrink-0">
@@ -137,14 +132,11 @@
         </div>
 
         <nav class="flex-1 py-6 space-y-2 px-2">
-            <!-- Main Trigger -->
             <button onclick="openModule()" class="nav-btn w-full flex items-center justify-start p-3 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20 hover:shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all group whitespace-nowrap">
                 <i data-lucide="plus-square" class="w-6 h-6 shrink-0"></i>
                 <span class="ml-3 font-semibold sidebar-text">Saisie / Import</span>
             </button>
-            
             <div class="h-px bg-cyber-border my-4 mx-2"></div>
-
             <div id="sidebarLegend" class="px-4 py-2">
                 <h3 class="text-xs font-semibold text-cyber-text uppercase tracking-wider mb-3 whitespace-nowrap">Légende</h3>
                 <div class="space-y-3">
@@ -160,7 +152,6 @@
             </div>
         </nav>
 
-        <!-- Collapse Toggle -->
         <button onclick="toggleSidebar()" class="absolute bottom-4 right-[-12px] md:static md:w-full md:p-4 flex justify-end md:justify-center text-gray-500 hover:text-cyan-400 transition-colors focus:outline-none">
             <i id="collapseIcon" data-lucide="chevrons-left" class="w-5 h-5"></i>
         </button>
@@ -172,7 +163,6 @@
 
     <!-- MAIN CONTENT -->
     <main class="flex-1 flex flex-col h-full overflow-hidden relative">
-        
         <!-- Header -->
         <header class="h-auto md:h-16 py-2 border-b border-cyber-border bg-cyber-bg/80 backdrop-blur flex flex-wrap items-center justify-between px-4 md:px-8 z-10 gap-2 shrink-0">
             <div class="md:hidden flex items-center gap-2">
@@ -183,7 +173,6 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-2 ml-auto">
-                <!-- Period Filter -->
                 <div class="flex bg-cyber-card rounded-lg p-1 border border-cyber-border">
                     <button onclick="setFilter('global')" class="filter-btn px-3 py-1 text-xs rounded transition-all text-gray-400 hover:text-white" data-period="global">Global</button>
                     <button onclick="setFilter('year')" class="filter-btn px-3 py-1 text-xs rounded text-gray-400 hover:text-white transition-all" data-period="year">Année</button>
@@ -191,14 +180,12 @@
                     <button onclick="setFilter('custom')" class="filter-btn px-3 py-1 text-xs rounded text-gray-400 hover:text-white transition-all" data-period="custom">Perso</button>
                 </div>
                 
-                <!-- Date Nav (Prev/Next) -->
                 <div id="dateNavigator" class="hidden flex items-center gap-1 border border-cyber-border rounded-lg p-1 bg-cyber-card">
                      <button onclick="changePeriod(-1)" class="p-1 hover:text-cyan-400 transition-colors"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
                      <span id="currentPeriodLabel" class="text-xs font-mono text-cyan-400 min-w-[80px] text-center">...</span>
                      <button onclick="changePeriod(1)" class="p-1 hover:text-cyan-400 transition-colors"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
                 </div>
 
-                <!-- Custom Range Selector (Hidden by default) -->
                 <div id="customRangeSelector" class="hidden flex items-center gap-2">
                     <input type="date" id="customStart" onchange="applyCustomFilter()" class="bg-cyber-card border border-cyber-border rounded px-2 py-1 text-xs text-gray-300 focus:outline-none focus:border-cyan-500 w-28">
                     <span class="text-gray-500 text-xs">-</span>
@@ -296,152 +283,77 @@
                 </div>
             </div>
             
-            <!-- Extra spacer for mobile scrolling comfort -->
             <div class="h-10 md:hidden"></div>
         </div>
     </main>
 
-    <!-- FLOATING ACTION BUTTON (Mobile) -->
+    <!-- FAB -->
     <button onclick="openModule()" class="md:hidden fixed bottom-6 right-6 w-14 h-14 bg-cyan-600 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(8,145,178,0.6)] z-40 hover:scale-110 transition-transform border border-cyan-400">
         <i data-lucide="plus" class="w-6 h-6 text-white"></i>
     </button>
 
-    <!-- NEW MODULE MODAL (THE HUD) -->
+    <!-- HUD MODAL -->
     <div id="hudOverlay" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 transition-opacity duration-300 opacity-0">
         <div id="hudContent" class="hud-border bg-[#0a0c10] w-full max-w-2xl rounded-xl shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300 relative">
-            
-            <!-- Close Button -->
-            <button onclick="closeModule()" class="absolute top-4 right-4 text-cyan-600 hover:text-cyan-400 z-10">
-                <i data-lucide="x" class="w-6 h-6"></i>
-            </button>
-
-            <!-- Header -->
+            <button onclick="closeModule()" class="absolute top-4 right-4 text-cyan-600 hover:text-cyan-400 z-10"><i data-lucide="x" class="w-6 h-6"></i></button>
             <div class="p-6 border-b border-gray-800 text-center relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-50"></div>
                 <h2 class="text-xl font-bold text-white tracking-[0.2em] uppercase neon-text-cyan">Entrée Manuelle de Données</h2>
                 <p class="text-[10px] text-cyan-700 uppercase mt-1">Terminal de Saisie & Importation</p>
             </div>
-
-            <!-- Body Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2">
-                
-                <!-- Left: Inputs -->
                 <div class="p-6 space-y-6 border-b md:border-b-0 md:border-r border-gray-800 relative">
-                    <!-- Date Input -->
                     <div class="space-y-2">
                         <label class="text-[10px] text-cyan-500 uppercase tracking-wider font-bold block">Date du Relevé</label>
                         <div class="flex gap-2">
-                            <div class="relative flex-1">
-                                <input type="date" id="hudDate" class="hud-input w-full px-4 py-3 rounded text-lg text-center" onfocus="setActiveInput('none')">
-                            </div>
-                            <div class="relative w-28">
-                                <input type="time" id="hudTime" class="hud-input w-full px-2 py-3 rounded text-lg text-center" onfocus="setActiveInput('none')">
-                            </div>
+                            <div class="relative flex-1"><input type="date" id="hudDate" class="hud-input w-full px-4 py-3 rounded text-lg text-center" onfocus="setActiveInput('none')"></div>
+                            <div class="relative w-28"><input type="time" id="hudTime" class="hud-input w-full px-2 py-3 rounded text-lg text-center" onfocus="setActiveInput('none')"></div>
                         </div>
                     </div>
-
-                    <!-- Index Input (Target for Keypad) -->
                     <div class="space-y-2">
                         <label class="text-[10px] text-cyan-500 uppercase tracking-wider font-bold block">Index Compteur (m³)</label>
-                        <div class="relative">
-                            <input type="number" id="hudIndex" step="0.001" placeholder="00000.0" class="hud-input w-full px-4 py-4 rounded-lg text-2xl font-mono text-cyan-400 tracking-widest text-center" onfocus="setActiveInput('index')" readonly>
-                            <div class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 text-xs">m³</div>
-                        </div>
+                        <div class="relative"><input type="number" id="hudIndex" step="0.001" placeholder="00000.0" class="hud-input w-full px-4 py-4 rounded-lg text-2xl font-mono text-cyan-400 tracking-widest text-center" onfocus="setActiveInput('index')" readonly><div class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 text-xs">m³</div></div>
                     </div>
-
-                    <!-- Calculated Delta Display (Visual Feedback) -->
                     <div class="p-3 rounded bg-cyan-900/10 border border-cyan-900/30 text-center">
                         <span class="text-[10px] text-gray-500 uppercase">Dernier Index Connu</span>
                         <div class="text-sm text-gray-300 font-mono" id="lastIndexDisplay">--</div>
                     </div>
                 </div>
-
-                <!-- Right: Numpad -->
                 <div class="p-6 bg-[#050608]">
                     <div class="grid grid-cols-3 gap-3 h-full">
-                        <button onclick="numpadPress('1')" class="numpad-btn rounded">1</button>
-                        <button onclick="numpadPress('2')" class="numpad-btn rounded">2</button>
-                        <button onclick="numpadPress('3')" class="numpad-btn rounded">3</button>
-                        <button onclick="numpadPress('4')" class="numpad-btn rounded">4</button>
-                        <button onclick="numpadPress('5')" class="numpad-btn rounded">5</button>
-                        <button onclick="numpadPress('6')" class="numpad-btn rounded">6</button>
-                        <button onclick="numpadPress('7')" class="numpad-btn rounded">7</button>
-                        <button onclick="numpadPress('8')" class="numpad-btn rounded">8</button>
-                        <button onclick="numpadPress('9')" class="numpad-btn rounded">9</button>
-                        <button onclick="numpadPress('.')" class="numpad-btn rounded text-2xl">.</button>
-                        <button onclick="numpadPress('0')" class="numpad-btn rounded">0</button>
-                        <button onclick="numpadPress('DEL')" class="numpad-btn rounded text-red-400 border-red-900/30 hover:bg-red-900/20"><i data-lucide="delete" class="w-6 h-6 mx-auto"></i></button>
+                        <button onclick="numpadPress('1')" class="numpad-btn rounded">1</button><button onclick="numpadPress('2')" class="numpad-btn rounded">2</button><button onclick="numpadPress('3')" class="numpad-btn rounded">3</button>
+                        <button onclick="numpadPress('4')" class="numpad-btn rounded">4</button><button onclick="numpadPress('5')" class="numpad-btn rounded">5</button><button onclick="numpadPress('6')" class="numpad-btn rounded">6</button>
+                        <button onclick="numpadPress('7')" class="numpad-btn rounded">7</button><button onclick="numpadPress('8')" class="numpad-btn rounded">8</button><button onclick="numpadPress('9')" class="numpad-btn rounded">9</button>
+                        <button onclick="numpadPress('.')" class="numpad-btn rounded text-2xl">.</button><button onclick="numpadPress('0')" class="numpad-btn rounded">0</button><button onclick="numpadPress('DEL')" class="numpad-btn rounded text-red-400 border-red-900/30 hover:bg-red-900/20"><i data-lucide="delete" class="w-6 h-6 mx-auto"></i></button>
                     </div>
                 </div>
             </div>
-
-            <!-- Footer: Actions & Data Management -->
             <div class="p-4 bg-[#0f1219] border-t border-gray-800 flex flex-col md:flex-row items-center justify-between gap-4">
-                
-                <!-- Data Tools -->
                 <div class="flex gap-2 w-full md:w-auto">
-                    <button onclick="document.getElementById('fileImport').click()" class="flex-1 md:flex-none px-4 py-2 rounded border border-gray-700 hover:border-emerald-500 text-xs text-gray-400 hover:text-emerald-400 transition-colors flex items-center justify-center gap-2">
-                        <i data-lucide="upload" class="w-3 h-3"></i> Import
-                    </button>
-                    <button onclick="exportData()" class="flex-1 md:flex-none px-4 py-2 rounded border border-gray-700 hover:border-violet-500 text-xs text-gray-400 hover:text-violet-400 transition-colors flex items-center justify-center gap-2">
-                        <i data-lucide="save" class="w-3 h-3"></i> Sauvegarde
-                    </button>
-                    <button onclick="toggleSettings()" class="px-3 py-2 rounded border border-gray-700 hover:border-gray-500 text-gray-400 transition-colors">
-                        <i data-lucide="settings" class="w-4 h-4"></i>
-                    </button>
+                    <button onclick="document.getElementById('fileImport').click()" class="flex-1 md:flex-none px-4 py-2 rounded border border-gray-700 hover:border-emerald-500 text-xs text-gray-400 hover:text-emerald-400 transition-colors flex items-center justify-center gap-2"><i data-lucide="upload" class="w-3 h-3"></i> Import</button>
+                    <button onclick="exportData()" class="flex-1 md:flex-none px-4 py-2 rounded border border-gray-700 hover:border-violet-500 text-xs text-gray-400 hover:text-violet-400 transition-colors flex items-center justify-center gap-2"><i data-lucide="save" class="w-3 h-3"></i> Sauvegarde</button>
+                    <button onclick="toggleSettings()" class="px-3 py-2 rounded border border-gray-700 hover:border-gray-500 text-gray-400 transition-colors"><i data-lucide="settings" class="w-4 h-4"></i></button>
                 </div>
-
-                <!-- Submit Button -->
-                <button onclick="submitHudForm()" class="w-full md:w-auto px-8 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold tracking-wider rounded shadow-[0_0_20px_rgba(8,145,178,0.4)] transition-all transform hover:scale-[1.02]">
-                    VALIDER
-                </button>
+                <button onclick="submitHudForm()" class="w-full md:w-auto px-8 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold tracking-wider rounded shadow-[0_0_20px_rgba(8,145,178,0.4)] transition-all transform hover:scale-[1.02]">VALIDER</button>
             </div>
-            
-            <!-- Hidden inputs for logic -->
             <input type="file" id="fileImport" class="hidden" accept=".json,.csv">
         </div>
     </div>
     
-    <!-- Settings Modal (Redesigned) -->
+    <!-- Settings Modal -->
     <div id="settingsOverlay" class="fixed inset-0 bg-black/90 z-[60] hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="glass-panel p-6 rounded-xl w-full max-w-sm border border-gray-800 bg-[#0a0c10] shadow-2xl relative">
-             <!-- Header -->
              <div class="flex justify-between items-center mb-6">
-                <h3 class="text-white font-bold uppercase tracking-wider text-sm flex items-center gap-2">
-                    <i data-lucide="settings" class="w-4 h-4 text-cyan-400"></i>
-                    Configuration
-                </h3>
-                <button onclick="document.getElementById('settingsOverlay').classList.add('hidden')" class="text-gray-500 hover:text-white transition-colors">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
+                <h3 class="text-white font-bold uppercase tracking-wider text-sm flex items-center gap-2"><i data-lucide="settings" class="w-4 h-4 text-cyan-400"></i> Configuration</h3>
+                <button onclick="document.getElementById('settingsOverlay').classList.add('hidden')" class="text-gray-500 hover:text-white transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
              </div>
-
-             <!-- Inputs -->
              <div class="space-y-4">
-                <div>
-                    <label class="text-[10px] text-cyan-600 uppercase tracking-wider font-bold mb-1 block">Prix kWh HT (€)</label>
-                    <input type="number" id="setPrice" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white focus:border-cyan-500 focus:outline-none transition-colors">
-                </div>
-                <div>
-                    <label class="text-[10px] text-cyan-600 uppercase tracking-wider font-bold mb-1 block">Abonnement Annuel HT (€)</label>
-                    <input type="number" id="setSub" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white focus:border-cyan-500 focus:outline-none transition-colors">
-                </div>
-                <div>
-                    <label class="text-[10px] text-cyan-600 uppercase tracking-wider font-bold mb-1 block">Coef. Conversion (m³ -> kWh)</label>
-                    <input type="number" id="setCoef" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white focus:border-cyan-500 focus:outline-none transition-colors">
-                </div>
-                
-                <!-- Action Buttons -->
-                <button onclick="saveSettings()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 rounded shadow-[0_0_15px_rgba(8,145,178,0.4)] mt-2 transition-all tracking-wider text-sm">
-                    ENREGISTRER
-                </button>
-
-                <!-- Danger Zone -->
+                <div><label class="text-[10px] text-cyan-600 uppercase tracking-wider font-bold mb-1 block">Prix kWh HT (€)</label><input type="number" id="setPrice" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white focus:border-cyan-500 focus:outline-none transition-colors"></div>
+                <div><label class="text-[10px] text-cyan-600 uppercase tracking-wider font-bold mb-1 block">Abonnement Annuel HT (€)</label><input type="number" id="setSub" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white focus:border-cyan-500 focus:outline-none transition-colors"></div>
+                <div><label class="text-[10px] text-cyan-600 uppercase tracking-wider font-bold mb-1 block">Coef. Conversion (m³ -> kWh)</label><input type="number" id="setCoef" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white focus:border-cyan-500 focus:outline-none transition-colors"></div>
+                <button onclick="saveSettings()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 rounded shadow-[0_0_15px_rgba(8,145,178,0.4)] mt-2 transition-all tracking-wider text-sm">ENREGISTRER</button>
                 <div class="pt-4 mt-4 border-t border-gray-800">
-                    <button onclick="resetData()" class="w-full py-3 rounded border border-red-900/50 text-red-500 hover:bg-red-900/20 hover:border-red-500 flex items-center justify-center gap-2 transition-all group">
-                        <i data-lucide="trash-2" class="w-4 h-4 group-hover:animate-bounce"></i>
-                        <span class="font-bold text-xs uppercase tracking-widest">EFFACER TOUTES LES DONNÉES</span>
-                    </button>
+                    <button onclick="resetData()" class="w-full py-3 rounded border border-red-900/50 text-red-500 hover:bg-red-900/20 hover:border-red-500 flex items-center justify-center gap-2 transition-all group"><i data-lucide="trash-2" class="w-4 h-4 group-hover:animate-bounce"></i><span class="font-bold text-xs uppercase tracking-widest">EFFACER TOUTES LES DONNÉES</span></button>
                     <p class="text-[9px] text-gray-600 text-center mt-2">Action irréversible. Supprime tout l'historique local.</p>
                 </div>
              </div>
@@ -451,35 +363,25 @@
     <script>
         // --- LOGIC ---
         const DEFAULT_SETTINGS = { kwhPrice: 0.1045, subscription: 245.50, tva: 0.20, conversionCoef: 11.2 };
-        const DEMO_DATA = [];
-
         let state = {
             settings: { ...DEFAULT_SETTINGS },
             readings: [], 
             importedData: {}, 
             computedDaily: [],
-            ui: { periodFilter: 'month', currentDate: new Date(), chartMode: 'kwh' } // Default to month
+            ui: { periodFilter: 'month', currentDate: new Date(), chartMode: 'kwh' }
         };
 
-        // --- INIT ---
         function init() {
             if (window.lucide) lucide.createIcons();
             loadData();
-            
-            // Check current month on init
             if (state.readings.length > 0) {
-                // If we have data, maybe jump to last reading date
                 const last = state.readings[state.readings.length-1];
                 if(last) state.ui.currentDate = new Date(last.date);
             }
-
             recalcEngine();
-            // Init settings inputs
             document.getElementById('setPrice').value = state.settings.kwhPrice;
             document.getElementById('setSub').value = state.settings.subscription;
             document.getElementById('setCoef').value = state.settings.conversionCoef;
-
-            // Init Custom Dates
             const today = new Date();
             const lastMonth = new Date();
             lastMonth.setDate(today.getDate() - 30);
@@ -501,117 +403,69 @@
             localStorage.setItem('gt_imports', JSON.stringify(state.importedData));
         }
 
-        // --- MODULE HUD LOGIC ---
+        // --- UI ---
         let activeInput = 'hudIndex'; 
-
         function openModule() {
             const overlay = document.getElementById('hudOverlay');
             const content = document.getElementById('hudContent');
             overlay.classList.remove('hidden');
-            setTimeout(() => {
-                overlay.classList.remove('opacity-0');
-                content.classList.remove('scale-95');
-                content.classList.add('scale-100');
-            }, 10);
-            
-            // Set defaults (Now + Time)
+            setTimeout(() => { overlay.classList.remove('opacity-0'); content.classList.remove('scale-95'); content.classList.add('scale-100'); }, 10);
             const now = new Date();
             document.getElementById('hudDate').valueAsDate = now;
             document.getElementById('hudTime').value = now.toTimeString().substring(0, 5);
             document.getElementById('hudIndex').value = '';
-            
-            // Show last index hint
             if(state.readings.length > 0) {
                 const last = [...state.readings].sort((a,b) => (new Date(a.date + 'T' + (a.time||'00:00')) - new Date(b.date + 'T' + (b.time||'00:00')))).pop();
                 document.getElementById('lastIndexDisplay').innerText = `${last.value.toLocaleString()} m³ (${new Date(last.date).toLocaleDateString()})`;
-            } else {
-                document.getElementById('lastIndexDisplay').innerText = "Aucun historique";
-            }
-
+            } else document.getElementById('lastIndexDisplay').innerText = "Aucun historique";
             activeInput = 'hudIndex'; 
         }
-
         function closeModule() {
             const overlay = document.getElementById('hudOverlay');
             const content = document.getElementById('hudContent');
-            overlay.classList.add('opacity-0');
-            content.classList.remove('scale-100');
-            content.classList.add('scale-95');
+            overlay.classList.add('opacity-0'); content.classList.remove('scale-100'); content.classList.add('scale-95');
             setTimeout(() => overlay.classList.add('hidden'), 300);
         }
-
-        function setActiveInput(id) {
-            if(id !== 'none') activeInput = id;
-        }
-
+        function setActiveInput(id) { if(id !== 'none') activeInput = id; }
         function numpadPress(key) {
             const input = document.getElementById(activeInput);
             if (!input) return;
-            
-            if (key === 'DEL') {
-                input.value = input.value.slice(0, -1);
-            } else {
-                if (key === '.' && input.value.includes('.')) return;
-                input.value += key;
-            }
+            if (key === 'DEL') input.value = input.value.slice(0, -1);
+            else { if (key === '.' && input.value.includes('.')) return; input.value += key; }
         }
-
         function submitHudForm() {
             const date = document.getElementById('hudDate').value;
             const time = document.getElementById('hudTime').value || "00:00";
             const val = parseFloat(document.getElementById('hudIndex').value);
-
-            if (!date || isNaN(val)) {
-                alert("Veuillez entrer une date et un index valide.");
-                return;
-            }
-
-            // Check using date AND time
+            if (!date || isNaN(val)) { alert("Veuillez entrer une date et un index valide."); return; }
             const exists = state.readings.find(r => r.date === date && (r.time || "00:00") === time);
-            if (exists) {
-                if(!confirm("Un relevé existe déjà pour cette date et heure. Écraser ?")) return;
-                exists.value = val;
-            } else {
-                state.readings.push({ date, time, value: val });
-            }
-            
-            saveData();
-            recalcEngine();
-            closeModule();
+            if (exists) { if(!confirm("Index existant. Écraser ?")) return; exists.value = val; } 
+            else state.readings.push({ date, time, value: val });
+            saveData(); recalcEngine(); closeModule();
         }
-
-        // --- SIDEBAR TOGGLE ---
         function toggleSidebar() {
             const sidebar = document.getElementById('mainSidebar');
             const icon = document.getElementById('collapseIcon');
             const isCollapsed = sidebar.classList.contains('w-20');
-            
-            if(isCollapsed) {
-                sidebar.classList.remove('w-20', 'sidebar-collapsed');
-                sidebar.classList.add('w-64');
-                icon.setAttribute('data-lucide', 'chevrons-left');
-            } else {
-                sidebar.classList.remove('w-64');
-                sidebar.classList.add('w-20', 'sidebar-collapsed');
-                icon.setAttribute('data-lucide', 'chevrons-right');
-            }
+            if(isCollapsed) { sidebar.classList.remove('w-20', 'sidebar-collapsed'); sidebar.classList.add('w-64'); icon.setAttribute('data-lucide', 'chevrons-left'); } 
+            else { sidebar.classList.remove('w-64'); sidebar.classList.add('w-20', 'sidebar-collapsed'); icon.setAttribute('data-lucide', 'chevrons-right'); }
             if(window.lucide) lucide.createIcons();
         }
 
-        // --- IMPORT / EXPORT / SETTINGS ---
+        // --- ROBUST IMPORT ENGINE ---
         document.getElementById('fileImport').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
             
             reader.onload = function(e) {
-                // Remove BOM if present and normalize line endings
-                const text = e.target.result.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n');
+                // 1. CLEANING: Remove BOM, normalize breaks, trim empty lines
+                const rawText = e.target.result.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n');
                 let processed = false;
 
-                // 1. Try JSON (Backup)
+                // 2. TRY JSON (Backup)
                 try {
-                    const json = JSON.parse(text);
+                    const json = JSON.parse(rawText);
                     if (json.readings || json.indexes) {
                         if(json.readings) {
                             state.readings = json.readings;
@@ -635,49 +489,55 @@
                             });
                         }
                         processed = true;
-                        alert("Sauvegarde JSON importée.");
+                        alert("Sauvegarde JSON importée avec succès !");
                     }
-                } catch(e) { /* Not JSON */ }
+                } catch(e) { /* Not a JSON file */ }
 
-                // 2. Try CSV (Robust GRDF Parsing)
+                // 3. TRY CSV (GRDF / CSV Parsing)
                 if (!processed) {
                     let type = 'unknown';
-                    // Robust detection (scan all text)
-                    if (text.indexOf("Date de relevé") > -1) type = 'index';
-                    else if (text.indexOf("Date de consommation") > -1) type = 'daily';
-                    else if (text.indexOf("Période de consommation") > -1) type = 'monthly';
+                    // Robust detection using safe keywords (no accents if possible)
+                    if (rawText.indexOf("Index (m3)") > -1 || rawText.indexOf("Type d'index") > -1) type = 'index';
+                    else if (rawText.indexOf("Date de consommation") > -1 && rawText.indexOf("Consommation (m3)") > -1) type = 'daily';
+                    else if (rawText.indexOf("riode de consommation") > -1) type = 'monthly'; // Partial match for 'Période'
 
                     if (type === 'unknown') {
-                        alert("Format non reconnu. Utilisez un fichier GRDF (Index, Conso jour ou mois) ou une sauvegarde JSON.");
+                        alert("Format non reconnu. Assurez-vous d'utiliser un fichier CSV GRDF (Index, Conso jour ou mois) ou une sauvegarde JSON.");
                         e.target.value = '';
                         return;
                     }
 
                     let count = 0;
-                    const lines = text.split('\n');
+                    const lines = rawText.split('\n');
                     
                     lines.forEach(line => {
                         const cleanLine = line.trim();
-                        if(!cleanLine || cleanLine.startsWith('Année') || cleanLine.startsWith('Date') || cleanLine.startsWith('Période') || cleanLine.startsWith('Récapitulatif')) return;
+                        // Skip empty or purely summary lines (often start with Année/Year)
+                        if(!cleanLine || cleanLine.startsWith('Année') || cleanLine.startsWith('Total')) return;
                         
+                        // GRDF CSVs are semicolon delimited
                         const parts = cleanLine.split(';');
                         if (parts.length < 2) return;
 
-                        // Remove quotes and whitespace
+                        // Clean quotes and spaces from values (e.g. "11,28" -> 11,28)
                         const cols = parts.map(p => p.replace(/"/g, '').trim());
 
                         if (type === 'monthly') {
-                            const period = cols[0];
-                            if (!period.match(/^\d{2}\/\d{4}$/)) return;
+                            // Format: MM/YYYY;Conso;...
+                            const period = cols[0]; // "10/2025"
+                            if (!period.match(/^\d{2}\/\d{4}$/)) return; // Skip headers
                             const [m, y] = period.split('/');
-                            // Value is often something like "102,000" or "9"
-                            const val = parseFloat(cols[1].replace(/\s/g, '').replace(',', '.'));
+                            // Handle french number format: space as separator, comma as decimal
+                            const valStr = cols[1]; 
+                            if(!valStr) return;
+                            const val = parseFloat(valStr.replace(/\s/g, '').replace(/\u00A0/g, '').replace(',', '.'));
                             
                             if (!isNaN(val)) {
                                 const daysInMonth = new Date(parseInt(y), parseInt(m), 0).getDate();
                                 const dailyM3 = val / daysInMonth;
                                 for(let d=1; d<=daysInMonth; d++) {
                                     const isoDate = `${y}-${m}-${String(d).padStart(2,'0')}`;
+                                    // Don't overwrite if we have precise daily data
                                     if(state.importedData[isoDate] === undefined) {
                                         state.importedData[isoDate] = dailyM3;
                                     }
@@ -685,16 +545,19 @@
                                 count++;
                             }
                         } else {
-                            // Daily or Index
-                            const dateStr = cols[0];
-                            if (!dateStr.match(/^\d{2}\/\d{2}\/\d{4}$/)) return;
+                            // Daily or Index: DD/MM/YYYY;...
+                            const dateStr = cols[0]; // "26/11/2025"
+                            if (!dateStr.match(/^\d{2}\/\d{2}\/\d{4}$/)) return; // Skip headers
                             const [day, month, year] = dateStr.split('/');
                             const isoDate = `${year}-${month}-${day}`;
                             
+                            // GRDF Daily: Date(0);Conso(1)...
+                            // GRDF Index: Date(0);Type(1);Index(2)...
                             let valStr = (type === 'daily') ? cols[1] : cols[2];
                             if(!valStr) return;
                             
-                            const val = parseFloat(valStr.replace(/\s/g, '').replace(',', '.'));
+                            // Robust number parsing
+                            const val = parseFloat(valStr.replace(/\s/g, '').replace(/\u00A0/g, '').replace(',', '.'));
 
                             if (!isNaN(val)) {
                                 if (type === 'daily') {
@@ -709,8 +572,12 @@
                         }
                     });
                     
-                    if (count > 0) alert(`${count} entrées importées avec succès.`);
-                    else alert("Aucune donnée n'a pu être extraite. Vérifiez le format du fichier.");
+                    if (count > 0) {
+                        const label = type === 'monthly' ? 'mois' : 'entrées';
+                        alert(`Succès : ${count} ${label} importés.`);
+                    } else {
+                        alert("Aucune donnée valide n'a pu être extraite. Vérifiez le contenu du fichier.");
+                    }
                 }
 
                 saveData();
@@ -748,7 +615,7 @@
             } 
         }
 
-        // --- CORE ENGINE ---
+        // --- ENGINE ---
         function recalcEngine() {
             state.readings.sort((a, b) => {
                 const da = new Date(a.date + 'T' + (a.time || '00:00'));
@@ -767,7 +634,6 @@
             for (let i = 0; i < state.readings.length - 1; i++) {
                 const start = state.readings[i];
                 const end = state.readings[i+1];
-                
                 const dStart = new Date(start.date);
                 const dEnd = new Date(end.date);
                 const totalDelta = end.value - start.value;
@@ -787,7 +653,6 @@
                     days.push(current.toISOString().split('T')[0]);
                     current.setDate(current.getDate() + 1);
                 }
-                
                 if (days.length === 0) continue;
 
                 let knownVol = 0;
@@ -803,12 +668,8 @@
                 days.forEach(d => {
                     let val = 0;
                     let type = 'estimated';
-                    if (state.importedData[d] !== undefined) {
-                        val = state.importedData[d];
-                        type = 'real';
-                    } else {
-                        val = avg;
-                    }
+                    if (state.importedData[d] !== undefined) { val = state.importedData[d]; type = 'real'; } 
+                    else { val = avg; }
                     if (val < 0) val = 0;
 
                     if(!dailyMap.has(d)) dailyMap.set(d, { m3: 0, kwh: 0, type: type });
@@ -818,11 +679,7 @@
                     if(type === 'real') entry.type = 'real'; 
                 });
             }
-
-            state.computedDaily = Array.from(dailyMap.entries()).map(([date, data]) => ({
-                date, m3: data.m3, kwh: data.kwh, type: data.type
-            })).sort((a,b) => new Date(a.date) - new Date(b.date));
-
+            state.computedDaily = Array.from(dailyMap.entries()).map(([date, data]) => ({ date, m3: data.m3, kwh: data.kwh, type: data.type })).sort((a,b) => new Date(a.date) - new Date(b.date));
             updateUI();
         }
 
@@ -849,9 +706,7 @@
                 customNav.classList.remove('hidden');
                 const s = new Date(document.getElementById('customStart').value);
                 const e = new Date(document.getElementById('customEnd').value);
-                if(s && e) {
-                    data = data.filter(d => { const x = new Date(d.date); return x >= s && x <= e; });
-                }
+                if(s && e) { data = data.filter(d => { const x = new Date(d.date); return x >= s && x <= e; }); }
             }
 
             const tkwh = data.reduce((a, b) => a + b.kwh, 0);
@@ -874,57 +729,28 @@
             const histContainer = document.getElementById('historyList');
             histContainer.innerHTML = '';
             
-            const sorted = [...state.readings].sort((a,b) => {
-                return new Date(b.date + 'T' + (b.time||'00:00')) - new Date(a.date + 'T' + (a.time||'00:00'));
-            });
-            
+            const sorted = [...state.readings].sort((a,b) => new Date(b.date + 'T' + (b.time||'00:00')) - new Date(a.date + 'T' + (a.time||'00:00')));
             sorted.forEach((r, i) => {
-                let diffM3 = 0;
-                let daysDiff = 0;
                 let detailsHtml = '';
-
                 if (i < sorted.length - 1) {
                     const prev = sorted[i+1];
-                    diffM3 = r.value - prev.value;
+                    const diffM3 = r.value - prev.value;
                     const d1 = new Date(r.date + 'T' + (r.time||'00:00'));
                     const d2 = new Date(prev.date + 'T' + (prev.time||'00:00'));
                     const diffTime = Math.abs(d1 - d2);
-                    daysDiff = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-                    
+                    const daysDiff = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
                     const periodKwh = diffM3 * state.settings.conversionCoef;
-                    const rawCost = periodKwh * state.settings.kwhPrice;
-                    const subCost = (state.settings.subscription / 365) * (diffTime / (1000 * 60 * 60 * 24)); 
-                    const totalPeriodCost = (rawCost + subCost) * (1 + state.settings.tva);
+                    const totalPeriodCost = ((periodKwh * state.settings.kwhPrice) + ((state.settings.subscription / 365) * (diffTime / (1000 * 60 * 60 * 24)))) * (1 + state.settings.tva);
                     
                     let timeLabel = daysDiff + 'j';
-                    if (daysDiff < 1) {
-                        const hours = Math.round(diffTime / (1000*60*60));
-                        timeLabel = hours + 'h';
-                    }
-
+                    if (daysDiff < 1) { timeLabel = Math.round(diffTime / (1000*60*60)) + 'h'; }
                     if (diffM3 >= 0) {
-                        detailsHtml = `<div class="text-[10px] text-gray-500 mt-1 flex justify-between">
-                            <span>+${diffM3.toFixed(1)} m³ en ${timeLabel}</span>
-                            <span class="text-emerald-400 font-bold">${totalPeriodCost.toFixed(2)} €</span>
-                        </div>`;
+                        detailsHtml = `<div class="text-[10px] text-gray-500 mt-1 flex justify-between"><span>+${diffM3.toFixed(1)} m³ en ${timeLabel}</span><span class="text-emerald-400 font-bold">${totalPeriodCost.toFixed(2)} €</span></div>`;
                     }
                 }
-
                 const div = document.createElement('div');
                 div.className = "bg-gray-900/50 p-3 rounded border border-gray-800 hover:border-gray-700 transition-colors";
-                div.innerHTML = `
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="text-xs text-gray-400 font-mono flex flex-col">
-                            <span>${new Date(r.date).toLocaleDateString()}</span>
-                            <span class="text-[9px] text-gray-600">${r.time || '00:00'}</span>
-                        </span>
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm font-bold text-cyan-400 font-mono">${r.value.toLocaleString()} <span class="text-[10px] text-gray-600">m³</span></span>
-                            <button onclick="delReading('${r.date}', '${r.time||''}')" class="text-red-900 hover:text-red-500"><i data-lucide="trash" class="w-3 h-3"></i></button>
-                        </div>
-                    </div>
-                    ${detailsHtml}
-                `;
+                div.innerHTML = `<div class="flex justify-between items-center mb-1"><span class="text-xs text-gray-400 font-mono flex flex-col"><span>${new Date(r.date).toLocaleDateString()}</span><span class="text-[9px] text-gray-600">${r.time || '00:00'}</span></span><div class="flex items-center gap-2"><span class="text-sm font-bold text-cyan-400 font-mono">${r.value.toLocaleString()} <span class="text-[10px] text-gray-600">m³</span></span><button onclick="delReading('${r.date}', '${r.time||''}')" class="text-red-900 hover:text-red-500"><i data-lucide="trash" class="w-3 h-3"></i></button></div></div>${detailsHtml}`;
                 histContainer.appendChild(div);
             });
         }
@@ -933,34 +759,27 @@
             const container = document.getElementById('chartContainer');
             const labels = document.getElementById('chartLabels');
             container.innerHTML = ''; labels.innerHTML = '';
-            
             if (data.length === 0) { container.innerHTML = '<div class="absolute inset-0 flex items-center justify-center text-gray-700 text-xs">Pas de données</div>'; return; }
-
             let items = data;
             const tooMany = data.length > 35;
             if(tooMany) {
                 const grouped = {};
                 data.forEach(d => {
-                    const k = d.date.substring(0, 7); // Monthly
+                    const k = d.date.substring(0, 7); 
                     if(!grouped[k]) grouped[k] = {val:0, date:d.date, type:d.type};
                     grouped[k].val += (state.ui.chartMode === 'kwh' ? d.kwh : (d.kwh * state.settings.kwhPrice));
                 });
                 items = Object.values(grouped);
             } else {
-                items = data.map(d => ({
-                    val: state.ui.chartMode === 'kwh' ? d.kwh : (d.kwh * state.settings.kwhPrice),
-                    date: d.date, type: d.type
-                }));
+                items = data.map(d => ({ val: state.ui.chartMode === 'kwh' ? d.kwh : (d.kwh * state.settings.kwhPrice), date: d.date, type: d.type }));
             }
-
             const max = Math.max(...items.map(i=>i.val)) || 1;
             items.forEach((item, i) => {
                 const h = (item.val / max) * 100;
                 const color = item.type === 'real' ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.5)]';
                 const el = document.createElement('div');
                 el.className = `flex-1 mx-[1px] rounded-t-sm ${color} bar-grow opacity-80 hover:opacity-100 hover:scale-x-110 transition-all relative group`;
-                el.style.height = `${h}%`;
-                el.style.animationDelay = `${i*20}ms`;
+                el.style.height = `${h}%`; el.style.animationDelay = `${i*20}ms`;
                 el.innerHTML = `<div class="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-black text-[10px] p-1 rounded border border-gray-700 whitespace-nowrap z-20">${item.val.toFixed(1)}</div>`;
                 container.appendChild(el);
             });
@@ -968,10 +787,7 @@
                 const l1 = document.createElement('div'); l1.innerText = new Date(items[0].date).toLocaleDateString(undefined, {day:'numeric'});
                 const l2 = document.createElement('div'); l2.innerText = new Date(items[items.length-1].date).toLocaleDateString(undefined, {day:'numeric'});
                 labels.appendChild(l1); labels.appendChild(l2);
-            } else {
-                 const l1 = document.createElement('div'); l1.innerText = new Date(items[0].date).getFullYear();
-                 labels.appendChild(l1);
-            }
+            } else { const l1 = document.createElement('div'); l1.innerText = new Date(items[0].date).getFullYear(); labels.appendChild(l1); }
         }
 
         function renderHeatmap(data) {
@@ -979,45 +795,26 @@
             grid.innerHTML = '';
             let target = state.ui.currentDate;
             if(state.ui.periodFilter === 'global') target = new Date(); 
-            
-            const year = target.getFullYear();
-            const month = target.getMonth();
+            const year = target.getFullYear(); const month = target.getMonth();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const startDay = new Date(year, month, 1).getDay(); 
             const offset = startDay === 0 ? 6 : startDay - 1;
-
             for(let i=0; i<offset; i++) grid.innerHTML += '<div></div>';
-            
             const relevant = state.computedDaily.filter(d => new Date(d.date).getMonth() === month && new Date(d.date).getFullYear() === year);
             const max = Math.max(...relevant.map(d=>d.m3), 1);
-
             for(let d=1; d<=daysInMonth; d++) {
                 const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
                 const found = relevant.find(x => x.date === dateStr);
                 const el = document.createElement('div');
                 el.className = "aspect-square rounded flex items-center justify-center text-[9px] text-gray-500 relative group cursor-default";
                 el.innerText = d;
-                
                 if(found) {
                     const alpha = 0.2 + (found.m3/max)*0.8;
                     const col = found.type === 'real' ? `rgba(16,185,129,${alpha})` : `rgba(6,182,212,${alpha})`;
-                    el.style.backgroundColor = col;
-                    el.style.color = '#fff';
-                    el.style.boxShadow = `0 0 ${found.m3}px ${col}`;
-                    
+                    el.style.backgroundColor = col; el.style.color = '#fff'; el.style.boxShadow = `0 0 ${found.m3}px ${col}`;
                     const costDay = found.kwh * state.settings.kwhPrice * (1 + state.settings.tva); 
-                    
-                    el.innerHTML += `
-                        <div class="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-30 bg-black p-2 rounded border border-gray-700 whitespace-nowrap shadow-xl">
-                            <div class="font-bold text-white text-xs mb-1">${new Date(found.date).toLocaleDateString()}</div>
-                            <div class="flex justify-between gap-3 text-[10px]">
-                                <span class="text-cyan-400">${found.m3.toFixed(1)} m³</span>
-                                <span class="text-emerald-400 font-bold">${costDay.toFixed(2)} €</span>
-                            </div>
-                        </div>`;
-                } else {
-                    el.style.backgroundColor = 'rgba(255,255,255,0.05)';
-                }
+                    el.innerHTML += `<div class="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-30 bg-black p-2 rounded border border-gray-700 whitespace-nowrap shadow-xl"><div class="font-bold text-white text-xs mb-1">${new Date(found.date).toLocaleDateString()}</div><div class="flex justify-between gap-3 text-[10px]"><span class="text-cyan-400">${found.m3.toFixed(1)} m³</span><span class="text-emerald-400 font-bold">${costDay.toFixed(2)} €</span></div></div>`;
+                } else { el.style.backgroundColor = 'rgba(255,255,255,0.05)'; }
                 grid.appendChild(el);
             }
         }
@@ -1043,10 +840,7 @@
             updateUI();
         }
         function delReading(d, t) {
-            if(confirm('Supprimer ?')) { 
-                state.readings = state.readings.filter(r => !(r.date === d && (r.time || '00:00') === (t || '00:00')));
-                saveData(); recalcEngine(); 
-            }
+            if(confirm('Supprimer ?')) { state.readings = state.readings.filter(r => !(r.date === d && (r.time || '00:00') === (t || '00:00'))); saveData(); recalcEngine(); }
         }
 
         init();
