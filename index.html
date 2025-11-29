@@ -451,13 +451,8 @@
     <script>
         // --- LOGIC ---
         const DEFAULT_SETTINGS = { kwhPrice: 0.1045, subscription: 245.50, tva: 0.20, conversionCoef: 11.2 };
-        const DEMO_DATA = [
-            { date: "2023-01-01", value: 12000, time: "00:00" }, { date: "2023-02-01", value: 12350, time: "00:00" },
-            { date: "2023-03-01", value: 12600, time: "00:00" }, { date: "2023-04-01", value: 12750, time: "00:00" },
-            { date: "2023-06-01", value: 12850, time: "00:00" }, { date: "2023-09-01", value: 12900, time: "00:00" },
-            { date: "2023-10-15", value: 12980, time: "00:00" }, { date: "2023-11-01", value: 13050, time: "00:00" },
-            { date: "2023-12-01", value: 13300, time: "00:00" }
-        ];
+        // Empty demo data to prioritize real file import
+        const DEMO_DATA = [];
 
         let state = {
             settings: { ...DEFAULT_SETTINGS },
@@ -471,9 +466,10 @@
         function init() {
             if (window.lucide) lucide.createIcons();
             loadData();
-            if (state.readings.length === 0) {
-                state.readings = [...DEMO_DATA];
-                saveData();
+            if (state.readings.length === 0 && Object.keys(state.importedData).length === 0) {
+                // Keep empty on first load if no demo needed, or add basic demo if preferred
+                // state.readings = [...DEMO_DATA]; 
+                // saveData();
             }
             recalcEngine();
             // Init settings inputs
@@ -605,115 +601,124 @@
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
+            
             reader.onload = function(e) {
                 const text = e.target.result;
+                let processed = false;
+
+                // 1. Try JSON (Backup)
                 try {
                     const json = JSON.parse(text);
-                    if(json.readings && json.settings) {
-                        state.readings = json.readings;
-                        state.settings = json.settings;
-                        if(json.importedData) state.importedData = json.importedData;
-                        alert("Sauvegarde (Format Natif) importée !");
-                    } 
-                    else if (json.indexes && Array.isArray(json.indexes)) {
-                        let countReadings = 0;
-                        let countDaily = 0;
-                        json.indexes.forEach(idx => {
-                            if(idx.date && idx.index !== undefined) {
-                                const parts = idx.date.split('T');
-                                const dateStr = parts[0]; 
-                                const timeStr = parts[1] ? parts[1].substring(0,5) : "00:00";
-                                const exists = state.readings.find(r => r.date === dateStr && (r.time || "00:00") === timeStr);
-                                if(!exists) {
-                                    state.readings.push({ date: dateStr, time: timeStr, value: idx.index });
-                                    countReadings++;
+                    if (json.readings || json.indexes) {
+                        // ... JSON parsing logic (kept same as valid)
+                        if(json.readings) {
+                            state.readings = json.readings;
+                            state.settings = json.settings || state.settings;
+                            state.importedData = json.importedData || state.importedData;
+                        } else if(json.indexes) {
+                             // Legacy backup logic
+                             json.indexes.forEach(idx => {
+                                if(idx.date && idx.index !== undefined) {
+                                    const parts = idx.date.split('T');
+                                    const dateStr = parts[0]; 
+                                    const timeStr = parts[1] ? parts[1].substring(0,5) : "00:00";
+                                    // Dedupe
+                                    if(!state.readings.some(r=>r.date===dateStr && (r.time||"00:00")===timeStr)) {
+                                        state.readings.push({ date: dateStr, time: timeStr, value: idx.index });
+                                    }
                                 }
-                            }
-                        });
-                        Object.keys(json).forEach(key => {
-                            if(/^\d{4}-\d{2}-\d{2}$/.test(key) && json[key].m3 !== undefined) {
-                                state.importedData[key] = json[key].m3;
-                                countDaily++;
-                            }
-                        });
-                        alert(`Sauvegarde importée : ${countReadings} relevés et ${countDaily} jours de consommation.`);
+                            });
+                            // Daily keys
+                            Object.keys(json).forEach(key => {
+                                if(/^\d{4}-\d{2}-\d{2}$/.test(key) && json[key].m3 !== undefined) {
+                                    state.importedData[key] = json[key].m3;
+                                }
+                            });
+                        }
+                        processed = true;
+                        alert("Sauvegarde JSON importée.");
                     }
-                    else { throw new Error("Format JSON inconnu"); }
-                } catch(err) {
-                    const lines = text.split('\n').filter(l => l.trim() !== '');
-                    let count = 0;
+                } catch(e) { /* Not JSON */ }
+
+                // 2. Try CSV (Robust GRDF Parsing)
+                if (!processed) {
+                    const lines = text.split(/\r\n|\n/).filter(l => l.trim() !== '');
                     let type = 'unknown';
                     
-                    // Specific GRDF detection
-                    if (lines.some(l => l.includes('Date de consommation'))) type = 'daily';
-                    else if (lines.some(l => l.includes('Date de relevé'))) type = 'index';
-                    else if (lines.some(l => l.includes('Période de consommation'))) type = 'monthly'; // New detection
+                    // Detect content type by scanning first 10 lines
+                    const headerLimit = Math.min(lines.length, 20);
+                    for(let i=0; i<headerLimit; i++) {
+                        if(lines[i].includes("Date de relevé")) { type = 'index'; break; }
+                        if(lines[i].includes("Date de consommation")) { type = 'daily'; break; }
+                        if(lines[i].includes("Période de consommation")) { type = 'monthly'; break; }
+                    }
 
-                    if (type === 'unknown') { alert("Format inconnu."); return; }
+                    if (type === 'unknown') {
+                        alert("Format non reconnu. Utilisez un fichier GRDF (Index, Conso jour ou mois) ou une sauvegarde JSON.");
+                        e.target.value = '';
+                        return;
+                    }
 
-                    if(type === 'monthly') {
-                        // Monthly processing: Period;Consumption;Coeff...
-                        // Format: "10/2025";"9,000";...
-                        let monthlyCount = 0;
-                        lines.forEach(line => {
-                            const parts = line.split(';');
-                            if (parts.length < 2) return;
-                            
-                            const period = parts[0].trim(); // MM/YYYY
+                    let count = 0;
+                    
+                    lines.forEach(line => {
+                        // Skip empty or summary lines (starts with 'Année')
+                        if(line.startsWith('Année')) return;
+                        
+                        const parts = line.split(';');
+                        if (parts.length < 2) return;
+
+                        // Clean quotes around values
+                        const cleanParts = parts.map(p => p.replace(/"/g, '').trim());
+
+                        if (type === 'monthly') {
+                            // Monthly: MM/YYYY;Conso;...
+                            const period = cleanParts[0];
                             if (!period.match(/^\d{2}\/\d{4}$/)) return;
+                            const [m, y] = period.split('/');
+                            const val = parseFloat(cleanParts[1].replace(',', '.').replace(/\s/g, ''));
                             
-                            const [month, year] = period.split('/');
-                            let valStr = parts[1];
-                            if(!valStr) return;
-                            const totalMonthM3 = parseFloat(valStr.replace(',', '.').replace(/\s/g, ''));
-                            
-                            if (!isNaN(totalMonthM3)) {
-                                // Distribute over days of month
-                                const daysInMonth = new Date(year, month, 0).getDate();
-                                const dailyM3 = totalMonthM3 / daysInMonth;
-                                
+                            if (!isNaN(val)) {
+                                const daysInMonth = new Date(parseInt(y), parseInt(m), 0).getDate();
+                                const dailyM3 = val / daysInMonth;
                                 for(let d=1; d<=daysInMonth; d++) {
-                                    const isoDate = `${year}-${month}-${String(d).padStart(2,'0')}`;
-                                    // Only fill if not already present (preserve daily data priority)
+                                    const isoDate = `${y}-${m}-${String(d).padStart(2,'0')}`;
                                     if(state.importedData[isoDate] === undefined) {
                                         state.importedData[isoDate] = dailyM3;
                                     }
                                 }
-                                monthlyCount++;
+                                count++; // Count months
                             }
-                        });
-                        if(monthlyCount > 0) alert(`${monthlyCount} mois importés et lissés sur les jours correspondants.`);
-                    } else {
-                        // Index & Daily Logic
-                        lines.forEach(line => {
-                            const parts = line.split(';');
-                            if (parts.length < 2) return;
-                            const rawDate = parts[0].trim();
-                            if (!rawDate.match(/^\d{2}\/\d{2}\/\d{4}$/)) return;
-                            const [day, month, year] = rawDate.split('/');
+                        } else {
+                            // Daily or Index: DD/MM/YYYY;...
+                            const dateStr = cleanParts[0];
+                            if (!dateStr.match(/^\d{2}\/\d{2}\/\d{4}$/)) return;
+                            const [day, month, year] = dateStr.split('/');
                             const isoDate = `${year}-${month}-${day}`;
                             
-                            // Adjust column index based on file type
-                            // Daily: Col 1 (Date;Conso;...)
-                            // Index: Col 2 (Date;Type;Index;...)
-                            let valStr = (type === 'daily') ? parts[1] : parts[2];
+                            // Daily: Col 1 is Value. Index: Col 2 is Value.
+                            let valStr = (type === 'daily') ? cleanParts[1] : cleanParts[2];
                             if(!valStr) return;
                             const val = parseFloat(valStr.replace(',', '.').replace(/\s/g, ''));
 
                             if (!isNaN(val)) {
                                 if (type === 'daily') {
                                     state.importedData[isoDate] = val;
-                                } else {
+                                } else if (type === 'index') {
+                                    // Check duplicate
                                     const exists = state.readings.find(r => r.date === isoDate);
-                                    if (exists) { exists.value = val; } 
-                                    else { state.readings.push({ date: isoDate, time: "00:00", value: val }); }
+                                    if (exists) exists.value = val;
+                                    else state.readings.push({ date: isoDate, time: "00:00", value: val });
                                 }
                                 count++;
                             }
-                        });
-                        if (count > 0) alert(`${count} données importées.`);
-                    }
+                        }
+                    });
+                    
+                    if (count > 0) alert(`${count} entrées importées.`);
+                    else alert("Aucune donnée valide trouvée dans le fichier.");
                 }
+
                 saveData();
                 recalcEngine();
                 e.target.value = '';
