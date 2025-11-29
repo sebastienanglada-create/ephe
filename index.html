@@ -402,18 +402,47 @@
         </div>
     </div>
     
-    <!-- Settings Modal (Simple) -->
-    <div id="settingsOverlay" class="fixed inset-0 bg-black/80 z-[60] hidden flex items-center justify-center p-4">
-        <div class="glass-panel p-6 rounded-xl w-full max-w-sm">
-             <h3 class="text-white font-bold mb-4">Configuration Coûts</h3>
-             <div class="space-y-3">
-                <div><label class="text-xs text-gray-400">Prix kWh (€)</label><input type="number" id="setPrice" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white mt-1"></div>
-                <div><label class="text-xs text-gray-400">Abonnement (€)</label><input type="number" id="setSub" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white mt-1"></div>
-                <div><label class="text-xs text-gray-400">Coef. Conv.</label><input type="number" id="setCoef" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white mt-1"></div>
-                <div class="flex gap-2 mt-4">
-                    <button onclick="saveSettings()" class="flex-1 bg-cyan-600 text-white py-2 rounded">Sauver</button>
-                    <button onclick="resetData()" class="px-3 border border-red-500/30 text-red-400 rounded">Reset</button>
-                    <button onclick="document.getElementById('settingsOverlay').classList.add('hidden')" class="px-3 text-gray-400">Fermer</button>
+    <!-- Settings Modal (Redesigned) -->
+    <div id="settingsOverlay" class="fixed inset-0 bg-black/90 z-[60] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="glass-panel p-6 rounded-xl w-full max-w-sm border border-gray-800 bg-[#0a0c10] shadow-2xl relative">
+             <!-- Header -->
+             <div class="flex justify-between items-center mb-6">
+                <h3 class="text-white font-bold uppercase tracking-wider text-sm flex items-center gap-2">
+                    <i data-lucide="settings" class="w-4 h-4 text-cyan-400"></i>
+                    Configuration
+                </h3>
+                <button onclick="document.getElementById('settingsOverlay').classList.add('hidden')" class="text-gray-500 hover:text-white transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+             </div>
+
+             <!-- Inputs -->
+             <div class="space-y-4">
+                <div>
+                    <label class="text-[10px] text-cyan-600 uppercase tracking-wider font-bold mb-1 block">Prix kWh HT (€)</label>
+                    <input type="number" id="setPrice" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white focus:border-cyan-500 focus:outline-none transition-colors">
+                </div>
+                <div>
+                    <label class="text-[10px] text-cyan-600 uppercase tracking-wider font-bold mb-1 block">Abonnement Annuel HT (€)</label>
+                    <input type="number" id="setSub" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white focus:border-cyan-500 focus:outline-none transition-colors">
+                </div>
+                <div>
+                    <label class="text-[10px] text-cyan-600 uppercase tracking-wider font-bold mb-1 block">Coef. Conversion (m³ -> kWh)</label>
+                    <input type="number" id="setCoef" class="w-full bg-black/50 border border-gray-700 rounded p-2 text-white focus:border-cyan-500 focus:outline-none transition-colors">
+                </div>
+                
+                <!-- Action Buttons -->
+                <button onclick="saveSettings()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 rounded shadow-[0_0_15px_rgba(8,145,178,0.4)] mt-2 transition-all tracking-wider text-sm">
+                    ENREGISTRER
+                </button>
+
+                <!-- Danger Zone -->
+                <div class="pt-4 mt-4 border-t border-gray-800">
+                    <button onclick="resetData()" class="w-full py-3 rounded border border-red-900/50 text-red-500 hover:bg-red-900/20 hover:border-red-500 flex items-center justify-center gap-2 transition-all group">
+                        <i data-lucide="trash-2" class="w-4 h-4 group-hover:animate-bounce"></i>
+                        <span class="font-bold text-xs uppercase tracking-widest">EFFACER TOUTES LES DONNÉES</span>
+                    </button>
+                    <p class="text-[9px] text-gray-600 text-center mt-2">Action irréversible. Supprime tout l'historique local.</p>
                 </div>
              </div>
         </div>
@@ -614,34 +643,76 @@
                     const lines = text.split('\n').filter(l => l.trim() !== '');
                     let count = 0;
                     let type = 'unknown';
+                    
+                    // Specific GRDF detection
                     if (lines.some(l => l.includes('Date de consommation'))) type = 'daily';
                     else if (lines.some(l => l.includes('Date de relevé'))) type = 'index';
+                    else if (lines.some(l => l.includes('Période de consommation'))) type = 'monthly'; // New detection
 
                     if (type === 'unknown') { alert("Format inconnu."); return; }
 
-                    lines.forEach(line => {
-                        const parts = line.split(';');
-                        if (parts.length < 2) return;
-                        const rawDate = parts[0].trim();
-                        if (!rawDate.match(/^\d{2}\/\d{2}\/\d{4}$/)) return;
-                        const [day, month, year] = rawDate.split('/');
-                        const isoDate = `${year}-${month}-${day}`;
-                        let valStr = (type === 'daily') ? parts[1] : parts[2];
-                        if(!valStr) return;
-                        const val = parseFloat(valStr.replace(',', '.').replace(/\s/g, ''));
-
-                        if (!isNaN(val)) {
-                            if (type === 'daily') {
-                                state.importedData[isoDate] = val;
-                            } else {
-                                const exists = state.readings.find(r => r.date === isoDate);
-                                if (exists) { exists.value = val; } 
-                                else { state.readings.push({ date: isoDate, time: "00:00", value: val }); }
+                    if(type === 'monthly') {
+                        // Monthly processing: Period;Consumption;Coeff...
+                        // Format: "10/2025";"9,000";...
+                        let monthlyCount = 0;
+                        lines.forEach(line => {
+                            const parts = line.split(';');
+                            if (parts.length < 2) return;
+                            
+                            const period = parts[0].trim(); // MM/YYYY
+                            if (!period.match(/^\d{2}\/\d{4}$/)) return;
+                            
+                            const [month, year] = period.split('/');
+                            let valStr = parts[1];
+                            if(!valStr) return;
+                            const totalMonthM3 = parseFloat(valStr.replace(',', '.').replace(/\s/g, ''));
+                            
+                            if (!isNaN(totalMonthM3)) {
+                                // Distribute over days of month
+                                const daysInMonth = new Date(year, month, 0).getDate();
+                                const dailyM3 = totalMonthM3 / daysInMonth;
+                                
+                                for(let d=1; d<=daysInMonth; d++) {
+                                    const isoDate = `${year}-${month}-${String(d).padStart(2,'0')}`;
+                                    // Only fill if not already present (preserve daily data priority)
+                                    if(state.importedData[isoDate] === undefined) {
+                                        state.importedData[isoDate] = dailyM3;
+                                    }
+                                }
+                                monthlyCount++;
                             }
-                            count++;
-                        }
-                    });
-                    if (count > 0) alert(`${count} données importées.`);
+                        });
+                        if(monthlyCount > 0) alert(`${monthlyCount} mois importés et lissés sur les jours correspondants.`);
+                    } else {
+                        // Index & Daily Logic
+                        lines.forEach(line => {
+                            const parts = line.split(';');
+                            if (parts.length < 2) return;
+                            const rawDate = parts[0].trim();
+                            if (!rawDate.match(/^\d{2}\/\d{2}\/\d{4}$/)) return;
+                            const [day, month, year] = rawDate.split('/');
+                            const isoDate = `${year}-${month}-${day}`;
+                            
+                            // Adjust column index based on file type
+                            // Daily: Col 1 (Date;Conso;...)
+                            // Index: Col 2 (Date;Type;Index;...)
+                            let valStr = (type === 'daily') ? parts[1] : parts[2];
+                            if(!valStr) return;
+                            const val = parseFloat(valStr.replace(',', '.').replace(/\s/g, ''));
+
+                            if (!isNaN(val)) {
+                                if (type === 'daily') {
+                                    state.importedData[isoDate] = val;
+                                } else {
+                                    const exists = state.readings.find(r => r.date === isoDate);
+                                    if (exists) { exists.value = val; } 
+                                    else { state.readings.push({ date: isoDate, time: "00:00", value: val }); }
+                                }
+                                count++;
+                            }
+                        });
+                        if (count > 0) alert(`${count} données importées.`);
+                    }
                 }
                 saveData();
                 recalcEngine();
@@ -671,7 +742,12 @@
             recalcEngine();
             document.getElementById('settingsOverlay').classList.add('hidden');
         }
-        function resetData() { if(confirm("Tout effacer ?")) { localStorage.clear(); location.reload(); } }
+        function resetData() { 
+            if(confirm("ATTENTION : Vous êtes sur le point d'effacer INTÉGRALEMENT l'historique et les réglages.\n\nCette action est irréversible.\n\nConfirmer l'effacement ?")) { 
+                localStorage.clear(); 
+                location.reload(); 
+            } 
+        }
 
         // --- CORE ENGINE REWRITTEN FOR INTRA-DAY ---
         function recalcEngine() {
