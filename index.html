@@ -145,7 +145,7 @@
                         <span class="text-xs text-gray-400">Réel</span>
                     </div>
                     <div class="flex items-center gap-3">
-                        <div class="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.8)] shrink-0"></div>
+                        <div class="w-2 h-2 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.8)] shrink-0"></div>
                         <span class="text-xs text-gray-400">Estimé</span>
                     </div>
                 </div>
@@ -250,16 +250,30 @@
                 <div class="relative h-64 w-full flex items-end justify-between gap-1" id="chartContainer">
                     <div class="absolute inset-0 flex items-center justify-center text-gray-600 text-sm animate-pulse">En attente de données...</div>
                 </div>
-                <div class="flex justify-between mt-2 px-1 text-[10px] text-gray-500 font-mono" id="chartLabels"></div>
+                <!-- Labels Container -->
+                <div class="relative h-6 w-full mt-2" id="chartLabels"></div>
             </div>
 
             <!-- Heatmap & History -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 glass-panel rounded-xl p-6">
-                    <h3 class="text-sm font-bold text-white mb-4 flex items-center gap-2 uppercase tracking-wider">
-                        <i data-lucide="layout-grid" class="w-4 h-4 text-violet-400"></i>
-                        Matrice Temporelle
-                    </h3>
+                <div class="lg:col-span-2 glass-panel rounded-xl p-6 relative">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-sm font-bold text-white flex items-center gap-2 uppercase tracking-wider">
+                            <i data-lucide="layout-grid" class="w-4 h-4 text-violet-400"></i>
+                            Matrice Temporelle
+                        </h3>
+                        <div class="flex gap-3">
+                            <div class="flex items-center gap-1.5">
+                                <div class="w-2 h-2 rounded-sm bg-emerald-500/80 shadow-[0_0_5px_rgba(16,185,129,0.5)]"></div>
+                                <span class="text-[9px] text-gray-500 uppercase tracking-wider font-bold">Réel</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <div class="w-2 h-2 rounded-sm bg-cyan-500/80 shadow-[0_0_5px_rgba(6,182,212,0.5)]"></div>
+                                <span class="text-[9px] text-gray-500 uppercase tracking-wider font-bold">Estimé</span>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="grid grid-cols-7 gap-1 md:gap-2 mb-2">
                         <div class="text-center text-[10px] text-gray-500">L</div>
                         <div class="text-center text-[10px] text-gray-500">M</div>
@@ -459,11 +473,9 @@
             const reader = new FileReader();
             
             reader.onload = function(e) {
-                // 1. CLEANING: Remove BOM, normalize breaks, trim empty lines
                 const rawText = e.target.result.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n');
                 let processed = false;
 
-                // 2. TRY JSON (Backup)
                 try {
                     const json = JSON.parse(rawText);
                     if (json.readings || json.indexes) {
@@ -493,13 +505,11 @@
                     }
                 } catch(e) { /* Not a JSON file */ }
 
-                // 3. TRY CSV (GRDF / CSV Parsing)
                 if (!processed) {
                     let type = 'unknown';
-                    // Robust detection using safe keywords (no accents if possible)
                     if (rawText.indexOf("Index (m3)") > -1 || rawText.indexOf("Type d'index") > -1) type = 'index';
                     else if (rawText.indexOf("Date de consommation") > -1 && rawText.indexOf("Consommation (m3)") > -1) type = 'daily';
-                    else if (rawText.indexOf("riode de consommation") > -1) type = 'monthly'; // Partial match for 'Période'
+                    else if (rawText.indexOf("riode de consommation") > -1) type = 'monthly'; 
 
                     if (type === 'unknown') {
                         alert("Format non reconnu. Assurez-vous d'utiliser un fichier CSV GRDF (Index, Conso jour ou mois) ou une sauvegarde JSON.");
@@ -512,32 +522,24 @@
                     
                     lines.forEach(line => {
                         const cleanLine = line.trim();
-                        // Skip empty or purely summary lines (often start with Année/Year)
                         if(!cleanLine || cleanLine.startsWith('Année') || cleanLine.startsWith('Total')) return;
                         
-                        // GRDF CSVs are semicolon delimited
                         const parts = cleanLine.split(';');
                         if (parts.length < 2) return;
 
-                        // Clean quotes and spaces from values (e.g. "11,28" -> 11,28)
                         const cols = parts.map(p => p.replace(/"/g, '').trim());
 
                         if (type === 'monthly') {
-                            // Format: MM/YYYY;Conso;...
-                            const period = cols[0]; // "10/2025"
-                            if (!period.match(/^\d{2}\/\d{4}$/)) return; // Skip headers
+                            const period = cols[0];
+                            if (!period.match(/^\d{2}\/\d{4}$/)) return; 
                             const [m, y] = period.split('/');
-                            // Handle french number format: space as separator, comma as decimal
-                            const valStr = cols[1]; 
-                            if(!valStr) return;
-                            const val = parseFloat(valStr.replace(/\s/g, '').replace(/\u00A0/g, '').replace(',', '.'));
+                            const val = parseFloat(cols[1].replace(/\s/g, '').replace(/\u00A0/g, '').replace(',', '.'));
                             
                             if (!isNaN(val)) {
                                 const daysInMonth = new Date(parseInt(y), parseInt(m), 0).getDate();
                                 const dailyM3 = val / daysInMonth;
                                 for(let d=1; d<=daysInMonth; d++) {
                                     const isoDate = `${y}-${m}-${String(d).padStart(2,'0')}`;
-                                    // Don't overwrite if we have precise daily data
                                     if(state.importedData[isoDate] === undefined) {
                                         state.importedData[isoDate] = dailyM3;
                                     }
@@ -545,18 +547,14 @@
                                 count++;
                             }
                         } else {
-                            // Daily or Index: DD/MM/YYYY;...
-                            const dateStr = cols[0]; // "26/11/2025"
-                            if (!dateStr.match(/^\d{2}\/\d{2}\/\d{4}$/)) return; // Skip headers
+                            const dateStr = cols[0];
+                            if (!dateStr.match(/^\d{2}\/\d{2}\/\d{4}$/)) return; 
                             const [day, month, year] = dateStr.split('/');
                             const isoDate = `${year}-${month}-${day}`;
                             
-                            // GRDF Daily: Date(0);Conso(1)...
-                            // GRDF Index: Date(0);Type(1);Index(2)...
                             let valStr = (type === 'daily') ? cols[1] : cols[2];
                             if(!valStr) return;
                             
-                            // Robust number parsing
                             const val = parseFloat(valStr.replace(/\s/g, '').replace(/\u00A0/g, '').replace(',', '.'));
 
                             if (!isNaN(val)) {
@@ -759,35 +757,120 @@
             const container = document.getElementById('chartContainer');
             const labels = document.getElementById('chartLabels');
             container.innerHTML = ''; labels.innerHTML = '';
+            labels.style.position = 'relative'; labels.style.height = '20px';
+
             if (data.length === 0) { container.innerHTML = '<div class="absolute inset-0 flex items-center justify-center text-gray-700 text-xs">Pas de données</div>'; return; }
+
             let items = data;
-            const tooMany = data.length > 35;
+            const tooMany = data.length > 60; // Slightly higher threshold for better daily view
+            const unit = state.ui.chartMode === 'kwh' ? 'kWh' : '€';
+
             if(tooMany) {
+                // Monthly Grouping
                 const grouped = {};
                 data.forEach(d => {
                     const k = d.date.substring(0, 7); 
-                    if(!grouped[k]) grouped[k] = {val:0, date:d.date, type:d.type};
+                    if(!grouped[k]) grouped[k] = {val:0, date:d.date, type:d.type, count:0, realCount:0};
                     grouped[k].val += (state.ui.chartMode === 'kwh' ? d.kwh : (d.kwh * state.settings.kwhPrice));
+                    grouped[k].count++;
+                    if(d.type === 'real') grouped[k].realCount++;
                 });
-                items = Object.values(grouped);
+                items = Object.keys(grouped).sort().map(k => {
+                    const g = grouped[k];
+                    const type = (g.realCount / g.count) > 0.5 ? 'real' : 'estimated';
+                    return { val: g.val, date: k + "-01", type: type }; 
+                });
             } else {
-                items = data.map(d => ({ val: state.ui.chartMode === 'kwh' ? d.kwh : (d.kwh * state.settings.kwhPrice), date: d.date, type: d.type }));
+                // Daily View
+                items = data.map(d => ({ 
+                    val: state.ui.chartMode === 'kwh' ? d.kwh : (d.kwh * state.settings.kwhPrice), 
+                    date: d.date, 
+                    type: d.type 
+                }));
             }
+
             const max = Math.max(...items.map(i=>i.val)) || 1;
+
+            // RENDER BARS
             items.forEach((item, i) => {
                 const h = (item.val / max) * 100;
-                const color = item.type === 'real' ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.5)]';
+                const color = item.type === 'real' 
+                    ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.4)]' 
+                    : 'bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.4)]';
+                
                 const el = document.createElement('div');
                 el.className = `flex-1 mx-[1px] rounded-t-sm ${color} bar-grow opacity-80 hover:opacity-100 hover:scale-x-110 transition-all relative group`;
-                el.style.height = `${h}%`; el.style.animationDelay = `${i*20}ms`;
-                el.innerHTML = `<div class="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-black text-[10px] p-1 rounded border border-gray-700 whitespace-nowrap z-20">${item.val.toFixed(1)}</div>`;
+                el.style.height = `${Math.max(h, 1)}%`; 
+                el.style.animationDelay = `${i*10}ms`; 
+
+                // TOOLTIP
+                const dateObj = new Date(item.date);
+                const dateStr = tooMany 
+                    ? dateObj.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }).toUpperCase()
+                    : dateObj.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }).toUpperCase();
+
+                el.innerHTML = `
+                    <div class="hidden group-hover:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-[#0f1219] text-gray-200 text-[10px] p-3 rounded-lg border border-gray-700 whitespace-nowrap z-50 shadow-2xl backdrop-blur-md">
+                        <div class="font-bold text-white mb-1 tracking-widest text-[9px] border-b border-gray-800 pb-1">${dateStr}</div>
+                        <div class="flex items-center justify-between gap-4 mt-1">
+                            <div class="flex items-center gap-1.5">
+                                <div class="w-1.5 h-1.5 rounded-full ${item.type === 'real' ? 'bg-emerald-500' : 'bg-cyan-500'} animate-pulse"></div>
+                                <span class="text-[9px] text-gray-400 uppercase">${item.type === 'real' ? 'Réel' : 'Estimé'}</span>
+                            </div>
+                            <span class="text-sm font-mono font-bold text-white">${item.val.toFixed(1)} <span class="text-[10px] text-gray-500">${unit}</span></span>
+                        </div>
+                    </div>
+                `;
                 container.appendChild(el);
             });
-            if(!tooMany) {
-                const l1 = document.createElement('div'); l1.innerText = new Date(items[0].date).toLocaleDateString(undefined, {day:'numeric'});
-                const l2 = document.createElement('div'); l2.innerText = new Date(items[items.length-1].date).toLocaleDateString(undefined, {day:'numeric'});
-                labels.appendChild(l1); labels.appendChild(l2);
-            } else { const l1 = document.createElement('div'); l1.innerText = new Date(items[0].date).getFullYear(); labels.appendChild(l1); }
+
+            // RENDER LABELS
+            const labelCount = items.length;
+            const step = Math.ceil(labelCount / 6); // Aim for ~6 labels max
+
+            items.forEach((item, i) => {
+                const date = new Date(item.date);
+                let showLabel = false;
+                let labelText = "";
+                let isHighlight = false;
+
+                if (tooMany) {
+                    // Monthly View Labels
+                    if (date.getMonth() === 0) { // Jan -> Show Year
+                        showLabel = true;
+                        labelText = date.getFullYear().toString();
+                        isHighlight = true;
+                    } else if (i % step === 0) {
+                         showLabel = true;
+                         labelText = date.toLocaleDateString('fr-FR', { month: 'short' }).replace('.', '');
+                    }
+                } else {
+                    // Daily View Labels
+                    if (date.getDate() === 1) { // 1st -> Show Month
+                        showLabel = true;
+                        labelText = date.toLocaleDateString('fr-FR', { month: 'short' }).replace('.', '');
+                        isHighlight = true;
+                    } else if (i % step === 0 || i === 0 || i === items.length - 1) {
+                        showLabel = true;
+                        labelText = date.getDate().toString().padStart(2, '0');
+                    }
+                }
+
+                if (showLabel) {
+                    const labelDiv = document.createElement('div');
+                    const pct = (i / (items.length - 1)) * 100;
+                    
+                    labelDiv.className = `absolute text-[9px] font-mono transform -translate-x-1/2 transition-colors duration-300 ${isHighlight ? 'text-cyan-400 font-bold bg-cyan-900/30 px-1 rounded' : 'text-gray-500'}`;
+                    labelDiv.style.left = `${pct}%`;
+                    labelDiv.innerText = labelText;
+                    
+                    // Prevent overflow at edges
+                    if(pct < 5) labelDiv.style.transform = 'translateX(0)';
+                    if(pct > 95) labelDiv.style.transform = 'translateX(-100%)';
+
+                    labels.appendChild(labelDiv);
+                }
+            });
         }
 
         function renderHeatmap(data) {
