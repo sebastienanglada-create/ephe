@@ -355,10 +355,10 @@
                 <!-- Data Tools -->
                 <div class="flex gap-2 w-full md:w-auto">
                     <button onclick="document.getElementById('fileImport').click()" class="flex-1 md:flex-none px-4 py-2 rounded border border-gray-700 hover:border-emerald-500 text-xs text-gray-400 hover:text-emerald-400 transition-colors flex items-center justify-center gap-2">
-                        <i data-lucide="upload" class="w-3 h-3"></i> Import CSV
+                        <i data-lucide="upload" class="w-3 h-3"></i> Import
                     </button>
                     <button onclick="exportData()" class="flex-1 md:flex-none px-4 py-2 rounded border border-gray-700 hover:border-violet-500 text-xs text-gray-400 hover:text-violet-400 transition-colors flex items-center justify-center gap-2">
-                        <i data-lucide="download" class="w-3 h-3"></i> Export
+                        <i data-lucide="save" class="w-3 h-3"></i> Sauvegarde
                     </button>
                     <button onclick="toggleSettings()" class="px-3 py-2 rounded border border-gray-700 hover:border-gray-500 text-gray-400 transition-colors">
                         <i data-lucide="settings" class="w-4 h-4"></i>
@@ -532,43 +532,122 @@
             if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
+                const text = e.target.result;
                 try {
                     // Try parsing JSON first
-                    const json = JSON.parse(e.target.result);
-                    if(json.readings) state.readings = json.readings;
-                    if(json.settings) state.settings = json.settings;
-                    if(json.importedData) state.importedData = json.importedData;
-                    alert("JSON importé avec succès !");
-                } catch(err) {
-                    // Fallback to CSV parsing (GRDF style simplified)
-                    // Expected: Date;Index or Date;Volume
-                    const lines = e.target.result.split('\n');
-                    let count = 0;
-                    lines.forEach(line => {
-                        const parts = line.split(/[;,]/); // Split by ; or ,
-                        if(parts.length >= 2) {
-                            const d = parts[0].trim(); // YYYY-MM-DD
-                            const v = parseFloat(parts[1].trim());
-                            if(d.match(/^\d{4}-\d{2}-\d{2}$/) && !isNaN(v)) {
-                                // Assume daily consumption volume import
-                                state.importedData[d] = v; 
-                                count++;
+                    const json = JSON.parse(text);
+                    
+                    // CASE 1: Current App Export Format
+                    if(json.readings && json.settings) {
+                        state.readings = json.readings;
+                        state.settings = json.settings;
+                        if(json.importedData) state.importedData = json.importedData;
+                        alert("Sauvegarde (Format Natif) importée !");
+                    } 
+                    // CASE 2: The specific backup format provided by user (indexes + daily keys)
+                    else if (json.indexes && Array.isArray(json.indexes)) {
+                        let countReadings = 0;
+                        let countDaily = 0;
+
+                        // 1. Import Indexes
+                        json.indexes.forEach(idx => {
+                            if(idx.date && idx.index !== undefined) {
+                                // date "2024-04-04T12:00" -> "2024-04-04"
+                                const dateStr = idx.date.split('T')[0]; 
+                                const exists = state.readings.find(r => r.date === dateStr);
+                                if(!exists) {
+                                    state.readings.push({ date: dateStr, value: idx.index });
+                                    countReadings++;
+                                }
                             }
+                        });
+
+                        // 2. Import Daily Data (Root keys)
+                        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+                        Object.keys(json).forEach(key => {
+                            if(dateRegex.test(key) && json[key].m3 !== undefined) {
+                                state.importedData[key] = json[key].m3;
+                                countDaily++;
+                            }
+                        });
+
+                        alert(`Sauvegarde importée : ${countReadings} relevés et ${countDaily} jours de consommation.`);
+                    }
+                    else {
+                         throw new Error("Format JSON inconnu");
+                    }
+
+                } catch(err) {
+                    // Fallback: CSV Parsing logic specific to GRDF files
+                    const lines = text.split('\n').filter(l => l.trim() !== '');
+                    let count = 0;
+                    let type = 'unknown';
+
+                    // Detect file type based on header
+                    if (lines.some(l => l.includes('Date de consommation') && l.includes('Consommation (m3)'))) {
+                        type = 'daily';
+                    } else if (lines.some(l => l.includes('Date de relevé') && l.includes('Index (m3)'))) {
+                        type = 'index';
+                    }
+
+                    if (type === 'unknown') {
+                        alert("Format non reconnu. Veuillez utiliser un JSON valide ou un export CSV GRDF.");
+                        return;
+                    }
+
+                    lines.forEach(line => {
+                        const parts = line.split(';');
+                        if (parts.length < 2) return;
+
+                        // Parse Date (DD/MM/YYYY -> YYYY-MM-DD)
+                        const rawDate = parts[0].trim();
+                        if (!rawDate.match(/^\d{2}\/\d{2}\/\d{4}$/)) return;
+                        
+                        const [day, month, year] = rawDate.split('/');
+                        const isoDate = `${year}-${month}-${day}`;
+
+                        // Parse Value (Handle french comma decimal)
+                        let valStr = '';
+                        if (type === 'daily') valStr = parts[1];
+                        if (type === 'index') valStr = parts[2];
+                        
+                        if(!valStr) return;
+                        
+                        const val = parseFloat(valStr.replace(',', '.').replace(/\s/g, ''));
+
+                        if (!isNaN(val)) {
+                            if (type === 'daily') {
+                                state.importedData[isoDate] = val;
+                            } else {
+                                const exists = state.readings.find(r => r.date === isoDate);
+                                if (exists) { exists.value = val; } 
+                                else { state.readings.push({ date: isoDate, value: val }); }
+                            }
+                            count++;
                         }
                     });
-                    alert(`${count} jours de données importés.`);
+                    
+                    if (count > 0) {
+                        alert(`${count} données importées (${type === 'daily' ? 'Consommations' : 'Index'}).`);
+                    } else {
+                         alert("Aucune donnée valide trouvée.");
+                    }
                 }
                 saveData();
                 recalcEngine();
+                // Reset file input
+                e.target.value = '';
             };
             reader.readAsText(file);
         });
 
         function exportData() {
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0];
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
             const anchor = document.createElement('a');
             anchor.setAttribute("href", dataStr);
-            anchor.setAttribute("download", "neogaz_backup.json");
+            anchor.setAttribute("download", `gaz_backup_${dateStr}.json`);
             document.body.appendChild(anchor);
             anchor.click();
             anchor.remove();
@@ -589,7 +668,7 @@
             if(confirm("Tout effacer ?")) { localStorage.clear(); location.reload(); }
         }
 
-        // --- CORE ENGINE & UI RENDERING (Simplified for readability) ---
+        // --- CORE ENGINE & UI RENDERING ---
 
         function recalcEngine() {
             state.readings.sort((a, b) => new Date(a.date) - new Date(b.date));
