@@ -19,20 +19,21 @@
                     },
                     colors: {
                         cyber: {
-                            bg: '#05070a',
+                            bg: '#05070a', // Darker black
                             card: '#0f1219',
                             border: '#1e293b',
-                            primary: '#06b6d4',
-                            secondary: '#8b5cf6',
+                            primary: '#06b6d4', // Cyan neon
+                            secondary: '#8b5cf6', // Violet
                             success: '#10b981',
                             danger: '#ef4444',
-                            warning: '#f97316',
+                            warning: '#f97316', // Orange for temp
                             text: '#94a3b8',
                             ai: '#d946ef' // Fuchsia for AI
                         }
                     },
                     boxShadow: {
                         'neon-cyan': '0 0 5px theme("colors.cyan.500"), 0 0 20px theme("colors.cyan.900")',
+                        'neon-blue': '0 0 5px theme("colors.blue.500"), 0 0 20px theme("colors.blue.900")',
                         'neon-ai': '0 0 5px theme("colors.fuchsia.500"), 0 0 20px theme("colors.fuchsia.900")',
                     },
                     animation: {
@@ -259,6 +260,7 @@
                     </div>
                     <p class="text-[10px] text-cyan-400 uppercase tracking-widest mb-1">Volume Total</p>
                     <h2 class="text-2xl md:text-3xl font-bold text-white font-mono" id="kpiKwh">0</h2>
+                    <!-- REINSERTED ID kpiAvg TO FIX ERROR -->
                     <p class="text-xs text-gray-500 mt-1">Moy. <span id="kpiAvg" class="text-gray-300 font-bold">0</span> kWh/j</p>
                 </div>
 
